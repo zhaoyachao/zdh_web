@@ -1308,7 +1308,20 @@ INSERT INTO `resource_tree_info` VALUES (802848818109353984,'#','ZDH','1','zyc',
 (1495051477649985539, '1495051432326336512', '服务号管理-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_detail', '5', '', '', 'zdh', ''),
 (1495051477649985540, '1495051432326336512', '服务号管理-新增', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_add', '5', '', '', 'zdh', ''),
 (1495051477649985541, '1495051432326336512', '服务号管理-更新', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_update', '5', '', '', 'zdh', ''),
-(1495051477654179840, '1495051432326336512', '服务号管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_delete', '5', '', '', 'zdh', ''),(1496940338407804928, '1495051432326336512', '服务号管理-同步粉丝', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-23 18:26:28', '2026-04-23 18:26:28', 'wechat_refresh', '5', '', '', 'zdh', '');
+(1495051477654179840, '1495051432326336512', '服务号管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-18 13:20:49', '2026-04-18 13:20:49', 'wechat_delete', '5', '', '', 'zdh', ''),(1496940338407804928, '1495051432326336512', '服务号管理-同步粉丝', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-23 18:26:28', '2026-04-23 18:26:28', 'wechat_refresh', '5', '', '', 'zdh', ''),(1497232632855924736, '1439659600709160960', '微信文章管理', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-24 13:47:57', '2026-04-24 13:47:57', 'wechat_send_news_index', '2', '', '', 'zdh', ''),
+(1497309172167872512, '1439659600709160960', '评论管理', '4', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-24 18:52:05', '2026-04-24 18:52:05', 'wechat_comment_index', '2', '', '', 'zdh', ''),
+(1497680010725560320, '1497232632855924736', '微信文章管理-列表', '5', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_list', '5', '', '', 'zdh', ''),
+(1497680010729754624, '1497232632855924736', '微信文章管理-分页列表', '5', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_list_by_page', '5', '', '', 'zdh', ''),
+(1497680010729754625, '1497232632855924736', '微信文章管理-新增页面', '5', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_add_index', '3', '', '', 'zdh', ''),
+(1497680010729754626, '1497232632855924736', '微信文章管理-明细', '5', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_detail', '5', '', '', 'zdh', ''),
+(1497680010733948928, '1497232632855924736', '微信文章管理-新增', '5', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_add', '5', '', '', 'zdh', ''),
+(1497680010733948929, '1497232632855924736', '微信文章管理-更新', '5', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_update', '5', '', '', 'zdh', ''),
+(1497680010733948930, '1497232632855924736', '微信文章管理-删除', '5', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-04-25 19:25:40', '2026-04-25 19:25:40', 'wechat_send_news_delete', '5', '', '', 'zdh', ''),
+(1497680273897164800, '1497232632855924736', '微信文章管理-同步评论', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-25 19:26:43', '2026-04-25 19:26:43', 'wechat_send_news_refresh_comment', '5', '', '', 'zdh', ''),
+(1497680464087879680, '1497309172167872512', '评论管理-分页列表', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-25 19:27:28', '2026-04-25 19:27:28', 'wechat_comment_list_by_page', '5', '', '', 'zdh', ''),
+(1497680572644855808, '1497309172167872512', '评论管理-评论回复', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-25 19:27:54', '2026-04-25 19:27:54', 'wechat_comment_reply_add', '5', '', '', 'zdh', ''),
+(1497680664122626048, '1497309172167872512', '评论管理-删除评论回复', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-25 19:28:16', '2026-04-25 19:28:16', 'wechat_comment_reply_delete', '5', '', '', 'zdh', ''),
+(1497680723522359296, '1497309172167872512', '评论管理-删除评论', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-04-25 19:28:30', '2026-04-25 19:28:30', 'wechat_comment_delete', '5', '', '', 'zdh', '');
 /*!40000 ALTER TABLE `resource_tree_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3915,6 +3928,46 @@ CREATE TABLE `wechat_info` (
   PRIMARY KEY (`id`),
   KEY `idx_wechat_channel_key` (`product_code`,`wechat_channel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT '微信信息表';
+
+CREATE TABLE wechat_send_news_info (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `event` varchar(50) DEFAULT NULL COMMENT '事件,PUBLISHJOBFINISH:发布草稿, MASSSENDJOBFINISH:群发消息',
+  `wechat_channel` varchar(50) DEFAULT '' COMMENT '微信服务号',
+  `publish_id` varchar(50) DEFAULT '' COMMENT '发布任务id',
+  `msg_id` varchar(50) DEFAULT '' COMMENT '群发消息id',
+  `msg_data_id` varchar(100) DEFAULT '' COMMENT '内容id',
+  `article_id` varchar(100) DEFAULT '' COMMENT '发布成功后的id',
+  `status` varchar(8) DEFAULT '' COMMENT '状态,0:成功, 1:失败',
+  `wechat_status` varchar(8) DEFAULT '' COMMENT '草稿/群发消息原始错误',
+  `wechat_comment_sync_time` varchar(20) DEFAULT '' COMMENT '评论同步时间',
+  `ext` text  COMMENT '消息回调数据',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_channel_key` (`wechat_channel`,`event`,`publish_id`,`msg_id`,`msg_data_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信草稿发布明细';
+
+CREATE TABLE wechat_comment_info (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+  `msg_data_id` varchar(128) NOT NULL DEFAULT '' COMMENT 'msg_data_id',
+  `article_id` varchar(128) NOT NULL DEFAULT '' COMMENT '文章ID',
+  `comment_id` varchar(128) NOT NULL DEFAULT '' COMMENT '微信评论ID',
+  `parent_comment_id` varchar(128) NOT NULL DEFAULT '' COMMENT '父评论ID, 一级评论为空',
+  `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '评论用户openid',
+  `content` text COMMENT '评论内容',
+  `reply_content` text COMMENT '回复内容',
+  `comment_time` varchar(32) NOT NULL DEFAULT '' COMMENT '评论时间, 秒级时间戳',
+  `reply_time` varchar(32) NOT NULL DEFAULT '' COMMENT '回复时间, 秒级时间戳',
+  `is_delete` varchar(8) DEFAULT '0' COMMENT '是否删除,0:未删除,1:删除',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_wechat_comment` (`wechat_channel`,`article_id`,`msg_data_id`,`comment_id`),
+  KEY `idx_parent_comment_id` (`parent_comment_id`),
+  KEY `idx_openid` (`openid`),
+  KEY `idx_comment_time` (`comment_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信评论回复信息表';
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;

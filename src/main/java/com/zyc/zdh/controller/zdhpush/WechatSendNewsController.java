@@ -1,7 +1,6 @@
 package com.zyc.zdh.controller.zdhpush;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.zyc.zdh.annotation.White;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatMapper;
 import com.zyc.zdh.dao.WechatSendNewsMapper;
@@ -13,7 +12,6 @@ import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.pushx.PushxWechatCommentService;
 import com.zyc.zdh.pushx.entity.WechatCommentRequest;
 import com.zyc.zdh.service.ZdhPermissionService;
-import com.zyc.zdh.util.Const;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -54,7 +52,6 @@ public class WechatSendNewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_send_news_index", method = RequestMethod.GET)
-    @White
     public String wechat_send_news_index() {
 
         return "push/wechat_send_news_index";
@@ -69,7 +66,6 @@ public class WechatSendNewsController extends BaseController {
     @SentinelResource(value = "wechat_send_news_list", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_send_news_list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<List<WechatSendNewsInfo>> wechat_send_news_list(String context, String wechat_channel) {
         try{
             Example example=new Example(WechatSendNewsInfo.class);
@@ -111,7 +107,6 @@ public class WechatSendNewsController extends BaseController {
     @SentinelResource(value = "wechat_send_news_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_send_news_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<PageResult<List<WechatSendNewsInfo>>> wechat_send_news_list_by_page(String context,String wechat_channel, int limit, int offset) {
         try{
             Example example=new Example(WechatSendNewsInfo.class);
@@ -151,7 +146,6 @@ public class WechatSendNewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wechat_send_news_add_index", method = RequestMethod.GET)
-    @White
     public String wechat_send_news_add_index() {
 
         return "push/wechat_send_news_add_index";
@@ -165,7 +159,6 @@ public class WechatSendNewsController extends BaseController {
     @SentinelResource(value = "wechat_send_news_detail", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_send_news_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_detail(String id) {
         try {
             WechatSendNewsInfo wechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(id);
@@ -187,7 +180,6 @@ public class WechatSendNewsController extends BaseController {
     @RequestMapping(value = "/wechat_send_news_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_update(WechatSendNewsInfo wechatSendNewsInfo) {
         try {
 
@@ -218,7 +210,6 @@ public class WechatSendNewsController extends BaseController {
     @RequestMapping(value = "/wechat_send_news_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_add(WechatSendNewsInfo wechatSendNewsInfo) {
         try {
             wechatSendNewsInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
@@ -243,7 +234,6 @@ public class WechatSendNewsController extends BaseController {
     @RequestMapping(value = "/wechat_send_news_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    @White
     public ReturnInfo wechat_send_news_delete(String[] ids) {
         try {
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatSendNewsMapper, wechatSendNewsMapper.getTable(), ids, getAttrDel());
@@ -271,7 +261,6 @@ public class WechatSendNewsController extends BaseController {
     @SentinelResource(value = "wechat_send_news_refresh_comment", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_send_news_refresh_comment", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    @White
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_refresh_comment(String id) {
         try {
             WechatSendNewsInfo wechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(id);

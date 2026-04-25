@@ -43,11 +43,24 @@ public class WechatCommentController extends BaseController {
     @Autowired
     private WechatSendNewsMapper wechatSendNewsMapper;
 
+    /**
+     * 微信评论列表
+     * @return
+     */
     @RequestMapping(value = "/wechat_comment_index", method = RequestMethod.GET)
     public String wechat_comment_index() {
         return "push/wechat_comment_index";
     }
 
+    /**
+     * 获取微信评论列表
+     * @param context
+     * @param wechat_channel
+     * @param article_id
+     * @param limit
+     * @param offset
+     * @return
+     */
     @SentinelResource(value = "wechat_comment_list_by_page", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_comment_list_by_page", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -92,42 +105,12 @@ public class WechatCommentController extends BaseController {
         }
     }
 
-    @SentinelResource(value = "wechat_comment_sync", blockHandler = "handleReturn")
-    @RequestMapping(value = "/wechat_comment_sync", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public ReturnInfo wechat_comment_sync(String wechat_channel, String article_id, String begin_create_time) {
-        try {
-            if (StringUtils.isEmpty(wechat_channel) || StringUtils.isEmpty(article_id)) {
-                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "参数缺失", null);
-            }
-            //checkAttrPermissionByProduct(zdhPermissionService, product_code, getAttrAdd());
-
-            WechatCommentRequest request = new WechatCommentRequest();
-            request.setWechat_channel(wechat_channel);
-            request.setArticle_id(article_id);
-            request.setBegin_create_time(begin_create_time);
-            WechatCommentResponse response = pushxWechatCommentService.listComment(request);
-            if (response == null) {
-                throw new RuntimeException("微信评论同步失败, 响应为空");
-            }
-            if (!response.isSuccess()) {
-                throw new RuntimeException("微信评论同步失败, 微信失败码: " + response.getCode() + ", 微信失败信息: " + response.getMsg());
-            }
-            if (response.getData() == null || response.getData().getList() == null) {
-                return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功, 无新增评论", null);
-            }
-
-            for (WechatCommentResponse.CommentItem item : response.getData().getList()) {
-                //saveOrUpdateComment(item, wechat_channel, article_id, product_code);
-            }
-            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "同步成功", null);
-        } catch (Exception e) {
-            LogUtil.error(this.getClass(), e);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
-        }
-    }
-
+    /**
+     * 添加微信评论回复
+     * @param id
+     * @param content
+     * @return
+     */
     @SentinelResource(value = "wechat_comment_reply_add", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_comment_reply_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -179,6 +162,11 @@ public class WechatCommentController extends BaseController {
         }
     }
 
+    /**
+     * 删除微信评论回复
+     * @param id
+     * @return
+     */
     @SentinelResource(value = "wechat_comment_reply_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_comment_reply_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -231,6 +219,11 @@ public class WechatCommentController extends BaseController {
         }
     }
 
+    /**
+     * 删除微信评论
+     * @param ids
+     * @return
+     */
     @SentinelResource(value = "wechat_comment_delete", blockHandler = "handleReturn")
     @RequestMapping(value = "/wechat_comment_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
