@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 调度新增首页</title>
+    <meta name="keywords" content="ZDH 调度新增首页">
+    <meta name="description" content="ZDH 调度新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>调度任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
+                    <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
+                    <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
+                    <input type="hidden" id="shell_text" name="shell_text" value="">
+                    <input type="hidden" id="hdfs_url_text" name="hdfs_url_text" value="">
+                    <input type="hidden" id="hdfs_path_text" name="hdfs_path_text" value="">
+                    <input type="hidden" id="http_params" name="http_params" value="">
+                    <input type="hidden" id="http_header" name="http_header" value="">
+                    <input type="hidden" id="http_cookie" name="http_cookie" value="">
+                    <input type="hidden" id="http_res_expr" name="http_res_expr" value="">
+                    <input type="hidden" id="http_url_text" name="http_url_text" value="">
+                    <input type="hidden" id="http_proxy_url_text" name="http_proxy_url_text" value="">
+                    <input type="hidden" id="to_emails" name="to_emails" value="">
+                    <input type="hidden" id="email_context" name="email_context" value="">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">调度说明</label>
+                            <div class="col-sm-10">
+                                <input id="job_context" name="job_context" type="text"
+                                       placeholder="调度说明,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务依赖</label>
+                            <div  class="col-sm-10">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft">
+                                        <div class="deviceLeft_box">
+                                            <div class="node nodetaskscss" data-type="tasks">ETL任务</div>
+                                            <div class="node nodeshellcss" data-type="shell">SHELL</div>
+                                            <div class="node nodegroupcss" data-type="group">任务组</div>
+                                            <div class="node nodejdbccss" data-type="jdbc">JDBC</div>
+                                            <div class="node nodehdfscss" data-type="hdfs">HDFS</div>
+                                            <div class="node nodehttpcss" data-type="http">HTTP</div>
+                                            <div class="node nodeemailcss" data-type="email">EMAIL</div>
+                                            <div class="node nodeflumecss" data-type="flume">日志采集</div>
+                                        </div>
+                                    </div>
+                                    <div id="deviceRight">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务类型</label>
+                            <div class="col-sm-10">
+                                <input id="job_type" name="job_type" type="text"
+                                       placeholder="任务状态" class="form-control" aria-required="true" readonly value="ETL"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">表达式</label>
+                            <div class="col-sm-10">
+                                <input id="expr" name="expr" type="text"
+                                       placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
+                                <span class="help-block m-b-none"><a id="" href="javascript:void(0);" onclick="cron()">生成Cron表达式</a></span>
+                            </div>
+<!--                            <div class="form-group col-sm-12"></div>-->
+                            <label class="col-sm-2 control-label">调度时间策略</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="use_quartz_time" name="use_quartz_time"  onclick="abc()" type="checkbox"><i></i> 使用调度触发时间</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="div_time_diff">
+                            <label class="col-sm-2 control-label">回退时间差</label>
+                            <div class="col-sm-10">
+                                <input id="time_diff" name="time_diff" type="text"
+                                       placeholder="时间差,默认单位秒 example:60(60秒)" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="div_start_end_time">
+                            <label class="col-sm-2 control-label">起始日期</label>
+                            <div class="col-sm-10">
+                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
+                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" id="div_step_size">
+                            <label class="col-sm-2 control-label">步长</label>
+                            <div class="col-sm-10">
+                                <input id="step_size" name="step_size" type="text" value="1d"
+                                       placeholder="步长 example:1s(1秒),1m(1分钟),1d(1天)" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">执行模式</label>
+                            <div class="col-sm-10">
+                                <select id="job_model" name="job_model" data-placeholder="选择执行模式..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype=""></option>
+                                    <option value="1" mytype="" selected = "selected">顺时间执行</option>
+                                    <option value="2" mytype="">执行一次</option>
+                                   <!-- <option value="3" mytype="">重复执行</option>-->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">恢复策略</label>
+                            <div class="col-sm-10">
+                                <select id="misfire" name="misfire" data-placeholder="选择恢复策略..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="0" mytype="" selected = "selected">无</option>
+                                    <option value="1" mytype="">执行所有历史错过任务</option>
+                                    <option value="2" mytype="">执行最近一次错过历史</option>
+                                    <!-- <option value="3" mytype="">重复执行</option>-->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">失败重试次数</label>
+                            <div class="col-sm-10">
+                                <input id="plan_count" name="plan_count" type="text" value="0"
+                                       placeholder="失败重试次数,设置-1 代表无限制" class="form-control" aria-required="true"> </span>
+                            </div>
+                            <div class="form-group col-sm-12"></div>
+                            <label class="col-sm-2 control-label">重试时间间隔(s)</label>
+                            <div class="col-sm-10">
+                                <input id="interval_time" name="interval_time" type="text" value="5"
+                                       placeholder="重试时间间隔单位是秒,example: 5" class="form-control" aria-required="true"> </span>
+                            </div>
+                            <div class="form-group col-sm-12"></div>
+                            <label class="col-sm-2 control-label">重置已执行次数</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="reset_count" name="reset_count" type="checkbox"><i></i> 选择重置</label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务状态</label>
+                            <div class="col-sm-10">
+                                <input id="status" name="status" type="text"
+                                       placeholder="任务状态" class="form-control" aria-required="true" readonly> </span>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">其他参数</label>
+                            <div class="col-sm-10" id="div_data_sources_params">
+                                <textarea id="params" name="params" class="form-control" rows="2" placeholder="参数使用固定格式{&#34;k&#34;:&#34;v&#34;,&#34;k1&#34;:&#34;v1&#34;}"></textarea>
+                                <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);" onclick="resovle_params()">常用参数</a>; <a id="system_params" href="javascript:void(0);"
+                                                                                                                                                      onclick="system_params()">系统内置参数</a></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">是否修改上次执行时间</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="reset_last_time" name="reset_last_time" type="checkbox"><i></i> 手动覆盖</label>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12"></div>
+                            <label class="col-sm-2 control-label">上次执行时间</label>
+                            <div class="col-sm-10">
+                                <input placeholder="上次执行时间" class="form-control layer-date" id="last_time" name="last_time">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">通知类型</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="notice_error" name="notice_error" type="checkbox"><i></i> 失败</label>
+                                    <label class="no-padding">
+                                        <input id="notice_finish" name="notice_finish" type="checkbox"><i></i> 完成</label>
+                                    <label class="no-padding">
+                                        <input id="notice_timeout" name="notice_timeout" type="checkbox"><i></i> 超时</label>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 control-label">通知渠道</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="alarm_email" name="alarm_email" type="checkbox"><i></i> 邮箱</label>
+                                    <label class="no-padding">
+                                        <input id="alarm_sms" name="alarm_sms" type="checkbox"><i></i> 短信</label>
+                                    <label class="no-padding">
+                                        <input id="alarm_zdh" name="alarm_zdh" type="checkbox"><i></i> ZDH</label>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 control-label">配置告警用户</label>
+                            <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="alarm_account" name="alarm_account" placeholder="ZDH用户账号,多用户逗号分隔">
+                            </div>
+
+                            <div class="form-group col-sm-12"></div>
+                            <label class="col-sm-2 control-label">超时时间</label>
+                            <div class="col-sm-10">
+                                <input id="time_out" name="time_out" type="text" value="86400"
+                                       placeholder="任务超时时间,以秒为单位,example: 100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">优先级</label>
+                            <div class="col-sm-10">
+                                <input id="priority" name="priority" type="text"
+                                       placeholder="优先级 默认5,最高级100,example:25" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<div  id="dispath_params" class="ibox-content" style="display: none;">
+    <p>调度参数api</p>
+    <ul>
+        <li>在此处配置动态日期
+            </br>日期参数zdh_date => yyyy-MM-dd 模式
+            </br>日期参数zdh_date_nodash=> yyyyMMdd 模式
+            </br>日期参数zdh_date_time=> yyyy-MM-dd HH:mm:ss 模式
+            </br>日期参数zdh_year=> yyyy 模式
+            </br>日期参数zdh_month=> 月 模式
+            </br>日期参数zdh_day=>  天 模式
+            </br>日期参数zdh_hour=> 24小时 模式
+            </br>日期参数zdh_minute=> 分钟 模式
+            </br>日期参数zdh_second=> 秒 模式
+            </br>日期参数zdh_time=> 时间戳 模式
+        </li>
+    </ul>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jsplumb_common.js"></script>
+<script type="text/javascript" src="js/jsplumb/dispatch_task_group_index.js"></script>
+
+<script type="text/javascript">
+
+
+    function open_json(json) {
+        var jsplumb_json=JSON.parse(json);
+        //添加div 数据
+        console.info(json);
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            console.info("color:"+color);
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("etl_context",rs.etl_context);
+            $("#" + divId).attr("is_disenable",rs.is_disenable);
+            $("#" + divId).attr("depend_level",rs.depend_level);
+            $("#" + divId).attr("schedule_id",is_empty(rs.schedule_id)?"":rs.schedule_id);
+            $("#" + divId).attr("time_out",rs.time_out);
+            if(tp == "tasks"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("more_task",rs.more_task);
+                $("#" + divId).attr("zdh_instance",rs.zdh_instance);
+            }
+
+            if(tp == "shell"){
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("is_script",rs.is_script);
+            }
+
+            if(tp == "group"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            if(tp == "jdbc"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("driver",rs.driver);
+                $("#" + divId).attr("username",rs.username);
+                $("#" + divId).attr("password",rs.password);
+                $("#" + divId).attr("jdbc_sql",rs.jdbc_sql);
+                $("#" + divId).attr("data_sources_choose_input",rs.data_sources_choose_input);
+            }
+            if(tp == "hdfs"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("url_type",rs.url_type);
+                $("#" + divId).attr("username",rs.username);
+                $("#" + divId).attr("password",rs.password);
+                $("#" + divId).attr("hdfs_path",rs.hdfs_path);
+                $("#" + divId).attr("hdfs_mode",rs.hdfs_mode);
+
+            }
+            if(tp == "http"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("url",rs.url);
+                $("#" + divId).attr("proxy_url",is_empty(rs.proxy_url)?"":rs.proxy_url);
+                $("#" + divId).attr("url_type",rs.url_type);
+                $("#" + divId).attr("params",rs.params);
+                $("#" + divId).attr("header",rs.header);
+                $("#" + divId).attr("cookie",rs.cookie);
+                $("#" + divId).attr("res_expr",rs.res_expr);
+            }
+            if(tp == "email"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("to_emails",rs.to_emails);
+                $("#" + divId).attr("email_context",rs.email_context);
+                $("#" + divId).attr("subject",rs.subject);
+                $("#" + divId).attr("email_type",rs.email_type);
+            }
+            if(tp == "flume"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+
+
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+            $("#" + divId).html(rs.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+
+            doubleclick("#" + divId,tp);
+
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+                jsPlumb.connect({
+                    uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+                })
+        }
+
+
+    }
+
+    function jsplumb_data(){
+        var ojson={
+            tasks:[],
+            line:[]
+        };
+        //服务器
+        $("#m1 .tasks").each(function (idx, elem) {
+            var $elem = $(elem);
+            if($elem.attr('schedule_id') == undefined){
+                $elem.attr('schedule_id',"");
+            }
+            var param={
+                id: $elem.attr('id'),
+                etl_task_id: $elem.attr('etl_task_id'),
+                etl_context:$elem.attr('etl_context'),
+                more_task:$elem.attr('more_task'),
+                depend_level:$elem.attr('depend_level'),
+                schedule_id:$elem.attr('schedule_id'),
+                zdh_instance:$elem.attr('zdh_instance'),
+                is_script: $elem.attr('is_script'),
+                is_disenable: $elem.attr('is_disenable'),
+                command:$elem.attr('command'),
+                url: $elem.attr('url'),
+                proxy_url: $elem.attr('proxy_url'),
+                driver: $elem.attr('driver'),
+                username: $elem.attr('username'),
+                password: $elem.attr('password'),
+                jdbc_sql: $elem.attr('jdbc_sql'),
+                data_sources_choose_input: $elem.attr('data_sources_choose_input'),
+                url_type: $elem.attr('url_type'),
+                hdfs_path: $elem.attr('hdfs_path'),
+                hdfs_mode: $elem.attr('hdfs_mode'),
+                time_out: $elem.attr('time_out'),
+                params: $elem.attr('params'),
+                header: $elem.attr('header'),
+                cookie: $elem.attr('cookie'),
+                res_expr: $elem.attr('res_expr'),
+                to_emails: $elem.attr('to_emails'),
+                email_type: $elem.attr('email_type'),
+                email_context: $elem.attr('email_context'),
+                subject: $elem.attr('subject'),
+
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            };
+            ojson.tasks.push(param)
+        });
+
+        $.each(jsPlumb.getConnections(), function (idx, connection) {
+            var param={
+                connectionId: connection.id,
+                pageSourceId: connection.sourceId,
+                pageTargetId: connection.targetId
+            };
+            ojson.line.push(param)
+        });
+        console.info(ojson);
+        return ojson
+    }
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        //定义特定数据源展示的div
+        function customerTimeShow(action) {
+            //$('#div_start_end_time')[0].style.display = action;
+            $('#div_step_size')[0].style.display = action;
+        }
+
+        function quartTimeShow(action) {
+            $('#div_time_diff')[0].style.display = action;
+        }
+
+        $('#use_quartz_time').iCheck('check');
+        quartTimeShow("block");
+        customerTimeShow("none");
+
+        $('#use_quartz_time').on('ifChecked', function (event) {
+            customerTimeShow("none");
+            quartTimeShow("block");
+        });
+        $('#use_quartz_time').on('ifUnchecked', function (event) {
+            customerTimeShow("block");
+            quartTimeShow("none");
+        });
+
+        window.addressIdMagicSuggest = $('#alarm_account').magicSuggest({
+            width:200,
+            queryParam: 'username',
+            method: 'get',
+            allowFreeEntries: true,
+            autoSelect:true,
+            valueField:"id",
+            displayField:"name",
+            resultAsString:true,
+            selectionStacked: true,
+            resultsField: "result",
+            //下拉框数据的获得：
+            data: server_context+'/user_names'
+        });
+
+    });
+
+    function closeTab() {
+        // var currentWidth = $(this).parents('.J_menuTab').width();
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
+        var currentTab=pageTabs.find(".J_menuTab.active");
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
+
+        // 当前元素处于活动状态
+        if (currentTab.hasClass('active')) {
+
+            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+            if (pageTabs.next('.J_menuTab').size()) {
+
+                var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                if (marginLeftVal < 0) {
+                    pageTabs.animate({
+                        marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                    }, "fast");
+                }
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+            }
+
+            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+            if (currentTab.prev('.J_menuTab').size()) {
+                var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                currentTab.prev('.J_menuTab:last').addClass('active');
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+
+            }
+        }
+        // 当前元素不处于活动状态
+        else {
+
+            //  移除当前选项卡
+            currentTab.remove();
+
+            // 移除相应tab对应的内容区
+            mainContent.find('.J_iframe').each(function (index,e) {
+                if ($(e).data('id') == closeTabId) {
+                    $(e).remove();
+                    return false;
+                }
+            });
+            // scrollToTab($('.J_menuTab.active'));
+        }
+        return false;
+    }
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
+
+
+            $('#job_model').chosen();
+            $('#last_status').chosen();
+            $('#misfire').chosen();
+
+            var last_time = {
+                elem: '#last_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+
+            laydate(last_time);
+
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            if(s.id !='-1'){
+                console.info("更新-拷贝按钮触发");
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/dispatch_task_list",
+                    data : "ids=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+
+                        var product_code=data.result[0].product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result[0].dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
+
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var job_context=data.result[0].job_context;
+                        $("#job_context").val(job_context);
+
+
+                        //任务类型
+                        var job_type=data.result[0].job_type;
+                        //初始化输入数据源select 组件
+                        $("#job_type").val(job_type);
+                        var jsmind_data=data.result[0].jsmind_data;
+                        open_json(jsmind_data);
+
+                        //表达式expr
+                        var expr=data.result[0].expr;
+                        $("#expr").val(expr);
+
+                        var use_quartz_time=data.result[0].use_quartz_time;
+                        console.info("use_quartz_time:"+use_quartz_time);
+                        if(use_quartz_time=="on"){
+                            $('#use_quartz_time').iCheck('check');
+                        }else{
+                            $('#use_quartz_time').iCheck('uncheck');
+                        }
+
+                        var time_diff=data.result[0].time_diff;
+                        if(time_diff!=''){
+                            $("#time_diff").val(time_diff);
+                        }
+                        //开始时间
+                        var start_time=data.result[0].start_time;
+                        if(start_time!='' && typeof(start_time) !="undefined"){
+                            $("#start_time").val(getMyDate(start_time));
+                        }
+
+                        //结束时间
+                        var end_time=data.result[0].end_time;
+                        if(end_time!='' && typeof(end_time) !="undefined"){
+                            $("#end_time").val(getMyDate(end_time));
+                        }
+
+                        var step_size=data.result[0].step_size;
+                        if(step_size!=''){
+                            $("#step_size").val(step_size);
+                        }
+
+                        //执行模式job_model
+                        var job_model=data.result[0].job_model;
+                        //初始化输入数据源select 组件
+                        $("#job_model").val(job_model);
+                        $("#job_model").trigger("chosen:updated");
+
+                        var misfire=data.result[0].misfire;
+                        //初始化输入数据源select 组件
+                        $("#misfire").val(misfire);
+                        $("#misfire").trigger("chosen:updated");
+
+                        var plan_count=data.result[0].plan_count;
+                        $("#plan_count").val(plan_count);
+
+                        var interval_time=data.result[0].interval_time;
+                        $("#interval_time").val(interval_time);
+
+                        //调度任务依赖
+                        // var job_ids=data.result[0].job_ids;
+                        // if(job_ids!='' && typeof(job_ids) !="undefined"){
+                        //     //初始化输入数据源select 组件
+                        //     $("#job_ids").val(job_ids.split(","));
+                        //     $("#job_ids").trigger("chosen:updated");
+                        // }
+
+                        // var jump_dep=data.result[0].jump_dep;
+                        // console.info("jump_dep:"+jump_dep);
+                        // if(jump_dep=="on"){
+                        //     $('#jump_dep').iCheck('check');
+                        // }
+
+                        //status
+                        var status=data.result[0].status;
+                        $("#status").val(status);
+
+                        //获取输入源数据其他参数
+                        var params=data.result[0].params;
+                        $("#params").val(params);
+
+                        var last_status=data.result[0].last_status;
+                        console.info("last_status:"+last_status);
+                        $("#last_status").val(last_status);
+                        $("#last_status").trigger("chosen:updated");
+
+                        var last_time=data.result[0].last_time;
+
+                        if(last_time!='' && typeof(last_time) !="undefined")
+                        $("#last_time").val(getMyDate(last_time));
+
+                        var notice_error=data.result[0].notice_error;
+                        console.info("notice_error:"+notice_error);
+                        if(notice_error=="on"){
+                            $('#notice_error').iCheck('check');
+                        }
+                        var notice_finish=data.result[0].notice_finish;
+                        console.info("notice_finish:"+notice_finish);
+                        if(notice_finish=="on"){
+                            $('#notice_finish').iCheck('check');
+                        }
+                        var notice_timeout=data.result[0].notice_timeout;
+                        console.info("notice_timeout:"+notice_timeout);
+                        if(notice_timeout=="on"){
+                            $('#notice_timeout').iCheck('check');
+                        }
+
+                        var alarm_email=data.result[0].alarm_email;
+                        console.info("email_alarm:"+alarm_email);
+                        if(alarm_email=="on"){
+                            $('#alarm_email').iCheck('check');
+                        }
+
+                        var alarm_sms=data.result[0].alarm_sms;
+                        console.info("alarm_sms:"+alarm_sms);
+                        if(alarm_sms=="on"){
+                            $('#alarm_sms').iCheck('check');
+                        }
+
+                        var alarm_zdh=data.result[0].alarm_zdh;
+                        console.info("alarm_zdh:"+alarm_zdh);
+                        if(alarm_zdh=="on"){
+                            $('#alarm_zdh').iCheck('check');
+                        }
+
+                        var alarm_account=data.result[0].alarm_account;
+                        window.addressIdMagicSuggest.setValue(alarm_account.split(','));
+
+                        var time_out=data.result[0].time_out;
+                        $("#time_out").val(time_out);
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    //初始化a 标签 弹出具体参数解析功能
+    function resovle_params() {
+
+        layer.open({
+            type: 1,
+            shade: false,
+            title: false, //不显示标题
+            closeBtn: 1,
+            area:["50%","60%"],
+            content: $('#dispath_params'), //捕获的元素
+            cancel: function(index){
+                layer.close(index);
+                //this.content.show();
+               //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构',{time: 5000});
+            }
+        });
+    }
+
+    function cron() {
+        parent.layer.open({
+            type: 2,
+            title: 'cron表达式生成',
+            shadeClose: false,
+            resize: true,
+            fixed: false,
+            maxmin: true,
+            shade: 0.1,
+            area : ['45%', '60%'],
+            //area: ['450px', '500px'],
+            content: server_context+"/cron.html", //iframe的url
+            end : function () {
+                console.info("弹框结束")
+            }
+        });
+    }
+
+    $('#save_dispatch_task').click(function () {
+
+        //自定义实现
+        var etl_context=$('#etl_task_id').find("option:selected").text();
+
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空");
+            return false
+        }
+
+        if($('#expr').val() == ''){
+            $('#expr').val("1d")
+        }
+
+        if($('#start_time').val()==''){
+            layer.msg("调度开始时间不可为空");
+            return false
+        }
+
+        if($('#end_time').val()==''){
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+
+        if(window.addressIdMagicSuggest.getValue() == ""){
+            layer.msg("告警账号不可为空");
+            return false
+        }
+
+        if($('#job_model').val()==''){
+            $('#job_model').val("1")
+            //layer.msg("调度模式不可为空")
+        }
+
+        var oDate1 = new Date($('#start_time').val());
+        var oDate2 = new Date($('#end_time').val());
+        if(oDate1 > oDate2){
+            layer.msg("结束时间大于开始时间");
+            return false
+        }
+
+        var count_str="";
+        if($('#reset_count').is(':checked')){
+            count_str="&count=0"
+        }
+        var script_str="";
+        if($('#is_script').is(':checked')){
+            script_str="&is_script=true"
+        }
+        $("#dispatch_task_add_form").attr("etl_context",etl_context);
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+        var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
+
+        $("[name='alarm_account[]']").remove();
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_task_group_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+count_str+script_str+alarm_str,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                //parent.layer.close(index); //再执行关闭
+                closeTab();
+                console.info("closeTab()")
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var etl_context=$('#etl_task_id').find("option:selected").text();
+
+        if($('#job_context').val()==''){
+            layer.msg("调度说明不可为空");
+            return false
+        }
+
+        if($('#expr').val()==''){
+            layer.msg("调度任务表达式不可为空");
+            return false
+        }
+
+        if($('#start_time').val()==''){
+            layer.msg("调度开始时间不可为空");
+            return false
+        }
+
+        if($('#end_time').val()==''){
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+        if($('#job_model').val()==''){
+            layer.msg("调度模式不可为空");
+            return false
+        }
+
+        if(window.addressIdMagicSuggest.getValue() == ""){
+            layer.msg("告警账号不可为空");
+            return false
+        }
+        var oDate1 = new Date($('#start_time').val());
+        var oDate2 = new Date($('#end_time').val());
+        if(oDate1 > oDate2){
+            layer.msg("结束时间大于开始时间");
+            return false
+        }
+        var count_str="";
+        if($('#reset_count').is(':checked')){
+            count_str="&count=0"
+        }
+        var script_str="";
+        if($('#is_script').is(':checked')){
+            script_str="&is_script=true"
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+        console.info($("#dispatch_task_add_form").serialize());
+        var alarm_str = "&alarm_account="+window.addressIdMagicSuggest.getValue();
+        $("[name='alarm_account[]']").remove();
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_task_group_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+"&etl_context="+etl_context+"&job_id="+s.id+count_str+script_str+alarm_str,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+               // parent.layer.close(index); //再执行关闭
+                closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+
+    // window.operateEvents = {
+    //     'click #del': function (e, value, row, index) {
+    //         $('#exampleTableEvents').bootstrapTable('remove', {field: 'column_md5', values: [row.column_md5]});
+    //     }
+    // };
+
+    // function operateFormatter(value, row, index) {
+    //     return [
+    //         ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm">\n' +
+    //         '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+    //         '                                    </button>'
+    //     ].join('');
+    // }
+
+    //初始化 bootstrap table
+    // $('#exampleTableEvents').bootstrapTable({
+    //     url: "",
+    //     search: false,
+    //     clickEdit: true,
+    //     pagination: false,
+    //     showRefresh: false,
+    //     showToggle: false,
+    //     showColumns: false,
+    //     useRowAttrFunc: true,
+    //     iconSize: 'outline',
+    //     //toolbar: '#exampleTableEventsToolbar',
+    //     icons: {
+    //         refresh: 'glyphicon-repeat',
+    //         toggle: 'glyphicon-list-alt',
+    //         columns: 'glyphicon-list'
+    //     },
+    //     columns: [
+    //         {
+    //             field: 'nu',
+    //             title: '序号',
+    //             formatter: function (value, row, index) {
+    //                 return index + 1;
+    //             }
+    //         }, {
+    //             field: 'column_md5',
+    //             title: '字段序列码'
+    //         }, {
+    //             field: 'more_task',
+    //             title: '任务模板',
+    //             sortable: false
+    //         }, {
+    //             field: 'etl_id',
+    //             title: '任务id',
+    //             sortable: false
+    //         }, {
+    //             field: 'etl_context',
+    //             title: '任务说明',
+    //             sortable: false
+    //         }, {
+    //             field: 'operate',
+    //             title: '操作',
+    //             events: operateEvents,//给按钮注册事件
+    //             width: 45,
+    //             formatter: operateFormatter //表格中增加按钮
+    //         }],
+    //     onDblClickCell: function (field, value, row, $element) {
+    //         $element.attr('contenteditable', true);
+    //         $element.blur(function () {
+    //             var index = $element.parent().data('index');
+    //             var tdValue = $element.html().replace("<br>", "");
+    //             saveData(index, field, tdValue);
+    //         })
+    //     }
+    // });
+
+    // function addRow(more_task,etl_id,etl_context) {
+    //
+    //     var index = $('#exampleTableEvents').bootstrapTable('getData').length;
+    //
+    //     function guid() {
+    //         return 'xxx-4xxx-yxxx-xx'.replace(/[xy]/g, function (c) {
+    //             var r = Math.random() * 16 | 0,
+    //                 v = c == 'x' ? r : (r & 0x3 | 0x8);
+    //             return v.toString(16);
+    //         });
+    //     }
+    //
+    //
+    //     var guid_str = guid();
+    //     // newFlag == 1的数据为新规的数据
+    //     $('#exampleTableEvents').bootstrapTable('insertRow', {
+    //         index: index,
+    //         row: {
+    //             column_md5: guid_str,
+    //             more_task: more_task,
+    //             etl_id: etl_id,
+    //             etl_context: etl_context
+    //         }
+    //     });
+    // }
+</script>
+
+
+</body>
+
+</html>

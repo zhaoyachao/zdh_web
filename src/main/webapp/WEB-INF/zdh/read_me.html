@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+
+    <title>ZDH - 主页示例</title>
+
+    <link rel="shortcut icon" href="img/favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div class="row  border-bottom white-bg dashboard-header">
+        <div class="col-sm-12">
+            <blockquote class="text-warning" style="font-size:14px">您是否需要数据采集,简单数据加密…
+                <br>您是否一直在苦苦寻找一款适合自己的数据采集平台…
+                <br>您是否想做一款自己的方便管理的数据采集应用…
+                <br>…………
+                <h4 class="text-danger">那么，现在请尝试使用zdh</h4>
+            </blockquote>
+
+            <hr>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-4">
+
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>特色</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <p> 开箱即用</p>
+                        <p>支持多数据源</p>
+                        <p>单独的调度器,调度也可和三方调度器对接airflow,azkaban</p>
+                        <p>二次开发</p>
+                    </div>
+                </div>
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>项目信息</h5>
+
+                    </div>
+                    <div class="ibox-content">
+                        <p><i class="fa fa-github"></i>github：<a href="https://github.com/zhaoyachao/zdh" target="_blank">https://github.com/zhaoyachao/zdh</a>
+                        </p>
+                        <p>本预览版本为dev分支,开发者可拉去dev分支做具体分析</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>主要功能</h5>
+                    </div>
+                    <div class="ibox-content no-padding">
+                        <div class="panel-body">
+                            <div class="panel-group" id="version">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#version" href="#v41">v1.0.0</a><code class="pull-right">2020.04.01</code>
+                                            </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <div class="alert alert-warning">zdh 主要的作用 是从hdfs,hive,jdbc,http-json接口 等数据源拉取数据,并转存到hdfs,hive,jdbc等其他数据源
+                                                支持集群式部署</div>
+                                            <ol>
+                                                <li>支持sql标准函数</li>
+                                                <li>支持界面选择配置</li>
+                                                <li>支持快速复制已有任务</li>
+                                                <li>支持外部调度工具(需要修改,新增特定接口)</li>
+                                                <li>弹性扩展(可单机,可集群)</li>
+                                                <li>支持客户级权限</li>
+                                                <li>简单易用支持二次开发</li>
+                                                <li>自带简单调度工具,可配置定时任务,时间序列任务,设定次数</li>
+                                                <li>支持SHELL 命令检查文件 if [ ! -f "/dir1/file1" ];then echo "文件不存在"; else echo "true"; fi</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>支持的数据源</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <p>都包含那些数据源？</p>
+                        <ol>
+                            <li>hive(单集群使用多个远程hive)</li>
+                            <li>hdfs</li>
+                            <li>jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc)</li>
+                            <li>hbase</li>
+                            <li>mongodb</li>
+                            <li>es</li>
+                            <li>kafka</li>
+                            <li>http</li>
+                            <li>……</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js"></script>
+
+    <!-- 欢迎信息 -->
+    <script src="js/welcome.js"></script>
+</body>
+
+</html>

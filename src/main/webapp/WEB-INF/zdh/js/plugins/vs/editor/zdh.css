@@ -1,0 +1,9 @@
+.monaco_div {
+    height: 400px;
+    width: calc(100%);
+}
+
+.monaco_div_100 {
+    height: 100px;
+    width: calc(100%);
+}

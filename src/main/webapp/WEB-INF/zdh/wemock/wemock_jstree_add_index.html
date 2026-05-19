@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH wemock新增页面</title>
+    <meta name="keywords" content="ZDH wemock新增页面">
+    <meta name="description" content="ZDH wemock新增页面">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5 id="node_text"></h5><h5>wemock配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li class=""><a data-toggle="tab" href="#tab-5" aria-expanded="false">mock列表</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-1" aria-expanded="true">新增子节点</a>
+                                    </li>
+                                    <li class="active"><a data-toggle="tab" href="#tab-2" aria-expanded="false">更新本节点</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="false">删除本节点</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="#tab-4" aria-expanded="false">更换父节点</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_add_node_from" name="jstree_add_node_from" method="post" class="form-horizontal"
+                                                  action="">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">产品代码</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="product_code" name="product_code" class="form-control" type="text" value="" readonly placeholder="产品代码">
+                                                    </div>
+                                                    <div class="form-group col-sm-12"></div>
+                                                    <label class="col-sm-2 control-label">父节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="parent_text" name="parent_text" class="form-control" type="text" value="" readonly placeholder="父节点名称">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="child" name="child" class="form-control" type="text" value="" placeholder="节点名称">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">图标设置</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="icon" name="icon" class="form-control" type="text" value="fa fa-coffee" placeholder="图标 fa fa-hourglass-half" readonly>
+                                                    </div>
+                                                    <label class="col-sm-2 control-label"></label>
+                                                    <div class="col-sm-10">
+                                                        <span class="help-block m-b-none"><a href="javascript:void(0);" onclick="open_fontawesome()">图标网站</a></span>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="resource_type" name="resource_type"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2" disabled="disabled">
+                                                            <option value="1" mytype="">目录</option>
+                                                            <option value="2" mytype="">菜单</option>
+                                                            <option value="3" mytype="">页面</option>
+                                                            <option value="4" mytype="">方法</option>
+                                                            <option value="5" mytype="">接口</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="url" name="url" class="form-control" type="text" value="" placeholder="跳转链接 index.html" readonly>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">顺序号</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="order" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">事件</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="event_code" name="event_code"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2" disabled="disabled">
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">提示语</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="notice_title" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字" readonly>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-2" class="tab-pane active">
+                                        <div class="panel-body">
+                                            <form id="jstree_update_node_from" name="jstree_update_node_from" method="post" class="form-horizontal"
+                                                  action="">
+
+                                                <input type="hidden" name="product_code" value="" id="product_code2">
+                                                <input type="hidden" name="parent" value="" id="parent2">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">本节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="text" name="text" class="form-control" type="text" value="" placeholder="本节点名称">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">图标设置</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="icon2" name="icon" class="form-control" type="text" value="" placeholder="图标 fa fa-hourglass-half" readonly>
+                                                    </div>
+                                                    <label class="col-sm-2 control-label"></label>
+                                                    <div class="col-sm-10">
+                                                        <span class="help-block m-b-none"><a href="javascript:void(0);" onclick="open_fontawesome()">图标网站</a></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">资源类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="resource_type2" name="resource_type"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2" disabled="disabled">
+                                                            <option value="1" mytype="">目录</option>
+                                                            <option value="2" mytype="">菜单</option>
+                                                            <option value="3" mytype="">页面</option>
+                                                            <option value="4" mytype="">方法</option>
+                                                            <option value="5" mytype="">接口</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="url2" name="url" class="form-control" type="text" value="" placeholder="跳转链接 index.html" readonly>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">顺序号</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="order2" name="order" class="form-control" type="text" value="" placeholder="序号自定义">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">事件</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="event_code2" name="event_code"
+                                                                data-placeholder="空"
+                                                                class="chosen-select form-control m-b" tabindex="2" disabled="disabled">
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">提示语</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="notice_title2" name="notice_title" class="form-control" type="text" value="" placeholder="提示语,最多支持4个汉字" readonly>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute2" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel2" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-3" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_del_node_from" name="jstree_del_node_from" method="post" class="form-horizontal"
+                                                  action="">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">本节点名称</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="text3" name="text" class="form-control" type="text" value="" readonly placeholder="本节点名称">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute3" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel3" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-4" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_up_parent_from" name="jstree_up_parent_from" method="post" class="form-horizontal"
+                                                  action="">
+                                                <div id="using_json2"></div>
+                                                <div class="hr-line-dashed"></div>
+
+                                                <div class="form-group">
+                                                    <div class="text-center">
+                                                        <button id="execute4" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                                                type="button">执行
+                                                        </button>
+                                                        <button id="cancel4" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                                                type="button">取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+                                    <div id="tab-5" class="tab-pane">
+                                        <div class="panel-body">
+                                            <form id="jstree_add_node_from5" name="jstree_add_node_from" method="post" class="form-inline"
+                                                  action="">
+
+                                                <div class="form-group">
+                                                    <div class="input-group" >
+                                                        <input id="wemock_context" name="wemock_context" class="form-control" type="text" value="" placeholder="关键字">
+                                                        <span class="add-on"><i class="icon-remove"></i></span>
+                                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                </div>
+                                            </form>
+
+                                            <div class="row row-lg">
+
+                                                <div class="col-sm-12">
+                                                    <!-- Example Events -->
+                                                    <div class="example-wrap">
+                                                        <div class="btn-group" id="exampleTableEventsToolbar" role="group">
+                                                            <button id="add" type="button" class="btn btn-outline btn-default">
+                                                                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                                            </button>
+                                                            <button id="remove" type="button" class="btn btn-outline btn-default">
+                                                                <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
+                                                        <table id="exampleTableEvents" data-height="500" data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams" >
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <!-- End Example Events -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+
+<script src="js/plugins/jsTree/jstree.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        $('.chosen-select').chosen();
+        $(".chosen-container").css("width","100%");
+    });
+
+    function getMyDate(str){
+        var oDate = new Date(str),
+            oYear = oDate.getFullYear(),
+            oMonth = oDate.getMonth()+1,
+            oDay = oDate.getDate(),
+            oHour = oDate.getHours(),
+            oMin = oDate.getMinutes(),
+            oSen = oDate.getSeconds(),
+            oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay) +" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+        return oTime;
+    };
+    //补0操作
+    function getzf(num){
+        if(parseInt(num) < 10){
+            num = '0'+num;
+        }
+        return num;
+    }
+
+    (function(document, window, $) {
+
+        (function () {
+
+            var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            var node_text=s.text;
+            var product_code=s.product_code;
+            var tree_id=s.id;
+            $('#node_text').html("【"+node_text+"】");
+            $('#node_text').css("color","red");
+            $('#parent_text').attr('node_id',s.id);
+            $('#parent_text').val(node_text);
+            $('#product_code').val(product_code);
+            //设置删除节点
+            $('#text3').val(node_text);
+
+            //更新模块设置
+            $.ajax({
+                type: 'post',
+                url: server_context+"/wemock_jstree_get_node",
+                dataType: 'json',
+                async:'false',
+                data: "id="+s.id,
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    $('#text').attr('node_id',s.id);
+                    $('#text').val(data.result.text);
+
+                    $('#event_code2').val(data.result.event_code);
+                    $('#event_code2').trigger("chosen:updated");
+
+                    $('#parent2').val(data.result.parent);
+                    $('#product_code2').val(data.result.product_code);
+                    $('#icon2').val(data.result.icon);
+                    $('#url2').val(data.result.url);
+                    $('#order2').val(data.result.order);
+                    $('#notice_title2').val(data.result.notice_title);
+                    $('#resource_type2').val(data.result.resource_type);
+                    $("#resource_type2").trigger("chosen:updated");
+                },
+                //处理完成
+                complete: function () {
+                    $("#execute").removeAttr('disabled');
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#execute").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+            $('#using_json2').jstree({
+                "plugins" : [ "types",'checkbox' ],
+                'checkbox': { cascade: "", three_state: false }, //不级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/wemock_jstree_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code},
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
+                                }else{
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+
+
+                } });
+
+            window.operateEvents = {
+                'click #edit': function (e, value, row, index) {
+                    $("#id").val(row.id);
+                    var we_tree_id = "mock_tree_id="+row.mock_tree_id+"&product_code="+product_code;
+                    top.layer.open({
+                        type: 2,
+                        title: 'WEMOCK配置',
+                        shadeClose: false,
+                        resize: true,
+                        fixed: false,
+                        maxmin: true,
+                        shade: 0.1,
+                        area : ['100%', '100%'],
+                        //area: ['450px', '500px'],
+                        content: server_context+"/wemock_data_add_index?id="+row.id+"&"+we_tree_id, //iframe的url
+                        end:function () {
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url : server_context+'/wemock_data_list?'+we_tree_id
+                            });
+                        }
+                    });
+
+                },
+                'click #copy': function (e, value, row, index) {
+                    $("#id").val(row.id);
+                    var we_tree_id = "mock_tree_id="+row.mock_tree_id+"&product_code="+product_code;
+                    top.layer.open({
+                        type: 2,
+                        title: 'WEMOCK配置',
+                        shadeClose: false,
+                        resize: true,
+                        fixed: false,
+                        maxmin: true,
+                        shade: 0.1,
+                        area : ['100%', '100%'],
+                        //area: ['450px', '500px'],
+                        content: server_context+"/wemock_data_add_index?id="+row.id+"&is_copy=true&"+we_tree_id, //iframe的url
+                        end:function () {
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/wemock_data_list?"+we_tree_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
+                        }
+                    });
+
+                },
+                'click #del': function (e, value, row, index) {
+                    layer.confirm('是否删除任务', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(index){
+                        var ids = new Array();// 声明一个数组
+                        ids.push(row.id);
+                        deleteMs(ids, row);
+                        layer.close(layer.index);
+                    }, function(){
+
+                    });
+                },
+                'click #log_txt': function (e, value, row, index) {
+                    window.open(server_context+"/log_txt.html?job_id=" + row.id+"&task_log_id="+row.id + "&log_type=mock");
+                },
+            };
+
+            function deleteMs(ids,row) {
+                var we_tree_id = "mock_tree_id="+row.mock_tree_id+"&product_code="+product_code;
+                $.ajax({
+                    url : server_context+"/wemock_data_delete",
+                    data : "ids=" + ids,
+                    type : "post",
+                    async:false,
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != '200'){
+                            console.error(data.msg);
+                            parent.layer.msg("执行失败");
+                            return ;
+                        }
+                        parent.layer.msg("执行成功");
+
+                        $('#exampleTableEvents').bootstrapTable('refresh', {
+                            url: server_context+"/wemock_data_list?"+we_tree_id,
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json"
+                        });
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+            function operateFormatter(value, row, index) {
+                return [
+                    ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
+                    ' <button id="edit" name="edit" type="button" class="btn btn-outline btn-sm" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
+                    '                                    </button>',
+                    ' <button id="copy" name="copy" type="button" class="btn btn-outline btn-sm" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
+                    '                                    </button>',
+                    ' <button id="del" name="del" type="button" class="btn btn-outline btn-sm" title="删除">\n' +
+                    '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +
+                    '                                    </button>',
+                    ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">\n' +
+                    '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
+                    '                                    </button>'
+                    +
+                    '</div>'
+
+                ].join('');
+
+            }
+
+            var columns = [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'id',
+                title: 'ID',
+                visible: false
+            }, {
+                field: 'wemock_context',
+                title: 'mock说明',
+                sortable: false,
+                visible: true
+            },{
+                field: 'req_type',
+                title: '请求类型',
+                sortable: false,
+                visible: true
+            }, {
+                field: 'resolve_type',
+                title: '解析类型',
+                sortable: false,
+                visible: true
+            },  {
+                field: 'url',
+                title: '链接',
+                sortable: false,
+                visible: true
+            }, {
+                field: 'mock_tree_id',
+                title: '树节点',
+                sortable: false,
+                visible: false
+            }, {
+                field: 'create_time',
+                title: '创建时间',
+                sortable: false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            },{
+                field: 'operate',
+                title: '操作按钮',
+                events: operateEvents,//给按钮注册事件
+                width:150,
+                formatter: operateFormatter //表格中增加按钮
+            }];
+            var bootstrapTableConf = getTablePageCommon(server_context+"/wemock_data_list?mock_tree_id="+s.id);
+            bootstrapTableConf['columns'] = columns;
+            bootstrapTableConf['pageList'] = [10,50,100,200,500];
+            $('#exampleTableEvents').bootstrapTable(bootstrapTableConf
+            //     {
+            //     method: 'POST',
+            //     url: ,
+            //     search: false,
+            //     pagination: true,
+            //     showRefresh: true,
+            //     showToggle: true,
+            //     showColumns: true,
+            //
+            //     sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            //     pageNumber: 1,                       //初始化加载第一页，默认第一页
+            //     pageSize: 10,                       //每页的记录行数（*）
+            //     queryParams: function (params) {
+            //         // 此处使用了LayUi组件 是为加载层
+            //         loadIndex = layer.load(1);
+            //         let resRepor = {
+            //             //服务端分页所需要的参数
+            //             limit: params.limit,
+            //             offset: params.offset
+            //         };
+            //         return resRepor;
+            //     },
+            //     responseHandler: res => {
+            //         // 关闭加载层
+            //         layer.close(loadIndex);
+            //         return {                            //return bootstrap-table能处理的数据格式
+            //             "total":res.result.total,
+            //             "rows": res.result.rows
+            //         }
+            //     },
+            //     iconSize: 'outline',
+            //     toolbar: '#exampleTableEventsToolbar',
+            //     icons: {
+            //         refresh: 'glyphicon-repeat',
+            //         toggle: 'glyphicon-list-alt',
+            //         columns: 'glyphicon-list'
+            //     },
+            //
+            // }
+            );
+
+            $('#search').click(function () {
+                $('#exampleTableEvents').bootstrapTable('refresh', {
+                    url: server_context+"/wemock_data_list?mock_tree_id="+tree_id+"&wemock_context="+$('#wemock_context').val(),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    queryParams: function (params) {
+                        // 此处使用了LayUi组件 是为加载层
+                        loadIndex = layer.load(1);
+                        let resRepor = {
+                            //服务端分页所需要的参数
+                            limit: params.limit,
+                            offset: params.offset
+                        };
+                        return resRepor;
+                    },
+                });
+
+            });
+
+            $('#add').click(function () {
+                var we_tree_id = "mock_tree_id="+tree_id+"&product_code="+product_code;
+                layer.confirm('是否新增', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    parent.layer.open({
+                        type: 2,
+                        title: 'WEMOCK配置',
+                        shadeClose: false,
+                        resize: true,
+                        fixed: false,
+                        maxmin: true,
+                        shade: 0.1,
+                        area : ['100%', '100%'],
+                        //area: ['450px', '500px'],
+                        content: server_context+"/wemock_data_add_index?id=-1&product_code="+product_code+"&mock_tree_id="+tree_id, //iframe的url
+                        end : function () {
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/wemock_data_list?"+we_tree_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
+                        }
+                    });
+                    layer.close(index)
+                }, function(){
+
+                });
+
+            });
+
+            $('#remove').click(function () {
+
+                var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+                if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+                    layer.msg("请先选择要删除的记录!");
+                    return;
+                } else {
+                    layer.confirm('是否删除执行记录', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(index){
+                        var ids = new Array();// 声明一个数组
+                        $(rows).each(function () {// 通过获得别选中的来进行遍历
+                            ids.push(this.id);// cid为获得到的整条数据中的一列
+                        });
+                        console.log(ids);
+                        deleteMs(ids, {"mock_tree_id": tree_id});
+                        layer.close(index);
+                    }, function(){
+
+                    });
+                }
+
+            });
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    $('#execute').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/wemock_add_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_add_node_from").serialize()+"&parent="+s.id+"&text="+$("#child").val()+"&level="+(parseInt(s.level)+1),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
+                //window.parent.create_node(s.id,node);
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute").removeAttr('disabled');
+                //layer.close(index1);
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    });
+
+    function cancel(){
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+    }
+
+    $('#cancel').click(function (){
+        cancel ()
+    });
+    $('#cancel2').click(function (){
+        cancel ()
+    });
+    $('#cancel3').click(function (){
+        cancel ()
+    });
+    $('#cancel4').click(function (){
+        cancel ()
+    });
+
+    $('#execute2').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //更新节点
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/wemock_update_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_update_node_from").serialize()+"&id="+s.id+"&level="+s.level,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute2").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute2").removeAttr('disabled');
+                layer.close(index1);
+
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    layer.msg("执行失败");
+                    return ;
+                }
+                parent.refash(s.id);
+                layer.msg("执行成功");
+                //window.parent.create_node(s.id,node);
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute2").removeAttr('disabled');
+                //layer.close(index1)
+            },
+            //报错
+            error: function (data) {
+                $("#execute2").removeAttr('disabled');
+                layer.msg('失败')
+            }
+        });
+
+
+
+    });
+
+    $('#execute3').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        //删除节点
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/wemock_del_node",
+            dataType: 'json',
+            async:'false',
+            data: $("#jstree_del_node_from").serialize()+"&id="+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute3").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute3").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.refash(s.id);
+                parent.layer.msg("执行成功");
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute3").removeAttr('disabled');
+                //layer.close(index1);
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute3").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    });
+
+    $('#execute4').click(function () {
+
+
+        var url = decodeURI(location.search); //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+
+        var parent_id = $('#using_json2').jstree("get_checked");
+
+        if(parent_id.length != 1){
+            layer.msg("请选中一个父节点");
+            layer.close(index1);
+            return ;
+        }
+
+        var parent_ary = $('#using_json2').jstree("get_path", parent_id);
+        console.info(parent_ary);
+        console.info("parent_id:"+parent_id);
+        console.info("level:"+parent_ary.length+1);
+        var level=parent_ary.length+1;
+        //增加子节点,返回子节点id
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/wemock_update_parent",
+            dataType: 'json',
+            async:'false',
+            data: "id="+s.id+"&parent_id="+parent_id+"&level="+level,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#execute4").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#execute4").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code != '200'){
+                    console.error(data.msg);
+                    parent.layer.msg("执行失败");
+                    return ;
+                }
+                parent.refash(parent_id);
+                parent.layer.msg("执行成功");
+                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // parent.layer.close(index); //再执行关闭
+
+            },
+            //处理完成
+            complete: function () {
+                $("#execute4").removeAttr('disabled');
+                //layer.close(index1);
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#execute4").removeAttr('disabled');
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    })
+
+</script>
+
+</body>
+
+</html>

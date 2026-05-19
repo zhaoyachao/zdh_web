@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 调度手动执行首页</title>
+    <meta name="keywords" content="ZDH 调度手动执行首页">
+    <meta name="description" content="ZDH 调度手动执行首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>调度任务配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+
+                        <div class="form-group" id="div_start_end_time">
+                            <label class="col-sm-2 control-label">起始日期</label>
+                            <div class="col-sm-10">
+                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
+                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否串行</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="concurrency" type="checkbox"><i></i> 串行</label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">使用调度时间</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="use_quartz_time" type="checkbox"><i></i> 调度时间</label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">子任务</label>
+                            <div class="col-sm-10">
+                                <div class="checkbox i-checks" id="sub_task_div">
+
+                                </div>
+                            </div>
+                            <div  class="col-sm-12">
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft">
+                                    </div>
+                                    <div id="deviceRight">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-sm-10">
+                                <p id="etl_time"></p>
+                            </div>
+
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="check_time" name="check_time" class="btn btn-info" οnsubmit='return false'
+                                        type="button">生成执行时间
+                                </button>
+                                <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">执行
+                                </button>
+                                <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                        type="button">取消
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<!--jsplumb专用-->
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/jsplumb/jsplumb_common.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            //获取所有子任务
+            function get_all_tasks(){
+                var job_id=s.id;
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/dispatch_task_list",
+                    dataType: 'json',
+                    data: "ids="+job_id,
+                    //发送数据前
+                    beforeSend: function () {
+
+                    },
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+
+                       if(data.result.length=1){
+
+                           $('#sub_task_div').empty();
+                           $('#sub_task_div').addClass("checkbox");
+                           $('#sub_task_div').addClass("i-checks");
+                           var jsplumb_json=JSON.parse(data.result[0].jsmind_data);
+                           for(var i=0;i<jsplumb_json.tasks.length;i++){
+                               if(jsplumb_json.tasks[i].is_disenable == "true"){
+                                   continue
+                               }
+                               var divId=jsplumb_json.tasks[i].divId;
+                               $('#sub_task_div').append('<label class="no-padding">');
+                               $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' checked="" id="checkbox_'+divId+'\"><i></i>'+jsplumb_json.tasks[i].etl_context+'</label>')
+                           }
+
+                           $('.i-checks').iCheck({
+                               checkboxClass: 'icheckbox_square-green',
+                               radioClass: 'iradio_square-green',
+                           });
+
+                       }
+
+                    },
+                    //处理完成
+                    complete: function () {
+                        console.info("complete")
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+            get_all_tasks()
+        })();
+
+
+
+    })(document, window, jQuery);
+
+    $('#check_time').click(function () {
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if($('#start_time').val()==''){
+            layer.msg("调度开始时间不可为空");
+            return false
+        }
+
+        if($('#end_time').val()==''){
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+
+        var oDate1 = new Date($('#start_time').val());
+        var oDate2 = new Date($('#end_time').val());
+        if(oDate1 > oDate2){
+            layer.msg("结束时间大于开始时间")
+            return false
+        }
+
+        //默认并行
+        var concurrency="&concurrency=1";
+        if($('#concurrency').is(':checked')){
+            concurrency="&concurrency=0"
+        }
+        //默认不使用调度时间
+        var use_quartz_time="&use_quartz_time=off";
+        if($('#use_quartz_time').is(':checked')){
+            use_quartz_time="&use_quartz_time=on"
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_task_execute_time",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+"&job_id="+s.id+use_quartz_time+concurrency,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code!='200'){
+                    layer.msg(data.result);
+                    return;
+                }
+                var title = "总计<strong>"+data.result.length+"</strong>个任务";
+                if(parseInt(data.result.length) >= 5 ){
+                    $('#etl_time').html(title+", ETL时间: "+ "<strong>"+data.result[0] +", "+data.result[0]+ ", .... "+ data.result[data.result.length-1]+"</strong> ");
+                }else{
+                    var time_str = '';
+                    for(var i=0;i<data.result.length;i++){
+                        time_str = time_str + "<strong>"+data.result[i]+"</strong> ";
+                        if(i != data.result.length-1){
+                            time_str = time_str + "<strong>,</strong> ";
+                        }
+                    }
+                    $('#etl_time').html(title+", ETL时间: "+time_str);
+                }
+
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#execute').click(function () {
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if($('#start_time').val()==''){
+            layer.msg("调度开始时间不可为空");
+            return false
+        }
+
+        if($('#end_time').val()==''){
+            layer.msg("调度结束时间不可为空");
+            return false
+        }
+
+        var oDate1 = new Date($('#start_time').val());
+        var oDate2 = new Date($('#end_time').val());
+        if(oDate1 > oDate2){
+            layer.msg("结束时间大于开始时间");
+            return false
+        }
+
+        //默认并行
+        var concurrency="&concurrency=1";
+        if($('#concurrency').is(':checked')){
+            concurrency="&concurrency=0"
+        }
+        //默认不使用调度时间
+        var use_quartz_time="&use_quartz_time=off";
+        if($('#use_quartz_time').is(':checked')){
+            use_quartz_time="&use_quartz_time=on"
+        }
+
+        var index1 = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/dispatch_task_execute",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+"&job_id="+s.id+use_quartz_time+concurrency,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                if(data.code != 200){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.close(index1);
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    })
+
+    $('#cancel').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+
+    })
+
+</script>
+
+<script>
+
+    var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+    var params = url.substr(1);//去掉问号
+    var pa = params.split("&");
+    var s = new Object();
+    for(var i = 0; i < pa.length; i ++){
+        s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+    }
+
+    $(document).ready(function () {
+        var i=0;
+
+    });
+
+    function get_color_by_status(is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable=='true'){
+            return "LightGrey"
+        }
+        return ""
+    }
+
+    function open_json(json,group_id) {
+        var jsplumb_json=JSON.parse(json);
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            console.info("color:"+color);
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("etl_context",rs.etl_context);
+            if(tp == "tasks"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+                $("#" + divId).attr("more_task",rs.more_task);
+            }
+
+            if(tp == "shell"){
+                $("#" + divId).attr("command",rs.command);
+                $("#" + divId).attr("is_script",rs.is_script);
+            }
+
+            if(tp == "group"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            if(tp == "jdbc"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            if(tp == "hdfs"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+
+            }
+            if(tp == "http"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+            if(tp == "email"){
+                $("#" + divId).attr("etl_task_id",rs.etl_task_id);
+            }
+
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+            $("#" + divId).html(rs.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+
+            doubleclick("#" + divId,tp);
+
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+            })
+        }
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(divId,task_log_instance_id,etl_context) {
+        $(divId).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+            var checkbox_id = "checkbox_"+$(this).attr('id');
+            if( $('#'+checkbox_id).is(":checked")){
+                $('#'+checkbox_id).iCheck('uncheck');
+            }else{
+                $('#'+checkbox_id).iCheck('check');
+            }
+        });
+    }
+    function init(){
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url : server_context+"/dispatch_task_list",
+            data : "ids=" + s.id,
+            type : "post",
+            dataType : "json",
+            success : function(data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                //初始化输入数据源select 组件
+                var jsmind_data=data.result[0].jsmind_data;
+                open_json(jsmind_data,s.id)
+
+            },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+
+        });
+    }
+    init();
+</script>
+</body>
+
+</html>

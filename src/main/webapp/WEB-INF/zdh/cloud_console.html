@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZDH 云服务控制台</title>
+    <meta name="keywords" content="ZDH, 云服务, 控制台">
+    <meta name="description" content="ZDH 云服务平台总控制台">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <style>
+        .console-header {
+            background: transparent;
+            color: white;
+            padding: 34px 0 26px;
+            margin-bottom: 0;
+        }
+
+        .chat-box {
+            padding: 15px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .user-message {
+            flex-direction: row-reverse;
+        }
+
+        .assistant-message {
+            flex-direction: row;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1ab394;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            flex-shrink: 0;
+        }
+
+        .user-message .avatar {
+            background: #337ab7;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px;
+            border-radius: 18px;
+            background: #f8f9fa;
+            border: 1px solid #e7eaec;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.7;
+        }
+
+        .assistant-message .message-content {
+            color: #333;
+        }
+
+        .assistant-message .message-content p {
+            margin: 0 0 10px;
+        }
+
+        .assistant-message .message-content p:last-child,
+        .assistant-message .message-content ul:last-child,
+        .assistant-message .message-content ol:last-child,
+        .assistant-message .message-content table:last-child,
+        .assistant-message .message-content pre:last-child {
+            margin-bottom: 0;
+        }
+
+        .assistant-message .message-content ul,
+        .assistant-message .message-content ol {
+            padding-left: 22px;
+            margin: 0 0 10px;
+        }
+
+        .assistant-message .message-content blockquote {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-left: 4px solid #1ab394;
+            background: #eefaf6;
+            color: #555;
+        }
+
+        .assistant-message .message-content pre {
+            padding: 10px 12px;
+            margin: 8px 0 10px;
+            color: #f8f8f2;
+            background: #2f4050;
+            border: none;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .assistant-message .message-content code {
+            padding: 2px 5px;
+            color: #c7254e;
+            background: #f9f2f4;
+            border-radius: 4px;
+        }
+
+        .assistant-message .message-content pre code {
+            padding: 0;
+            color: inherit;
+            background: transparent;
+        }
+
+        .assistant-message .message-content table {
+            width: 100%;
+            margin: 8px 0 10px;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        .assistant-message .message-content th,
+        .assistant-message .message-content td {
+            padding: 8px 10px;
+            border: 1px solid #e7eaec;
+            vertical-align: top;
+        }
+
+        .assistant-message .message-content th {
+            background: #f3f3f4;
+            font-weight: 600;
+        }
+
+        .assistant-message .message-content a {
+            color: #1c84c6;
+            text-decoration: underline;
+        }
+
+        .assistant-message .message-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .thinking-content {
+            color: #888;
+        }
+
+        .thinking-content .dot {
+            display: inline-block;
+            animation: thinkingDot 1.2s infinite;
+        }
+
+        .thinking-content .dot:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .thinking-content .dot:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes thinkingDot {
+            0%, 60%, 100% {
+                opacity: .25;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
+
+        .user-message .message-content {
+            background: #337ab7;
+            color: white;
+            border-color: #2e6da4;
+        }
+
+        .chat-input {
+            margin-top: 20px;
+        }
+
+        #questionInput {
+            border-radius: 20px;
+            padding: 12px 20px;
+            border: 2px solid #e7eaec;
+        }
+
+        #questionInput:focus {
+            border-color: #1ab394;
+            box-shadow: none;
+        }
+        body.gray-bg {
+            color: #111827;
+            background: radial-gradient(circle at 8% 8%, rgba(37, 99, 235, .16), transparent 28%), radial-gradient(circle at 86% 10%, rgba(124, 58, 237, .14), transparent 26%), linear-gradient(180deg, #eef4ff 0%, #f7f9fc 42%, #ffffff 100%);
+        }
+
+        .cloud-console-page { position: relative; min-height: 100vh; padding-bottom: 46px; overflow: hidden; }
+        .cloud-console-page:before, .cloud-console-page:after { position: fixed; z-index: 0; width: 420px; height: 420px; content: ""; pointer-events: none; border-radius: 50%; filter: blur(5px); }
+        .cloud-console-page:before { top: -180px; left: -120px; background: rgba(37, 99, 235, .11); }
+        .cloud-console-page:after { right: -150px; bottom: -220px; background: rgba(16, 185, 129, .11); }
+        .cloud-console-page > .container, .console-header { position: relative; z-index: 1; }
+        .hero-panel { position: relative; overflow: hidden; min-height: 190px; padding: 34px 38px; color: #fff; background: linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(37, 99, 235, .92) 58%, rgba(124, 58, 237, .9)); border: 1px solid rgba(255, 255, 255, .18); border-radius: 28px; box-shadow: 0 24px 70px rgba(15, 23, 42, .13); }
+        .hero-panel:before { position: absolute; top: -80px; right: -60px; width: 300px; height: 300px; content: ""; background: radial-gradient(circle, rgba(255, 255, 255, .24), transparent 64%); border-radius: 50%; }
+        .hero-panel:after { position: absolute; right: 38px; bottom: -44px; width: 190px; height: 190px; content: ""; border: 1px solid rgba(255, 255, 255, .18); border-radius: 42px; transform: rotate(18deg); }
+        .hero-content { position: relative; z-index: 2; }
+        .console-badge { display: inline-block; padding: 7px 13px; margin-bottom: 16px; font-size: 13px; letter-spacing: .4px; color: rgba(255, 255, 255, .92); background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; }
+        .console-header h1 { margin: 0 0 10px; font-size: 34px; font-weight: 700; letter-spacing: .2px; }
+        .console-header p { max-width: 720px; margin: 0; font-size: 15px; line-height: 1.8; color: rgba(255, 255, 255, .76); }
+        .hero-metrics { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+        .hero-metric { display: inline-flex; align-items: center; min-width: 150px; padding: 12px 14px; background: rgba(255, 255, 255, .11); border: 1px solid rgba(255, 255, 255, .16); border-radius: 18px; }
+        .hero-metric i { width: 32px; height: 32px; margin-right: 10px; line-height: 32px; text-align: center; background: rgba(255, 255, 255, .14); border-radius: 10px; }
+        .hero-metric strong { display: block; font-size: 14px; }
+        .hero-metric span { display: block; margin-top: 2px; font-size: 12px; color: rgba(255, 255, 255, .66); }
+        .console-shell { margin-top: 4px; }
+        .assistant-card { overflow: hidden; background: rgba(255, 255, 255, .92); border: 1px solid rgba(255, 255, 255, .72); border-radius: 28px; box-shadow: 0 24px 70px rgba(15, 23, 42, .13); }
+        .assistant-card-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 26px; background: linear-gradient(180deg, rgba(255, 255, 255, .92), rgba(248, 250, 252, .78)); border-bottom: 1px solid rgba(148, 163, 184, .24); }
+        .assistant-title { display: flex; align-items: center; }
+        .assistant-icon { width: 46px; height: 46px; margin-right: 14px; line-height: 46px; color: #fff; text-align: center; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 16px; box-shadow: 0 12px 24px rgba(37, 99, 235, .22); }
+        .assistant-card-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
+        .assistant-card-header p { margin: 4px 0 0; font-size: 13px; color: #6b7280; }
+        .assistant-status { display: inline-flex; align-items: center; padding: 8px 12px; font-size: 12px; font-weight: 600; color: #047857; background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 999px; }
+        .assistant-status:before { width: 8px; height: 8px; margin-right: 7px; content: ""; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 5px rgba(16, 185, 129, .12); }
+        .assistant-card-body { padding: 24px; }
+        .chat-box { padding: 0; }
+        .chat-messages { height: 540px !important; padding: 24px !important; margin-bottom: 18px !important; overflow-y: auto; background: linear-gradient(180deg, rgba(248, 250, 252, .9), rgba(255, 255, 255, .95)); border: 1px solid rgba(148, 163, 184, .24) !important; border-radius: 24px !important; scroll-behavior: smooth; }
+        .chat-messages::-webkit-scrollbar { width: 8px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+        .avatar { width: 42px; height: 42px; color: #fff; background: linear-gradient(135deg, #14b8a6, #10b981); border: 3px solid rgba(255, 255, 255, .82); border-radius: 16px; box-shadow: 0 10px 24px rgba(20, 184, 166, .24); }
+        .user-message .avatar { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 10px 24px rgba(37, 99, 235, .24); }
+        .message { margin-bottom: 18px; }
+        .message-content { max-width: 74%; padding: 14px 16px; color: #334155; line-height: 1.75; background: #fff; border: 1px solid rgba(226, 232, 240, .95); border-radius: 18px 18px 18px 6px; box-shadow: 0 12px 26px rgba(15, 23, 42, .06); }
+        .user-message .message-content { color: #fff; background: linear-gradient(135deg, #2563eb, #3b82f6); border-color: rgba(59, 130, 246, .36); border-radius: 18px 18px 6px 18px; box-shadow: 0 12px 26px rgba(37, 99, 235, .18); }
+        .assistant-message .message-content blockquote { margin: 10px 0; padding: 10px 14px; color: #475569; background: #f0fdf4; border-left-color: #10b981; border-radius: 0 12px 12px 0; }
+        .assistant-message .message-content pre { padding: 13px 15px; color: #e5e7eb; background: #0f172a; border-radius: 14px; }
+        .assistant-message .message-content code { color: #be123c; background: #fff1f2; border-radius: 6px; }
+        .assistant-message .message-content table { border-collapse: separate; border-spacing: 0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+        .assistant-message .message-content th { color: #0f172a; background: #f8fafc; }
+        .assistant-message .message-content a { color: #2563eb; text-decoration: none; border-bottom: 1px solid rgba(37, 99, 235, .28); }
+        .chat-input { padding: 16px; margin-top: 0; background: #fff; border: 1px solid rgba(148, 163, 184, .24); border-radius: 24px; box-shadow: 0 18px 40px rgba(15, 23, 42, .07); }
+        .input-group.console-input-group { display: table; width: 100%; }
+        #questionInput { height: 48px; padding: 12px 18px; color: #111827; background: #f8fafc; border: 1px solid #dbe4ef; border-radius: 16px 0 0 16px; box-shadow: none; }
+        #questionInput:focus { background: #fff; border-color: rgba(37, 99, 235, .72); box-shadow: 0 0 0 4px rgba(37, 99, 235, .1); }
+        .chat-input .input-group-btn .btn { height: 48px; padding: 0 18px; font-weight: 600; border-radius: 0; }
+        .chat-input .input-group-btn .btn-primary { color: #fff; background: linear-gradient(135deg, #2563eb, #7c3aed); border-color: transparent; box-shadow: 0 10px 22px rgba(37, 99, 235, .18); }
+        .chat-input .input-group-btn .btn-default { color: #475569; background: #f8fafc; border-color: #dbe4ef; border-radius: 0 16px 16px 0; }
+        .input-tip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; color: #6b7280; }
+        .quick-tag { display: inline-block; padding: 4px 9px; font-size: 12px; color: #334155; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 999px; }
+        @media (max-width: 767px) { .hero-panel { padding: 24px 20px; border-radius: 22px; } .console-header h1 { font-size: 26px; } .hero-metric { width: 100%; } .assistant-card-header { display: block; padding: 18px; } .assistant-status { margin-top: 14px; } .assistant-card-body { padding: 14px; } .chat-messages { height: 430px !important; padding: 16px 10px !important; } .message-content { max-width: 82%; } .avatar { width: 36px; height: 36px; margin: 0 8px; border-radius: 12px; } .chat-input .input-group-btn, .chat-input .input-group-btn .btn { display: block; width: 100%; } #questionInput, .chat-input .input-group-btn .btn, .chat-input .input-group-btn .btn-default { border-radius: 14px; } .chat-input .input-group-btn .btn { margin-top: 8px; } }
+        .console-header > .container {
+            position: relative;
+            overflow: hidden;
+            min-height: 190px;
+            padding: 34px 38px;
+            color: #fff;
+            background: linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(37, 99, 235, .92) 58%, rgba(124, 58, 237, .9));
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: 28px;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, .13);
+        }
+
+        .console-header > .container:before {
+            position: absolute;
+            top: -80px;
+            right: -60px;
+            width: 300px;
+            height: 300px;
+            content: "";
+            background: radial-gradient(circle, rgba(255, 255, 255, .24), transparent 64%);
+            border-radius: 50%;
+        }
+
+        .console-header > .container:after {
+            position: absolute;
+            right: 38px;
+            bottom: -44px;
+            width: 190px;
+            height: 190px;
+            content: "";
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: 42px;
+            transform: rotate(18deg);
+        }
+
+        .console-header .row {
+            position: relative;
+            z-index: 2;
+        }
+
+        .console-header h1 {
+            margin: 0 0 12px;
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .console-header h1:before {
+            display: inline-block;
+            padding: 7px 13px;
+            margin-right: 12px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+            vertical-align: middle;
+            content: "AI Cloud Console";
+            color: rgba(255, 255, 255, .92);
+            background: rgba(255, 255, 255, .14);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 999px;
+        }
+
+        .console-header p {
+            max-width: 720px;
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, .76) !important;
+        }
+
+        body.gray-bg {
+            color: #111827;
+            background: radial-gradient(circle at 8% 8%, rgba(37, 99, 235, .16), transparent 28%), radial-gradient(circle at 86% 10%, rgba(124, 58, 237, .14), transparent 26%), linear-gradient(180deg, #eef4ff 0%, #f7f9fc 42%, #ffffff 100%);
+        }
+
+        .cloud-console-page {
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 46px;
+            overflow: hidden;
+        }
+
+        .cloud-console-page:before,
+        .cloud-console-page:after {
+            position: fixed;
+            z-index: 0;
+            width: 420px;
+            height: 420px;
+            content: "";
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(5px);
+        }
+
+        .cloud-console-page:before {
+            top: -180px;
+            left: -120px;
+            background: rgba(37, 99, 235, .11);
+        }
+
+        .cloud-console-page:after {
+            right: -150px;
+            bottom: -220px;
+            background: rgba(16, 185, 129, .11);
+        }
+
+        .cloud-console-page > .container,
+        .console-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ibox {
+            overflow: hidden;
+            margin-top: 4px;
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(255, 255, 255, .72);
+            border-radius: 28px;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, .13);
+        }
+
+        .ibox-title {
+            min-height: auto;
+            padding: 22px 26px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .92), rgba(248, 250, 252, .78));
+            border: 0;
+            border-bottom: 1px solid rgba(148, 163, 184, .24);
+        }
+
+        .ibox-title h5 {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .ibox-title h5 i {
+            width: 46px;
+            height: 46px;
+            margin-right: 14px;
+            line-height: 46px;
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, .22);
+        }
+
+        .ibox-content {
+            padding: 24px;
+            background: transparent;
+            border: 0;
+        }
+
+        .chat-box {
+            padding: 0;
+        }
+
+        .chat-messages {
+            height: 540px !important;
+            padding: 24px !important;
+            margin-bottom: 18px !important;
+            overflow-y: auto;
+            background: linear-gradient(180deg, rgba(248, 250, 252, .9), rgba(255, 255, 255, .95));
+            border: 1px solid rgba(148, 163, 184, .24) !important;
+            border-radius: 24px !important;
+            scroll-behavior: smooth;
+        }
+
+        .chat-input {
+            padding: 16px;
+            margin-top: 0;
+            background: #fff;
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 24px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .07);
+        }
+
+        #questionInput {
+            height: 48px;
+            padding: 12px 18px;
+            color: #111827;
+            background: #f8fafc;
+            border: 1px solid #dbe4ef;
+            border-radius: 16px 0 0 16px;
+            box-shadow: none;
+        }
+
+        #questionInput:focus {
+            background: #fff;
+            border-color: rgba(37, 99, 235, .72);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+        }
+
+        .chat-input .btn-primary {
+            height: 48px;
+            padding: 0 18px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-color: transparent;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, .18);
+        }
+
+        .chat-input .btn-default {
+            height: 48px;
+            padding: 0 18px;
+            font-weight: 600;
+            color: #475569;
+            background: #f8fafc;
+            border-color: #dbe4ef;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #14b8a6, #10b981);
+            border: 3px solid rgba(255, 255, 255, .82);
+            border-radius: 16px;
+            box-shadow: 0 10px 24px rgba(20, 184, 166, .24);
+        }
+
+        .user-message .avatar {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+        }
+
+        .message-content {
+            max-width: 74%;
+            padding: 14px 16px;
+            color: #334155;
+            background: #fff;
+            border: 1px solid rgba(226, 232, 240, .95);
+            border-radius: 18px 18px 18px 6px;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, .06);
+        }
+
+        .user-message .message-content {
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-color: rgba(59, 130, 246, .36);
+            border-radius: 18px 18px 6px 18px;
+            box-shadow: 0 12px 26px rgba(37, 99, 235, .18);
+        }
+
+        @media (max-width: 767px) {
+            .console-header > .container {
+                padding: 24px 20px;
+                border-radius: 22px;
+            }
+
+            .console-header h1 {
+                font-size: 26px;
+            }
+
+            .ibox-title,
+            .ibox-content {
+                padding: 18px;
+            }
+
+            .chat-messages {
+                height: 430px !important;
+                padding: 16px 10px !important;
+            }
+
+            .message-content {
+                max-width: 82%;
+            }
+        }
+        .console-header {
+            display: none !important;
+        }
+
+        .cloud-console-page {
+            padding-top: 16px;
+            padding-bottom: 18px;
+        }
+
+        .cloud-console-page > .container {
+            margin-top: 0;
+        }
+
+        .ibox {
+            margin-bottom: 0;
+        }
+
+        .ibox-title {
+            padding-top: 16px;
+            padding-bottom: 16px;
+        }
+
+        .ibox-content {
+            padding: 18px;
+        }
+
+        .chat-messages {
+            height: calc(100vh - 245px) !important;
+            min-height: 320px;
+        }
+
+        @media (max-width: 767px) {
+            .cloud-console-page {
+                padding-top: 10px;
+            }
+
+            .chat-messages {
+                height: calc(100vh - 255px) !important;
+                min-height: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+    <div class="cloud-console-page">
+        <div class="console-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1><i class="fa fa-cloud"></i> ZDH 云服务控制台</h1>
+                    <p class="text-muted">面向云服务运维、系统操作与故障排查的智能问答助手，聚合常见场景与平台能力，让问题定位更清晰、处理路径更高效。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-question-circle"></i> 智能问答助手</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="chat-box">
+                            <div class="chat-messages" id="chatMessages" style="height: 500px; overflow-y: auto; margin-bottom: 20px; padding: 10px; border: 1px solid #e7eaec; border-radius: 5px;"></div>
+
+                            <div class="chat-input">
+                                <div class="input-group">
+                                    <input type="text" id="questionInput" class="form-control" placeholder="请输入您的问题，例如：云服务任务失败如何排查？" onkeypress="handleKeyPress(event)">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="button" onclick="askQuestion()">
+                                            <i class="fa fa-paper-plane"></i> 发送
+                                        </button>
+                                        <button class="btn btn-default" type="button" onclick="clearChat()">
+                                            <i class="fa fa-trash"></i> 清空
+                                        </button>
+                                    </span>
+                                </div>
+                                <small class="text-muted">推荐提问：云服务配置 / 系统操作 / 故障排查 / 任务诊断</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/zdh_common.js"></script>
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askQuestion();
+            }
+        }
+
+        function askQuestion() {
+            const question = $('#questionInput').val().trim();
+            if (!question) {
+                return;
+            }
+
+            // 添加用户问题到聊天窗口
+            addMessage('user', question);
+            $('#questionInput').val('');
+
+            // 显示正在思考
+            const thinkingId = addMessage('assistant', getThinkingHtml(), true);
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/cloud_question",
+                dataType: 'json',
+                data: {"question": question},
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200"){
+                        const errorMsg = data.msg || '请求失败，请稍后重试';
+                        updateMessage(errorMsg, thinkingId);
+                        return ;
+                    }
+                    updateMessage(data.result, thinkingId);
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                    updateMessage('服务请求异常，请稍后重试', thinkingId);
+                }
+            });
+
+
+            // 发送请求到后端
+        }
+
+        function addMessage(role, content, isThinking = false) {
+            const messageDiv = $('<div>').addClass('message ' + role + '-message');
+            if (isThinking) {
+                messageDiv.attr('id', 'thinking-message-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000));
+            }
+
+            const avatar = $('<span>').addClass('avatar').html(
+                role === 'user' ? '<i class="fa fa-user"></i>' : '<i class="fa fa-robot"></i>'
+            );
+
+            const contentDiv = $('<div>').addClass('message-content');
+            renderMessageContent(contentDiv, role, content);
+
+            messageDiv.append(avatar).append(contentDiv);
+            $('#chatMessages').append(messageDiv);
+            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+            return messageDiv.attr('id');
+        }
+
+        function updateMessage(content, messageId) {
+            const messageSelector = messageId ? '#' + messageId : '[id^="thinking-message-"]:last';
+            const contentDiv = $(messageSelector + ' .message-content');
+            renderMessageContent(contentDiv, 'assistant', getAnswerContent(content));
+            $(messageSelector).removeAttr('id');
+        }
+
+        function getThinkingHtml() {
+            return '<span class="thinking-content">思考中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>';
+        }
+
+        function getAnswerContent(content) {
+            if (content == null) {
+                return '';
+            }
+            if (typeof content === 'object') {
+                return content.answer || content.msg || JSON.stringify(content, null, 2);
+            }
+            return content;
+        }
+
+        function renderMessageContent(contentDiv, role, content) {
+            if (role === 'assistant') {
+                contentDiv.html(sanitizeHtml(formatAssistantContent(getAnswerContent(content))));
+                contentDiv.find('a').attr('target', '_blank').attr('rel', 'noopener noreferrer');
+                return;
+            }
+            contentDiv.text(content);
+        }
+
+        function formatAssistantContent(content) {
+            const text = String(content || '');
+            if (/<[a-z][\s\S]*>/i.test(text)) {
+                return text;
+            }
+            return $('<div>').text(text).html().replace(/\n/g, '<br>');
+        }
+
+        function sanitizeHtml(html) {
+            const allowedTags = ['A', 'B', 'STRONG', 'I', 'EM', 'U', 'BR', 'P', 'DIV', 'SPAN', 'UL', 'OL', 'LI', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'PRE', 'CODE', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'IMG'];
+            const allowedAttrs = {
+                'A': ['href', 'title', 'target', 'rel'],
+                'IMG': ['src', 'alt', 'title', 'width', 'height'],
+                'TH': ['colspan', 'rowspan'],
+                'TD': ['colspan', 'rowspan']
+            };
+            const template = document.createElement('template');
+            template.innerHTML = html;
+
+            $(template.content).find('*').each(function () {
+                const tagName = this.tagName;
+                if (allowedTags.indexOf(tagName) === -1) {
+                    $(this).replaceWith(document.createTextNode($(this).text()));
+                    return;
+                }
+
+                $.each(this.attributes, function () {
+                    const attrName = this.name.toLowerCase();
+                    const attrValue = this.value || '';
+                    const tagAttrs = allowedAttrs[tagName] || [];
+                    if (tagAttrs.indexOf(attrName) === -1 || /^on/i.test(attrName) || /javascript:/i.test(attrValue)) {
+                        $(this.ownerElement).removeAttr(this.name);
+                    }
+                });
+            });
+
+            return template.innerHTML;
+        }
+
+        function clearChat() {
+            $('#chatMessages').empty();
+            // 添加欢迎消息
+            addMessage('assistant', '您好！我是智能问答助手，我可以帮助您解答关于云服务平台的各种问题。请问您有什么需要帮助的吗？');
+        }
+
+        // 初始化聊天窗口
+        $(document).ready(function() {
+            clearChat(); // 初始化欢迎消息
+        });
+    </script>
+</body>
+
+</html>

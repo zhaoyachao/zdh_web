@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZDH 推送配置添加</title>
+    <meta name="keywords" content="ZDH 推送配置添加">
+    <meta name="description" content="ZDH 推送配置添加">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>推送配置</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="push_config_add_form">
+                            <input type="hidden" id="id" name="id" value="">
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">产品Code：</label>
+                                <div class="col-sm-8">
+                                    <select id="product_code" name="product_code"
+                                            data-placeholder="产品code...."
+                                            class="chosen-select form-control m-b" >
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">配置Key：</label>
+                                <div class="col-sm-8">
+                                    <input id="config_key" name="config_key" type="text" class="form-control" placeholder="请输入配置Key（唯一标识）" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">配置名称：</label>
+                                <div class="col-sm-8">
+                                    <input id="config_name" name="config_name" type="text" class="form-control" placeholder="请输入配置名称" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">配置类型：</label>
+                                <div class="col-sm-8">
+                                    <select id="config_type" name="config_type" class="form-control">
+                                        <option value="switch">开关配置</option>
+                                        <option value="number">数字配置</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">状态（status）：</label>
+                                <div class="col-sm-8">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="status" id="status_1" value="1">
+                                            开启
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="status" id="status_0" value="0">
+                                            关闭
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">线程数（thread_size）：</label>
+                                <div class="col-sm-8">
+                                    <input id="thread_size" name="thread_size" type="number" class="form-control" placeholder="请输入线程数" min="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">时间段（schedule_time）：</label>
+                                <div class="col-sm-8">
+                                    <input id="schedule_time" name="schedule_time" type="text" class="form-control" placeholder="请输入cron表达式，如：0 0 12 * * ?">
+                                    <div class="help-block">
+                                        <a href="javascript:void(0);" onclick="cron()">Cron表达式生成器</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">描述：</label>
+                                <div class="col-sm-8">
+                                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="请输入配置描述"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-3">
+                                    <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                            type="button">保存
+                                    </button>
+                                    <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                            type="button">更新
+                                    </button>
+                                    <button id="reset" class="btn btn-white" type=reset>清空</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/content.js?v=1.0.0"></script>
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+    <script src="js/admin/dim_product_common.js"></script>
+    <script src="js/push/push_config_add.js"></script>
+
+<script>
+
+    function closeLayer() {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+</script>
+
+</body>
+
+</html>

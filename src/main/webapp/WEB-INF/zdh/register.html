@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理-登陆</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="js/layui/lib/layui-v2.5.5/css/layui.css" media="all">
+    <!--[if lt IE 9]>
+
+    <![endif]-->
+    <style>
+        html, body {width: 100%;height: 100%;overflow: hidden;margin: 0;padding: 0;font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+
+        body {
+            background: linear-gradient(135deg,
+                rgba(102, 126, 234, 0.9) 0%,
+                rgba(118, 75, 162, 0.9) 50%,
+                rgba(92, 107, 192, 0.9) 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></svg>');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: rotateBackground 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateBackground {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+        }
+
+        .logo-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-title h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 300;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-title p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .login-form .layui-form-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .login-form .layui-form-item label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 2;
+        }
+
+        .login-form .layui-form-item input {
+            padding-left: 45px;
+            height: 48px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .login-form .layui-form-item input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-form .layui-form-item input::placeholder {
+            color: #bbb;
+        }
+
+        .login-btn {
+            height: 48px;
+            line-height: 48px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .login-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .login-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .language-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .language-switch a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .language-switch a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .agreement-check {
+            margin-top: 15px;
+        }
+
+        .agreement-check .layui-form-checkbox {
+            padding-left: 0;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo-title h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="language-switch">
+    <a href="javascript:void(0)">中文</a>
+    <a href="javascript:void(0)">EN</a>
+</div>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo-title">
+            <h1 id="platform_name">ZDH注册</h1>
+            <p>创建您的数据平台账号</p>
+        </div>
+
+        <form class="layui-form login-form" action="" method="post" id="register">
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-release" for="product_code"></label>
+                <input id="product_code" type="text" name="product_code" lay-verify="required" placeholder="企业标识" autocomplete="off" class="layui-input" value="zdh">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-username" for="userName"></label>
+                <input id="userName" type="text" name="userName" lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-email" for="email"></label>
+                <input id="email" type="text" name="email" lay-verify="email" placeholder="邮箱" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-password" for="password"></label>
+                <input id="password" type="password" name="password" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-icon layui-icon-password" for="password2"></label>
+                <input id="password2" type="password" name="password2" lay-verify="required" placeholder="确认密码" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-form-item agreement-check">
+                <input id="check_agree" type="checkbox" name="check_agree" value="true" lay-skin="primary" title="我已阅读并同意服务条款">
+            </div>
+
+            <div class="layui-form-item">
+                <button class="layui-btn login-btn layui-btn-fluid" lay-submit lay-filter="register" onclick="register();return false;">注 册</button>
+            </div>
+
+            <div class="login-links">
+                <a href="login.html">已有账号？立即登录</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="js/zdh_common.js"></script>
+<script src="js/layui/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/layui/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<!--<script src="js/layui/lib/jq-module/jquery.particleground.min.js" charset="utf-8"></script>-->
+
+<script>
+
+    $(document).ready(function () {
+        //加载平台名称
+        $.ajax({
+            type: 'GET',
+            url: server_context+"/get_platform_name",
+            dataType: 'json',
+            async: false,
+            data: {},
+            //成功返回
+            success: function (data) {
+                //layer.close(index)
+                if(data.code != "200"){
+                    parent.layer.msg(data.msg);
+                    return ;
+                }
+                $('#platform_name').html(data.result.platform_name);
+                //$("#videoCoverLayer").css('background-image', 'url(' + src + ')');
+                //$("body").css('background-image', 'url(' + data.result.background_image + ')');
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/get_error_msg",
+            dataType: 'json',
+            async: false,
+            data: $("#login").serialize(),
+            //成功返回
+            success: function (data) {
+                if(data.code == "200"){
+                    layer.msg(data.msg);
+                }
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+    });
+
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer;
+
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+        // 粒子线条背景
+        $(document).ready(function () {
+            $('.layui-container').particleground({
+                dotColor: '#7ec7fd',
+                lineColor: '#7ec7fd'
+            });
+        });
+
+
+        // 进行登录操作
+        form.on('submit(register)', function (data) {
+            data = data.field;
+            if (data.username == '') {
+                layer.msg('用户名不能为空');
+                return false;
+            }
+            if (data.password == '') {
+                layer.msg('密码不能为空');
+                return false;
+            }
+            if (data.password2 == '') {
+                layer.msg('确认密码不能为空');
+                return false;
+            }
+            return false;
+        });
+    });
+
+
+    function register(){
+
+        if( $('#userName').val().trim()==''){
+            layer.msg("用户名不能为空");
+            return ;
+        }
+
+        var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if(!myreg.test($('#email').val()))
+        {
+            layer.msg('请输入有效的邮箱!');
+            return false;
+        }
+
+        if( $('#password').val()==''){
+            layer.msg("密码不能为空");
+            return ;
+        }
+        if( $('#password').val().trim()!=$('#password2').val().trim()){
+            layer.msg("2次密码不一致");
+            return ;
+        }
+        if( $('#check_agree').is(':checked')==false){
+            layer.msg("请选择同意协议");
+            return ;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/register",
+            dataType: 'json',
+            async: false,
+            data: $("#register").serialize(),
+            //成功返回
+            success: function (data) {
+                if(data.code != "200" ){
+                    layer.msg(data.msg)
+                }else{
+                    window.location = 'login.html';
+                }
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+
+    }
+</script>
+</body>
+</html>

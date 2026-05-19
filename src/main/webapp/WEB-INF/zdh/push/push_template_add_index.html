@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 模板新增首页</title>
+    <meta name="keywords" content="ZDH 模板新增首页">
+    <meta name="description" content="ZDH 模板新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/plugins/simditor/simditor.css" />
+    <style>
+        .hidden_li {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>模板配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="config" name="config" value="">
+                        <input type="hidden" id="push_server" name="push_server" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模板名称</label>
+                            <div class="col-sm-10">
+                                <input id="template_name" name="template_name" type="text"
+                                       placeholder="模板名称,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模板ID</label>
+                            <div class="col-sm-10">
+                                <input id="template_id" name="template_id" type="text"
+                                       placeholder="模板ID,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="div_start_end_time">
+                            <label class="col-sm-2 control-label">起始日期</label>
+                            <div class="col-sm-10">
+                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
+                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息类型</label>
+                            <div class="col-sm-10">
+                                <select id="push_msg_type" name="push_msg_type"
+                                        data-placeholder="选择消息类型..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择消息类型...</option>
+                                    <option value="1" mytype="">营销</option>
+                                    <option value="2" mytype="">通知</option>
+                                    <option value="3" mytype="">验证码</option>
+                                    <option value="4" mytype="">告警</option>
+                                    <option value="5" mytype="">其他</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">触达动作</label>
+                            <div class="col-sm-10 checkbox i-checks">
+                                <label class="no-padding">
+                                    <input id="check_sms" name="check_sms"  type="checkbox" ><i></i> 短信</label>
+                                <label class="no-padding">
+                                    <input id="check_voice" name="check_voice"  type="checkbox"><i></i> 语音</label>
+                                </label>
+                                <label class="no-padding">
+                                    <input id="check_email" name="check_email"  type="checkbox"><i></i> 邮件</label>
+                                <label class="no-padding">
+                                    <input id="check_apppush" name="check_apppush"  type="checkbox"><i></i> APPPUSH</label>
+                                <label class="no-padding">
+                                    <input id="check_miniprogramwechat" name="check_miniprogramwechat"  type="checkbox"><i></i> 微信小程序</label>
+                                <label class="no-padding">
+                                    <input id="check_miniprogrambaidu" name="check_miniprogrambaidu"  type="checkbox"><i></i> 百度小程序</label>
+                                <label class="no-padding">
+                                    <input id="check_miniprogramdouyin" name="check_miniprogramdouyin"  type="checkbox"><i></i> 抖音小程序</label>
+                                <label class="no-padding">
+                                    <input id="check_wechatofficialaccount" name="check_wechatofficialaccount"  type="checkbox"><i></i> 微信公众号</label>
+                                <label class="no-padding">
+                                    <input id="check_wechatcustommessage" name="check_wechatcustommessage"  type="checkbox"><i></i> 微信客服</label>
+                                <label class="no-padding">
+                                    <input id="check_wechatnews" name="check_wechatnews"  type="checkbox"><i></i> 微信图文</label>
+                                <label class="no-padding">
+                                    <input id="check_feishurobot" name="check_feishurobot"  type="checkbox"><i></i> 飞书机器人</label>
+                                <label class="no-padding">
+                                    <input id="check_feishu" name="check_feishu"  type="checkbox"><i></i> 飞书</label>
+                                <label class="no-padding">
+                                    <input id="check_webhook" name="check_webhook"  type="checkbox"><i></i> webhook</label>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">动作配置</label>
+                            <div class="col-sm-10">
+                                <div class="tabs-container">
+                                    <ul class="nav nav-tabs" id="tab_ul">
+                                        <li class="tab_li active" id="check_sms_li"><a data-toggle="tab" href="#check_sms_tab" aria-expanded="true">短信配置</a>
+                                        </li>
+                                        <li class="tab_li" id="check_voice_li"><a data-toggle="tab" href="#check_voice_tab" aria-expanded="false">语音配置</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_email_li"><a data-toggle="tab" href="#check_email_tab" aria-expanded="false">邮件配置</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_apppush_li"><a data-toggle="tab" href="#check_apppush_tab" aria-expanded="false">APPPUSH配置</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_miniprogramwechat_li"><a data-toggle="tab" href="#check_miniprogramwechat_tab" aria-expanded="false">微信小程序</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_miniprogrambaidu_li"><a data-toggle="tab" href="#check_miniprogrambaidu_tab" aria-expanded="false">百度小程序</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_miniprogramdouyin_li"><a data-toggle="tab" href="#check_miniprogramdouyin_tab" aria-expanded="false">抖音小程序</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_wechatofficialaccount_li"><a data-toggle="tab" href="#check_wechatofficialaccount_tab" aria-expanded="false">微信公众号</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_wechatcustommessage_li"><a data-toggle="tab" href="#check_wechatcustommessage_tab" aria-expanded="false">微信客服</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_wechatnews_li"><a data-toggle="tab" href="#check_wechatnews_tab" aria-expanded="false">微信图文</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_feishurobot_li"><a data-toggle="tab" href="#check_feishurobot_tab" aria-expanded="false">飞书机器人</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_feishu_li"><a data-toggle="tab" href="#check_feishu_tab" aria-expanded="false">飞书</a>
+                                        </li>
+                                        <li class="tab_li"  id="check_webhook_li"><a data-toggle="tab" href="#check_webhook_tab" aria-expanded="false">webhook</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="check_sms_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">短信通道池</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="sms_channel_pool" name="sms_channel_pool"
+                                                                data-placeholder="选择通道池...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">通道模板</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="通道模板ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">短信签名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="sign_name" name="sign_name" class="form-control" type="text" value="" placeholder="短信签名">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">短信内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="content" name="content" class="form-control" rows="5" placeholder="短信内容,使用通道模板时,需和通道模板所创建的内容保持一致"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">短信参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="params" name="params" class="form-control" placeholder="短信参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_voice_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">语音通道池</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="voice_channel_pool" name="voice_channel_pool"
+                                                                data-placeholder="选择通道池...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">通道模板</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="voice_channel_template_id" name="voice_channel_template_id" class="form-control" type="text" value="" placeholder="通道模板ID">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">语音签名</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="voice_sign_name" name="voice_sign_name" class="form-control" type="text" value="" placeholder="语音签名">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">语音内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="voice_content" name="voice_content" class="form-control" rows="5" placeholder="语音内容,使用通道模板时,需和通道模板所创建的内容保持一致"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">语音参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="voice_params" name="voice_params" class="form-control" placeholder="短信参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="voice_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_email_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">邮箱通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="email_channel_pool" name="email_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="email_title" name="email_title" class="form-control" type="text" value="" placeholder="主题">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">文本类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="email_content_type" name="email_content_type"
+                                                                data-placeholder="选择文本类型...."
+                                                                class="chosen-select form-control m-b" >
+<!--                                                            <option value="text">文本</option>-->
+                                                            <option value="html">HTML</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+<!--                                                    <label class="col-sm-2 control-label">邮件内容</label>-->
+<!--                                                    <div class="col-sm-10">-->
+<!--                                                        <textarea id="email_content" class="form-control" rows="5" placeholder=""></textarea>-->
+<!--&lt;!&ndash;                                                        <div class="mail-box">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            <div class="mail-body">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                                <textarea id="email_content" placeholder="这里输入内容" autofocus>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                                                                </textarea>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                        </div>&ndash;&gt;-->
+<!--                                                    </div>-->
+<!--                                                    <label class="col-sm-2 control-label"></label>-->
+<!--                                                    <div class="col-sm-10"> <span class="help-block m-b-none"><a id="a_params" href="javascript:void(0);" onclick="mail_edit()">html编辑器</a></span></div>-->
+
+                                                    <label class="col-sm-2 control-label">邮件内容</label>
+                                                    <div class="col-sm-10 animated fadeInRight">
+                                                        <div class="mail-box">
+                                                            <div class="mail-body">
+                                                                <form class="form-horizontal" method="get" id="email_from">
+                                                                    <input type="hidden" name="context" id="context">
+                                                                    <div class="form-group">
+
+                                                                    </div>
+                                                                    <div class="form-group">
+
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
+
+                                                            <textarea id="email_content_editor" placeholder="这里输入内容" autofocus>
+                                                            </textarea>
+
+                                                            <div class="clearfix"></div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">邮件参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="email_params" class="form-control" placeholder="邮件参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="email_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_apppush_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APP</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="app" name="app"
+                                                                data-placeholder="选择APP...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">消息应用场景</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="scene" name="scene"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                            <option value="1">资讯营销</option>
+                                                            <option value="2">内容推广</option>
+                                                            <option value="3">服务通知</option>
+                                                            <option value="4">提醒告警</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">消息点击类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="click_type" name="click_type"
+                                                                data-placeholder="选择消息类型...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                            <option value="1">跳转app内部页面</option>
+                                                            <option value="2">跳转app</option>
+                                                            <option value="3">跳转外部链接</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">APP页面</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="click_app" name="click_app"
+                                                                data-placeholder="选择APP页面...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="0">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转外部资源链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="click_url" name="click_url" class="form-control" type="text" value="" placeholder="跳转外部资源链接">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">标题</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="push_title" name="title" class="form-control" rows="1" placeholder="标题"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="push_content" name="content" class="form-control" rows="5" placeholder="内容"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">PUSH参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="push_params" name="params" class="form-control" placeholder="PUSH参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="push_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_miniprogramwechat_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogramwechat_channel_pool" name="miniprogramwechat_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogramwechat_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="模板ID">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogramwechat_template_search" onclick='getMiniProgramTemplate("wechat")' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogramwechat_title" name="miniprogramwechat_title" class="form-control" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group" id="miniprogramwechat_div">
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogramwechat_channel_page" name="miniprogram_channel_page" class="form-control" type="text" value="" placeholder="跳转页面">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogramwechat_channel_miniprogram_state" name="miniprogram_channel_miniprogram_state"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="developer">开发版</option>
+                                                            <option value="trial">体验版</option>
+                                                            <option value="formal">正式版</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogramwechat_params" name="params" class="form-control" placeholder="参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogramwechat_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_miniprogrambaidu_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogrambaidu_channel_pool" name="miniprogram_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogrambaidu_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="模板ID">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogrambaidu_template_search" onclick='getMiniProgramTemplate("baidu")' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogrambaidu_title" name="miniprogram_title" class="form-control" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group" id="miniprogrambaidu_div">
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogrambaidu_channel_page" name="miniprogram_channel_page" class="form-control" type="text" value="" placeholder="跳转页面">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogrambaidu_channel_miniprogram_state" name="miniprogram_channel_miniprogram_state"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="developer">开发版</option>
+                                                            <option value="trial">体验版</option>
+                                                            <option value="formal">正式版</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogrambaidu_params" name="params" class="form-control" placeholder="参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogrambaidu_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_miniprogramdouyin_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogramdouyin_channel_pool" name="miniprogram_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogramdouyin_channel_template_id" name="channel_template_id" class="form-control" type="text" value="" placeholder="模板ID">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogramdouyin_template_search" onclick='getMiniProgramTemplate("douyin")' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogramdouyin_title" name="miniprogram_title" class="form-control" placeholder="内容,使用通道模板时,需和通道模板所创建的内容保持一致"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group" id="miniprogramdouyin_div">
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="miniprogramdouyin_channel_page" name="miniprogram_channel_page" class="form-control" type="text" value="" placeholder="跳转页面">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="miniprogramdouyin_channel_miniprogram_state" name="miniprogram_channel_miniprogram_state"
+                                                                data-placeholder="选择消息应用场景...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="developer">开发版</option>
+                                                            <option value="trial">体验版</option>
+                                                            <option value="formal">正式版</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="miniprogramdouyin_params" name="params" class="form-control" placeholder="参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="miniprogramdouyin_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="check_wechatofficialaccount_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">微信公众号通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatofficialaccount_channel_pool" name="wechatofficialaccount_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">模板类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatofficialaccount_channel_template_type" name="wechatofficialaccount_channel_template_type"
+                                                                data-placeholder="选择模板类型...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="1">普通模板</option>
+                                                            <option value="2">订阅模板</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_channel_url" name="wechatofficialaccount_channel_url" class="form-control" type="text" value="" placeholder="跳转链接">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">小程序</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_channel_miniprogram_appid" name="wechatofficialaccount_channel_miniprogram_appid" class="form-control" type="text" value="" placeholder="跳转小程序appid">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">跳转小程序页面</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_channel_miniprogram_page" name="wechatofficialaccount_channel_miniprogram_page" class="form-control" type="text" value="" placeholder="跳转小程序页面">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号模板</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatofficialaccount_channel_template_id" name="wechatofficialaccount_channel_template_id" class="form-control" placeholder="公众号模板">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatofficialaccount_template_search" onclick='getWechatTemplate()' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatofficialaccount_title" name="wechatofficialaccount_title" class="form-control" type="text" value="" placeholder="主题" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="wechat_div">
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatofficialaccount_params" name="wechatofficialaccount_params" class="form-control" placeholder="公众号参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatofficialaccount_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_wechatcustommessage_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">微信公众号通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatcustommessage_channel_pool" name="wechatcustommessage_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">模板类型</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatcustommessage_channel_msgtype" name="wechatcustommessage_channel_msgtype"
+                                                                data-placeholder="选择消息类型...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="text">文本</option>
+                                                            <option value="image">图片</option>
+                                                            <option value="voice">语音</option>
+                                                            <option value="video">视频</option>
+                                                            <option value="music">音乐</option>
+                                                            <option value="news">图文(跳外链)</option>
+                                                            <option value="mpnewsarticle">图文(发布的图文)</option>
+                                                            <option value="msgmenu">菜单</option>
+                                                            <option value="wxcard">卡券</option>
+                                                            <option value="miniprogrampage">小程序</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_content_div">
+                                                    <label class="col-sm-2 control-label">文本内容</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_content" name="wechatcustommessage_channel_content" class="form-control" type="text" value="" placeholder="文本内容，支持插入跳小程序的文字链，
+例如「文本内容点击跳小程序」
+
+说明： 1.data-miniprogram-appid 项，填写小程序appid，则表示该链接跳小程序； 2.data-miniprogram-path项，填写小程序路径，路径与app.json中保持一致，可带参数； 3.对于不支持data-miniprogram-appid 项的客户端版本，如果有herf项，则仍然保持跳href中的网页链接； 4.data-miniprogram-appid对应的小程序必须与公众号有绑定关系">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_media_id_div">
+                                                    <label class="col-sm-2 control-label">媒体ID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_media_id" name="wechatcustommessage_channel_media_id" class="form-control" type="text" value="" placeholder="图片,语言,视频必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_thumb_media_id_div">
+                                                    <label class="col-sm-2 control-label">缩略图媒体ID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_thumb_media_id" name="wechatcustommessage_channel_thumb_media_id" class="form-control " type="text" value="" placeholder="视频,音乐,小程序必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_title_div">
+                                                    <label class="col-sm-2 control-label">标题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_title" name="wechatcustommessage_channel_title" class="form-control" type="text" value="" placeholder="视频,音乐,图文,小程序必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_description_div">
+                                                    <label class="col-sm-2 control-label">描述</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_description" name="wechatcustommessage_channel_description" class="form-control" type="text" value="" placeholder="视频,音乐,图文必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_musicurl_div">
+                                                    <label class="col-sm-2 control-label">音乐链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_musicurl" name="wechatcustommessage_channel_musicurl" class="form-control" type="text" value="" placeholder="音乐必填">
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_hpmusicurl_div">
+                                                    <label class="col-sm-2 control-label">高质量音乐链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_hpmusicurl" name="wechatcustommessage_channel_hpmusicurl" class="form-control" type="text" value="" placeholder="音乐填写,非必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_url_div">
+                                                    <label class="col-sm-2 control-label">文章链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_url" name="wechatcustommessage_channel_url" class="form-control" type="text" value="" placeholder="图文消息(跳外链)必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_picurl_div">
+                                                    <label class="col-sm-2 control-label">封面图片链接</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_picurl" name="wechatcustommessage_channel_picurl" class="form-control" type="text" value="" placeholder="图文消息(跳外链)必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_article_id_div">
+                                                    <label class="col-sm-2 control-label">图文文章</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_article_id" name="wechatcustommessage_channel_article_id" class="form-control" type="text" value="" placeholder="图文(发布的图文)必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_head_content_div">
+                                                    <label class="col-sm-2 control-label">菜单描述</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_menu_head_content" name="wechatcustommessage_channel_menu_head_content" class="form-control" type="text" value="" placeholder="菜单描述必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_content_div">
+                                                    <label class="col-sm-2 control-label">菜单内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="wechatcustommessage_channel_menu_content" name="wechatcustommessage_channel_menu_content" class="form-control" rows="5" placeholder="菜单内容, 多个菜单换行, 菜单id#菜单内容"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_menu_tail_content_div">
+                                                    <label class="col-sm-2 control-label">菜单结尾</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_menu_tail_content" name="wechatcustommessage_channel_menu_tail_content" class="form-control" type="text" value="" placeholder="菜单描述必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_card_id_div">
+                                                    <label class="col-sm-2 control-label">卡券ID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_card_id" name="wechatcustommessage_channel_card_id" class="form-control" type="text" value="" placeholder="卡券必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_app_id_div">
+                                                    <label class="col-sm-2 control-label">小程序APPID</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_app_id" name="wechatcustommessage_channel_app_id" class="form-control" type="text" value="" placeholder="小程序必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group wechatcustommessage_div wechatcustommessage_channel_pagepath_div">
+                                                    <label class="col-sm-2 control-label">小程序页面路径</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_pagepath" name="wechatcustommessage_channel_pagepath" class="form-control" type="text" value="" placeholder="小程序必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">客服账号</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_kf_account" name="wechatcustommessage_channel_kf_account" class="form-control" type="text" value="" placeholder="非必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">是否ai消息</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatcustommessage_channel_is_ai_msg" name="wechatcustommessage_channel_is_ai_msg" class="form-control" type="text" value="" placeholder="非必填">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatcustommessage_params" name="wechatcustommessage_params" class="form-control" placeholder="公众号参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatcustommessage_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_wechatnews_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">微信公众号通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="wechatnews_channel_pool" name="wechatnews_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">草稿素材</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="wechatnews_channel_media_id" name="wechatnews_channel_media_id" class="form-control" type="text" value="" placeholder="草稿素材ID必填">
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">公众号参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="wechatnews_params" name="wechatnews_params" class="form-control" placeholder="公众号参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="wechatnews_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_feishurobot_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书机器人通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="feishurobot_channel_pool" name="feishurobot_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="feishurobot_title" name="feishurobot_title" class="form-control" type="text" value="" placeholder="主题" >
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="feishurobot_content" name="feishurobot_content" class="form-control" rows="5" placeholder="这里输入内容" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="feishurobot_params" name="feishurobot_params" class="form-control" placeholder="飞书参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="feishurobot_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_feishu_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书通道</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="feishu_channel_pool" name="feishu_channel_pool"
+                                                                data-placeholder="选择通道...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="feishu_title" name="feishu_title" class="form-control" type="text" value="" placeholder="主题">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="feishu_content" name="feishu_content" class="form-control" rows="5" placeholder="这里输入内容" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">飞书参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="feishu_params" name="feishu_params" class="form-control" placeholder="飞书参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="feishu_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="check_webhook_tab" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">webhook通道池</label>
+                                                    <div class="col-sm-10">
+                                                        <select id="webhook_channel_pool" name="webhook_channel_pool"
+                                                                data-placeholder="选择通道池...."
+                                                                class="chosen-select form-control m-b" >
+                                                            <option value="">空</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">主题</label>
+                                                    <div class="col-sm-10">
+                                                        <input id="webhook_title" name="webhook_title" class="form-control" type="text" value="" placeholder="主题" >
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">内容</label>
+                                                    <div class="col-sm-10">
+                                                        <textarea id="webhook_content" name="webhook_content" class="form-control" rows="5" placeholder="这里输入内容" ></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">webhook参数</label>
+                                                    <div class="col-sm-8">
+                                                        <input id="webhook_params" name="webhook_params" class="form-control" placeholder="webhook参数">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input id="webhook_search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">版本说明</label>
+                            <div class="col-sm-10">
+                                <input id="version_context" name="version_context" type="text"
+                                       placeholder="版本说明,用户手动保存版本,可根据历史版本还原当前配置" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="save_log_dispatch_task" name="save_log_zdh" class="btn btn-warning" οnsubmit='return false'
+                                        type="button">保存版本
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+
+<!-- simditor -->
+<script type="text/javascript" src="js/plugins/simditor/module.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/uploader.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/hotkeys.js"></script>
+<script type="text/javascript" src="js/plugins/simditor/simditor.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
+<script language="javascript">
+
+    var email_content_editor = new Simditor({
+        textarea: $('#email_content_editor'),
+        defaultImage: 'img/a9.jpg'
+    });
+
+
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        $('input[type=checkbox]').on('ifChanged', function(){
+            var id_str = $(this).attr('id');
+            if($(this).is(":checked")){
+                $('#'+id_str+"_li").click();
+            }else{
+
+            }
+
+        })
+    });
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            //客服消息类型
+            function wechatcustomemessage_channel_msgtype_change(channel_msgtype){
+                $('.wechatcustommessage_div').hide();
+                if(channel_msgtype=="text"){
+                    $('.wechatcustommessage_channel_content_div').show();
+                }else if(channel_msgtype=="image" || channel_msgtype=="voice"){
+                    $('.wechatcustommessage_channel_media_id_div').show();
+                }else if(channel_msgtype=="video"){
+                    $('.wechatcustommessage_channel_media_id_div').show();
+                    $('.wechatcustommessage_channel_thumb_media_id_div').show();
+                    $('.wechatcustommessage_channel_title_div').show();
+                    $('.wechatcustommessage_channel_description_div').show();
+                }else if(channel_msgtype=="music"){
+                    $('.wechatcustommessage_channel_title_div').show();
+                    $('.wechatcustommessage_channel_description_div').show();
+                    $('.wechatcustommessage_channel_musicurl_div').show();
+                    $('.wechatcustommessage_channel_hpmusicurl_div').show();
+                    $('.wechatcustommessage_channel_thumb_media_id_div').show();
+                }else if(channel_msgtype=="news"){
+                    $('.wechatcustommessage_channel_title_div').show();
+                    $('.wechatcustommessage_channel_description_div').show();
+                    $('.wechatcustommessage_channel_picurl_div').show();
+                    $('.wechatcustommessage_channel_url_div').show();
+                }else if(channel_msgtype=="mpnewsarticle"){
+                    $('.wechatcustommessage_channel_article_id_div').show();
+                }else if(channel_msgtype=="msgmenu"){
+                    $('.wechatcustommessage_channel_menu_content_div').show();
+                    $('.wechatcustommessage_channel_menu_head_content_div').show();
+                    $('.wechatcustommessage_channel_menu_tail_content_div').show();
+                }else if (channel_msgtype=="wxcard"){
+                    $('.wechatcustommessage_channel_card_id_div').show();
+                }else if(channel_msgtype == "miniprogram"){
+                    $('.wechatcustommessage_channel_title_div').show();
+                    $('.wechatcustommessage_channel_appid_div').show();
+                    $('.wechatcustommessage_channel_pagepath_div').show();
+                    $('.wechatcustommessage_channel_thumb_media_id_div').show();
+                }
+            }
+
+            $('#email_content_type').chosen();
+            $('#wechatcustommessage_channel_msgtype').chosen().on("change", function (evt, params) {
+                wechatcustomemessage_channel_msgtype_change($('#wechatcustommessage_channel_msgtype').val())
+            });
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            //$('#channel').chosen();
+            //初始化通道code
+            function init_push_channel(id, channel_type){
+                $('#wechatofficialaccount_channel_template_type').chosen();
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_channel_pool_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择通道' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].pool_code + '\" hassubinfo=\"true\">' + data.result[i].pool_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
+            function init_push_app(id){
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/push_app_list",
+                    async:false,
+                    dataType: 'json',
+                    data: {},
+                    //成功返回
+                    success: function (data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                        var str = '<option value=\"'  + '\" hassubinfo=\"true\">' + '选择App' + '</option>';
+                        for (var i = 0; i < data.result.length; i++) {
+                            str += '<option value=\"' + data.result[i].app + '\" hassubinfo=\"true\">' + data.result[i].app_name + '</option>';
+                        }
+                        $('#'+id).html(str);
+                        $('#'+id).trigger("chosen:updated");
+                        $('#'+id).chosen();
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                    }
+                });
+            }
+
+            init_push_channel('sms_channel_pool', "sms");
+
+            //此处增加样式为了解决chosen插件宽度为0问题
+            $('#check_voice_tab').addClass("active");
+            init_push_channel('voice_channel_pool', "voice");
+            $('#check_voice_tab').removeClass("active");
+
+            $('#check_email_tab').addClass("active");
+            init_push_channel('email_channel_pool', "email");
+            $('#check_email_tab').removeClass("active");
+
+            $('#check_apppush_tab').addClass("active");
+            init_push_app('app');
+            $('#check_apppush_tab').removeClass("active");
+
+            $('#check_miniprogramwechat_tab').addClass("active");
+            init_push_channel('miniprogramwechat_channel_pool',"miniprogram");
+            $('#check_miniprogramwechat_tab').removeClass("active");
+
+            $('#check_miniprogrambaidu_tab').addClass("active");
+            init_push_channel('miniprogrambaidu_channel_pool',"miniprogram");
+            $('#check_miniprogrambaidu_tab').removeClass("active");
+
+            $('#check_miniprogramdouyin_tab').addClass("active");
+            init_push_channel('miniprogramdouyin_channel_pool',"miniprogram");
+            $('#check_miniprogramdouyin_tab').removeClass("active");
+
+            $('#check_wechatofficialaccount_tab').addClass("active");
+            init_push_channel('wechatofficialaccount_channel_pool', "wechatofficialaccount");
+            $('#check_wechatofficialaccount_tab').removeClass("active");
+
+            $('#check_wechatcustommessage_tab').addClass("active");
+            init_push_channel('wechatcustommessage_channel_pool', "wechatofficialaccount");
+            $('#check_wechatcustommessage_tab').removeClass("active");
+
+            $('#check_wechatnews_tab').addClass("active");
+            init_push_channel('wechatnews_channel_pool', "wechatofficialaccount");
+            $('#check_wechatnews_tab').removeClass("active");
+
+            $('#check_feishurobot_tab').addClass("active");
+            init_push_channel('feishurobot_channel_pool', "feishurobot");
+            $('#check_feishurobot_tab').removeClass("active");
+
+            $('#check_feishu_tab').addClass("active");
+            init_push_channel('feishu_channel_pool', "feishu");
+            $('#check_feishu_tab').removeClass("active");
+
+            $('#check_webhook_tab').addClass("active");
+            init_push_channel('webhook_channel_pool', "webhook");
+            $('#check_webhook_tab').removeClass("active");
+
+            if(s.id !='-1'){
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/push_template_detail",
+                    data : "id=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var template_name=data.result.template_name;
+                        $("#template_name").val(template_name);
+
+                        var product_code=data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result.dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
+
+                        var template_id=data.result.template_id;
+                        $("#template_id").val(template_id);
+
+                        var push_msg_type=data.result.push_msg_type;
+                        $("#push_msg_type").val(push_msg_type);
+                        $("#push_msg_type").trigger("chosen:updated");
+
+                        var push_servers=data.result.push_server.split(",");
+                        for (var i = 0; i < push_servers.length; i++) {
+                            if(!is_empty(push_servers[i])){
+                                $('#check_'+push_servers[i]).iCheck('check');
+                            }
+                        }
+
+                        //sms配置
+                        if(!is_empty(data.result.configMap.sms)){
+                            $("#sms_channel_pool").val(data.result.configMap.sms.channel_pool);
+                            $("#sms_channel_pool").trigger("chosen:updated");
+
+                            $("#channel_template_id").val(data.result.configMap.sms.channel_template_id);
+                            $("#sign_name").val(data.result.configMap.sms.sign_name);
+                            $("#content").val(data.result.configMap.sms.content);
+                            $("#params").val(data.result.configMap.sms.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.voice)){
+                            $("#voice_channel_pool").val(data.result.configMap.voice.channel_pool);
+                            $("#voice_channel_pool").trigger("chosen:updated");
+                            $("#voice_channel_template_id").val(data.result.configMap.voice.channel_template_id);
+                            $("#voice_sign_name").val(data.result.configMap.voice.sign_name);
+                            $("#voice_content").val(data.result.configMap.voice.content);
+                            $("#voice_params").val(data.result.configMap.voice.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.email)){
+                            $("#email_channel_pool").val(data.result.configMap.email.channel_pool);
+                            $("#email_channel_pool").trigger("chosen:updated");
+
+                            $("#email_title").val(data.result.configMap.email.title);
+                            $("#email_content_type").val(data.result.configMap.email.content_type);
+                            $("#email_content_type").trigger("chosen:updated");
+                            email_content_editor.setValue(data.result.configMap.email.content);
+                            //$("#email_content").val(data.result.configMap.email.content);
+                            $("#email_params").val(data.result.configMap.email.params);
+
+                        }
+
+                        if(!is_empty(data.result.configMap.apppush)){
+                            $("#app").val(data.result.configMap.apppush.app);
+                            $("#app").trigger("chosen:updated");
+
+                            $("#scene").val(data.result.configMap.apppush.scene);
+                            $("#scene").trigger("chosen:updated");
+
+                            $("#click_type").val(data.result.configMap.apppush.click_type);
+                            $("#click_type").trigger("chosen:updated");
+
+                            $("#click_app").val(data.result.configMap.apppush.click_app);
+                            $("#click_app").trigger("chosen:updated");
+
+                            $("#click_url").val(data.result.configMap.apppush.click_url);
+
+
+                            $("#push_title").val(data.result.configMap.apppush.title);
+                            $("#push_content").val(data.result.configMap.apppush.content);
+                            $("#push_params").val(data.result.configMap.apppush.params);
+
+                        }
+
+                        if(!is_empty(data.result.configMap.miniprogramwechat)){
+                            $("#miniprogramwechat_channel_pool").val(data.result.configMap.miniprogramwechat.channel_pool);
+                            $("#miniprogramwechat_channel_pool").trigger("chosen:updated");
+                            $("#miniprogramwechat_channel_template_id").val(data.result.configMap.miniprogramwechat.channel_template_id);
+
+                            // $("#miniprogram_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            // $("#miniprogram_channel_template_type").trigger("chosen:updated");
+
+                            // $("#miniprogram_channel_miniprogram_appid").val(data.result.configMap.miniprogram.channel_miniprogram_appid);
+                            $("#miniprogramwechat_channel_page").val(data.result.configMap.miniprogramwechat.channel_page);
+                            //$("#miniprogram_channel_url").val(data.result.configMap.miniprogram.channel_url);
+
+                            //getWechatTemplate();
+                            $("#miniprogramwechat_title").val(data.result.configMap.miniprogramwechat.title);
+
+                            var wechatList = data.result.configMap.miniprogramwechat.content;
+
+                            $("#miniprogramwechat_div").empty();
+                            for (let i = 0; i < wechatList.length; i++) {
+                                var cn_name = wechatList[i].cn_name;
+                                var en_name = wechatList[i].en_name;
+                                var value = wechatList[i].value;
+                                var tmp = miniprogramTemplate;
+                                tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                                tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                                $('#miniprogramwechat_div').append(tmp);
+                                $('#miniprogram_'+en_name).val(value);
+                            }
+                            $("#miniprogramwechat_params").val(data.result.configMap.miniprogramwechat.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.miniprogrambaidu)){
+                            $("#miniprogrambaidu_channel_pool").val(data.result.configMap.miniprogrambaidu.channel_pool);
+                            $("#miniprogrambaidu_channel_pool").trigger("chosen:updated");
+                            $("#miniprogrambaidu_channel_template_id").val(data.result.configMap.miniprogrambaidu.channel_template_id);
+
+                            // $("#miniprogram_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            // $("#miniprogram_channel_template_type").trigger("chosen:updated");
+
+                            // $("#miniprogram_channel_miniprogram_appid").val(data.result.configMap.miniprogram.channel_miniprogram_appid);
+                            $("#miniprogrambaidu_channel_page").val(data.result.configMap.miniprogrambaidu.channel_page);
+                            //$("#miniprogram_channel_url").val(data.result.configMap.miniprogram.channel_url);
+
+                            //getWechatTemplate();
+                            $("#miniprogrambaidu_title").val(data.result.configMap.miniprogrambaidu.title);
+
+                            var wechatList = data.result.configMap.miniprogrambaidu.content;
+
+                            $("#miniprogrambaidu_div").empty();
+                            for (let i = 0; i < wechatList.length; i++) {
+                                var cn_name = wechatList[i].cn_name;
+                                var en_name = wechatList[i].en_name;
+                                var value = wechatList[i].value;
+                                var tmp = miniprogramTemplateBaidu;
+                                tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                                tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                                $('#miniprogrambaidu_div').append(tmp);
+                                $('#miniprogram_'+en_name).val(value);
+                            }
+                            $("#miniprogrambaidu_params").val(data.result.configMap.miniprogrambaidu.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.miniprogramdouyin)){
+                            $("#miniprogramdouyin_channel_pool").val(data.result.configMap.miniprogramdouyin.channel_pool);
+                            $("#miniprogramdouyin_channel_pool").trigger("chosen:updated");
+                            $("#miniprogramdouyin_channel_template_id").val(data.result.configMap.miniprogramdouyin.channel_template_id);
+
+                            // $("#miniprogram_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            // $("#miniprogram_channel_template_type").trigger("chosen:updated");
+
+                            // $("#miniprogram_channel_miniprogram_appid").val(data.result.configMap.miniprogram.channel_miniprogram_appid);
+                            $("#miniprogramdouyin_channel_page").val(data.result.configMap.miniprogramdouyin.channel_page);
+                            //$("#miniprogram_channel_url").val(data.result.configMap.miniprogram.channel_url);
+
+                            //getWechatTemplate();
+                            $("#miniprogramdouyin_title").val(data.result.configMap.miniprogramdouyin.title);
+
+                            var wechatList = data.result.configMap.miniprogramdouyin.content;
+
+                            $("#miniprogramdouyin_div").empty();
+                            for (let i = 0; i < wechatList.length; i++) {
+                                var cn_name = wechatList[i].cn_name;
+                                var en_name = wechatList[i].en_name;
+                                var value = wechatList[i].value;
+                                var tmp = miniprogramTemplateDouyin;
+                                tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                                tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                                $('#miniprogramdouyin_div').append(tmp);
+                                $('#miniprogram_'+en_name).val(value);
+                            }
+                            $("#miniprogramdouyin_params").val(data.result.configMap.miniprogramdouyin.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.wechatofficialaccount)){
+                            $("#wechatofficialaccount_channel_pool").val(data.result.configMap.wechatofficialaccount.channel_pool);
+                            $("#wechatofficialaccount_channel_pool").trigger("chosen:updated");
+                            $("#wechatofficialaccount_channel_template_id").val(data.result.configMap.wechatofficialaccount.channel_template_id);
+
+                            $("#wechatofficialaccount_channel_template_type").val(data.result.configMap.wechatofficialaccount.channel_template_type);
+                            $("#wechatofficialaccount_channel_template_type").trigger("chosen:updated");
+
+                            $("#wechatofficialaccount_channel_miniprogram_appid").val(data.result.configMap.wechatofficialaccount.channel_miniprogram_appid);
+                            $("#wechatofficialaccount_channel_miniprogram_page").val(data.result.configMap.wechatofficialaccount.channel_miniprogram_page);
+                            $("#wechatofficialaccount_channel_url").val(data.result.configMap.wechatofficialaccount.channel_url);
+
+                            //getWechatTemplate();
+                            $("#wechatofficialaccount_title").val(data.result.configMap.wechatofficialaccount.title);
+
+                            var wechatList = data.result.configMap.wechatofficialaccount.content;
+
+                            $("#wechat_div").empty();
+                            for (let i = 0; i < wechatList.length; i++) {
+                                var cn_name = wechatList[i].cn_name;
+                                var en_name = wechatList[i].en_name;
+                                var value = wechatList[i].value;
+                                var tmp = template;
+                                tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                                tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                                $('#wechat_div').append(tmp);
+                                $('#wechat_'+en_name).val(value);
+                            }
+
+                            $("#wechatofficialaccount_params").val(data.result.configMap.wechatofficialaccount.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.wechatcustommessage)){
+                            $("#wechatcustommessage_channel_pool").val(data.result.configMap.wechatcustommessage.channel_pool);
+                            $("#wechatcustommessage_channel_pool").trigger("chosen:updated");
+
+                            $("#wechatcustommessage_channel_msgtype").val(data.result.configMap.wechatcustommessage.channel_msgtype);
+                            $("#wechatcustommessage_channel_msgtype").trigger("chosen:updated");
+                            wechatcustomemessage_channel_msgtype_change($("#wechatcustommessage_channel_msgtype").val());
+
+                            $("#wechatcustommessage_channel_content").val(data.result.configMap.wechatcustommessage.channel_content);
+                            $("#wechatcustommessage_channel_media_id").val(data.result.configMap.wechatcustommessage.channel_media_id);
+                            $("#wechatcustommessage_channel_thumb_media_id").val(data.result.configMap.wechatcustommessage.channel_thumb_media_id);
+                            $("#wechatcustommessage_channel_title").val(data.result.configMap.wechatcustommessage.channel_title);
+                            $("#wechatcustommessage_channel_description").val(data.result.configMap.wechatcustommessage.channel_description);
+                            $("#wechatcustommessage_channel_url").val(data.result.configMap.wechatcustommessage.channel_url);
+                            $("#wechatcustommessage_channel_picurl").val(data.result.configMap.wechatcustommessage.channel_picurl);
+                            $("#wechatcustommessage_channel_musicurl").val(data.result.configMap.wechatcustommessage.channel_musicurl);
+                            $("#wechatcustommessage_channel_hqmusicurl").val(data.result.configMap.wechatcustommessage.channel_hqmusicurl);
+                            $("#wechatcustommessage_channel_card_id").val(data.result.configMap.wechatcustommessage.channel_card_id);
+                            $("#wechatcustommessage_channel_app_id").val(data.result.configMap.wechatcustommessage.channel_app_id);
+                            $("#wechatcustommessage_channel_pagepath").val(data.result.configMap.wechatcustommessage.channel_pagepath);
+                            $("#wechatcustommessage_channel_article_id").val(data.result.configMap.wechatcustommessage.channel_article_id);
+                            $("#wechatcustommessage_channel_menu_content").val(data.result.configMap.wechatcustommessage.channel_menu_content);
+                            $("#wechatcustommessage_channel_menu_head_content").val(data.result.configMap.wechatcustommessage.channel_menu_head_content);
+                            $("#wechatcustommessage_channel_menu_tail_content").val(data.result.configMap.wechatcustommessage.channel_menu_tail_content);
+
+                            $("#wechatcustommessage_channel_kf_account").val(data.result.configMap.wechatcustommessage.channel_kf_account);
+                            $("#wechatcustommessage_channel_is_ai_msg").val(data.result.configMap.wechatcustommessage.channel_is_ai_msg);
+
+                            $("#wechatcustommessage_params").val(data.result.configMap.wechatcustommessage.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.wechatnews)){
+                            $("#wechatnews_channel_pool").val(data.result.configMap.wechatnews.channel_pool);
+                            $("#wechatnews_channel_pool").trigger("chosen:updated");
+
+                            $("#wechatnews_channel_media_id").val(data.result.configMap.wechatnews.channel_media_id);
+
+                            $("#wechatnews_params").val(data.result.configMap.wechatnews.params);
+                        }
+
+                        if(!is_empty(data.result.configMap.feishurobot)){
+                            $("#feishurobot_channel_pool").val(data.result.configMap.feishurobot.channel_pool);
+                            $("#feishurobot_channel_pool").trigger("chosen:updated");
+
+                            $("#feishurobot_title").val(data.result.configMap.feishurobot.title);
+                            $("#feishurobot_content").val(data.result.configMap.feishurobot.content);
+                            $("#feishurobot_params").val(data.result.configMap.feishurobot.params);
+
+                        }
+
+                        if(!is_empty(data.result.configMap.feishu)){
+                            $("#feishu_channel_pool").val(data.result.configMap.feishu.channel_pool);
+                            $("#feishu_channel_pool").trigger("chosen:updated");
+
+                            $("#feishu_title").val(data.result.configMap.feishu.title);
+                            $("#feishu_content").val(data.result.configMap.feishu.content);
+                            $("#feishu_params").val(data.result.configMap.feishu.params);
+
+                        }
+
+                        if(!is_empty(data.result.configMap.webhook)){
+                            $("#webhook_channel_pool").val(data.result.configMap.webhook.channel_pool);
+                            $("#webhook_channel_pool").trigger("chosen:updated");
+
+                            $("#webhook_title").val(data.result.configMap.webhook.title);
+                            $("#webhook_content").val(data.result.configMap.webhook.content);
+                            $("#webhook_params").val(data.result.configMap.webhook.params);
+
+                        }
+
+                        //开始时间
+                        var start_time=data.result.start_time;
+                        if(start_time!='' && typeof(start_time) !="undefined"){
+                            $("#start_time").val(getMyDate(start_time));
+                        }
+
+                        //结束时间
+                        var end_time=data.result.end_time;
+                        if(end_time!='' && typeof(end_time) !="undefined"){
+                            $("#end_time").val(getMyDate(end_time));
+                        }
+
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+    var template = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label wechat_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"wechat_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control wechat_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
+    var miniprogramTemplate = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label wechatminiprogram_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"miniprogram_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control wechatminiprogram_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
+
+    var miniprogramTemplateBaidu = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label baiduminiprogram_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"miniprogram_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control baiduminiprogram_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
+
+    var miniprogramTemplateDouyin = "                    <div class=\"form-group col-sm-12\">\n" +
+        "                                                    <label class=\"col-sm-2 control-label douyinminiprogram_cn_name\">wechat_param_cn_name</label>\n" +
+        "                                                    <div class=\"col-sm-10\">\n" +
+        "                                                         <input id=\"miniprogram_wechat_param_en_name\" name=\"wechat_param_en_name\" class=\"form-control douyinminiprogram_en_name\" type=\"text\" value=\"\" placeholder=\"值\">\n" +
+        "                                                    </div>\n" +
+        "                                                </div>";
+    function getWechatTemplate(){
+        var wechat_template_id = $("#wechatofficialaccount_channel_template_id").val();
+        var wechat_template_type = $("#wechatofficialaccount_channel_template_type").val();
+        var wechatofficialaccount_channel_pool = $("#wechatofficialaccount_channel_pool").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type, "wechatofficialaccount_channel_pool": wechatofficialaccount_channel_pool},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#wechatofficialaccount_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#wechatofficialaccount_title").val(data.result.title);
+
+                $("#wechat_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = template;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#wechat_div').append(tmp);
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#wechatofficialaccount_template_search").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#wechatofficialaccount_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
+
+    function getMiniProgramTemplate(server){
+        if(server == "wechat"){
+            getWechatMiniProgramTemplate()
+        }else if(server == "baidu"){
+            getBaiduMiniProgramTemplate()
+        }else if(server == "douyin"){
+            getDouyinMiniProgramTemplate()
+        }
+    }
+
+    function getWechatMiniProgramTemplate(){
+        var wechat_template_id = $("#miniprogramwechat_channel_template_id").val();
+        var wechat_template_type = "3";
+        var miniprogramwechat_channel_pool = $("#miniprogramwechat_channel_pool").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type,"wechatofficialaccount_channel_pool": miniprogramwechat_channel_pool},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#miniprogramwechat_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#miniprogramwechat_title").val(data.result.title);
+
+                $("#miniprogramwechat_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = miniprogramTemplate;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#miniprogramwechat_div').append(tmp);
+                }
+                $("#miniprogramwechat_template_search").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#miniprogramwechat_template_search").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#miniprogramwechat_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
+
+    function getBaiduMiniProgramTemplate(){
+        var wechat_template_id = $("#miniprogrambaidu_channel_template_id").val();
+        var wechat_template_type = "4";
+        var wechatofficialaccount_channel_pool = $("#miniprogrambaidu_channel_pool").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type,"wechatofficialaccount_channel_pool": wechatofficialaccount_channel_pool},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#miniprogrambaidu_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#miniprogrambaidu_title").val(data.result.title);
+
+                $("#miniprogrambaidu_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = miniprogramTemplateBaidu;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#miniprogrambaidu_div').append(tmp);
+                }
+                $("#miniprogrambaidu_template_search").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#miniprogrambaidu_template_search").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#miniprogrambaidu_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
+
+    function getDouyinMiniProgramTemplate(){
+        var wechat_template_id = $("#miniprogramdouyin_channel_template_id").val();
+        var wechat_template_type = "5";
+        var wechatofficialaccount_channel_pool = $("#miniprogramdouyin_channel_pool").val();
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_wechattemplate_detail",
+            dataType: 'json',
+            async: false, // 同步请求
+            data: {'template_id': wechat_template_id, 'template_type': wechat_template_type,"wechatofficialaccount_channel_pool": wechatofficialaccount_channel_pool},
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#miniprogramdouyin_template_search").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#miniprogramdouyin_title").val(data.result.title);
+
+                $("#miniprogramdouyin_div").empty();
+                for (var i = 0; i < data.result.wechatTemplateContentParams.length; i++) {
+                    var cn_name = data.result.wechatTemplateContentParams[i].cn_name;
+                    var en_name = data.result.wechatTemplateContentParams[i].en_name;
+                    var tmp = miniprogramTemplateDouyin;
+                    tmp = tmp.replaceAll("wechat_param_cn_name", cn_name);
+                    tmp = tmp.replaceAll("wechat_param_en_name", en_name);
+                    $('#miniprogramdouyin_div').append(tmp);
+                }
+                $("#miniprogramdouyin_template_search").removeAttr('disabled');
+            },
+            //处理完成
+            complete: function () {
+                $("#miniprogramdouyin_template_search").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#miniprogramdouyin_template_search").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+    }
+
+    function buildConfig(){
+        var sms_config = {
+            "channel_pool": $("#sms_channel_pool").val(),
+            "channel_template_id": $("#channel_template_id").val(),
+            "sign_name": $("#sign_name").val(),
+            "content": $("#content").val(),
+            "params": $("#params").val()
+        };
+
+        var voice_config = {
+            "channel_pool": $("#voice_channel_pool").val(),
+            "channel_template_id": $("#voice_channel_template_id").val(),
+            "sign_name": $("#voice_sign_name").val(),
+            "content": $("#voice_content").val(),
+            "params": $("#voice_params").val()
+        };
+
+        var email_config = {
+            "channel_pool": $("#email_channel_pool").val(),
+            "title": $("#email_title").val(),
+            "content_type": $("#email_content_type").val(),
+            "content": email_content_editor.getValue(),
+            "params": $("#email_params").val()
+        };
+
+        var apppush_config = {
+            "app": $("#app").val(),
+            "scene": $("#scene").val(),
+            "click_type": $("#click_type").val(),
+            "click_app": $("#click_app").val(),
+            "click_url": $("#click_url").val(),
+            "title": $("#push_title").val(),
+            "content": $("#push_content").val(),
+            "params": $("#push_params").val()
+        };
+
+        var miniprogramWechatContentList = [];
+        var miniprogramBaiduContentList = [];
+        var miniprogramDouyinContentList = [];
+
+        $(".wechatminiprogram_en_name").each(function(index){
+            var en_name = $(this).attr('name');
+            var value = $(this).val();
+            var cn_name = $(this).closest('.form-group').find('.wechatminiprogram_cn_name').text();
+            miniprogramWechatContentList.push({
+                en_name: en_name,
+                cn_name: cn_name,
+                value: value
+            });
+        });
+
+        $(".baiduminiprogram_en_name").each(function(index){
+            var en_name = $(this).attr('name');
+            var value = $(this).val();
+            var cn_name = $(this).closest('.form-group').find('.baiduminiprogram_cn_name').text();
+            miniprogramBaiduContentList.push({
+                en_name: en_name,
+                cn_name: cn_name,
+                value: value
+            });
+        });
+
+        $(".douyinminiprogram_en_name").each(function(index){
+            var en_name = $(this).attr('name');
+            var value = $(this).val();
+            var cn_name = $(this).closest('.form-group').find('.douyinminiprogram_cn_name').text();
+            miniprogramDouyinContentList.push({
+                en_name: en_name,
+                cn_name: cn_name,
+                value: value
+            });
+        });
+
+        var miniprogramwechat_config = {
+            "channel_pool": $("#miniprogramwechat_channel_pool").val(),
+            "channel_template_id": $("#miniprogramwechat_channel_template_id").val(),
+            "channel_page": $("#miniprogramwechat_channel_page").val(),
+            "title": $("#miniprogramwechat_title").val(),
+            "channel_miniprogram_state": $("#miniprogramwechat_channel_miniprogram_state").val(),
+            "content": miniprogramWechatContentList,
+            "params": $("#miniprogramwechat_params").val()
+        };
+
+        var miniprogrambaidu_config = {
+            "channel_pool": $("#miniprogrambaidu_channel_pool").val(),
+            "channel_template_id": $("#miniprogrambaidu_channel_template_id").val(),
+            "channel_page": $("#miniprogrambaidu_channel_page").val(),
+            "title": $("#miniprogrambaidu_title").val(),
+            "channel_miniprogram_state": $("#miniprogrambaidu_channel_miniprogram_state").val(),
+            "content": miniprogramBaiduContentList,
+            "params": $("#miniprogrambaidu__params").val()
+        };
+
+        var miniprogramdouyin_config = {
+            "channel_pool": $("#miniprogramdouyin_channel_pool").val(),
+            "channel_template_id": $("#miniprogramdouyin_channel_template_id").val(),
+            "channel_page": $("#miniprogramdouyin_channel_page").val(),
+            "title": $("#miniprogramdouyin_title").val(),
+            "channel_miniprogram_state": $("#miniprogramdouyin_channel_miniprogram_state").val(),
+            "content": miniprogramDouyinContentList,
+            "params": $("#miniprogramdouyin_params").val()
+        };
+
+        var contentList = [];
+        $(".wechat_en_name").each(function(index){
+            var en_name = $(this).attr('name');
+            var value = $(this).val();
+            var cn_name = $(this).closest('.form-group').find('.wechat_cn_name').text();
+            contentList.push({
+                en_name: en_name,
+                cn_name: cn_name,
+                value: value
+            });
+        });
+
+        var  wechatofficialaccount_config = {
+            "channel_pool": $("#wechatofficialaccount_channel_pool").val(),
+            "channel_template_id":  $("#wechatofficialaccount_channel_template_id").val(),
+            "channel_template_type": $("#wechatofficialaccount_channel_template_type").val(),
+            "channel_miniprogram_page": $("#wechatofficialaccount_channel_miniprogram_page").val(),
+            "channel_miniprogram_appid": $("#wechatofficialaccount_channel_miniprogram_appid").val(),
+            "channel_url": $("#wechatofficialaccount_channel_url").val(),
+            "title": $("#wechatofficialaccount_title").val(),
+            "content": contentList,
+            "params": $("#wechatofficialaccount_params").val()
+        };
+
+        var wechatcustommessage_config = {
+            "channel_pool": $("#wechatcustommessage_channel_pool").val(),
+            "channel_msgtype": $("#wechatcustommessage_channel_msgtype").val(),
+            "channel_content": $("#wechatcustommessage_channel_content").val(),
+            "channel_media_id": $("#wechatcustommessage_channel_media_id").val(),
+            "channel_thumb_media_id": $("#wechatcustommessage_channel_thumb_media_id").val(),
+            "channel_title": $("#wechatcustommessage_channel_title").val(),
+            "channel_description": $("#wechatcustommessage_channel_description").val(),
+            "channel_url": $("#wechatcustommessage_channel_url").val(),
+            "channel_picurl": $("#wechatcustommessage_channel_picurl").val(),
+            "channel_musicurl": $("#wechatcustommessage_channel_musicurl").val(),
+            "channel_hqmusicurl": $("#wechatcustommessage_channel_hqmusicurl").val(),
+            "channel_card_id": $("#wechatcustommessage_channel_card_id").val(),
+            "channel_app_id": $("#wechatcustommessage_channel_app_id").val(),
+            "channel_pagepath": $("#wechatcustommessage_channel_pagepath").val(),
+            "channel_article_id": $("#wechatcustommessage_channel_article_id").val(),
+            "channel_menu_content": $("#wechatcustommessage_channel_menu_content").val(),
+            "channel_menu_head_content": $("#wechatcustommessage_channel_menu_head_content").val(),
+            "channel_menu_tail_content": $("#wechatcustommessage_channel_menu_tail_content").val(),
+            "channel_kf_account": $("#wechatcustommessage_channel_kf_account").val(),
+            "channel_is_ai_msg": $("#wechatcustommessage_channel_is_ai_msg").val(),
+            "params": $("#wechatcustommessage_params").val()
+        }
+
+        var wechatnews_config = {
+            "channel_pool": $("#wechatnews_channel_pool").val(),
+            "channel_media_id": $("#wechatnews_channel_media_id").val(),
+            "params": $("#wechatcustommessage_params").val()
+        }
+
+        var feishurobot_config = {
+            "channel_pool": $("#feishurobot_channel_pool").val(),
+            "title": $("#feishurobot_title").val(),
+            "content": $("#feishurobot_content").val(),
+            "params": $("#feishurobot_params").val()
+        };
+
+        var feishu_config = {
+            "channel_pool": $("#feishu_channel_pool").val(),
+            "title": $("#feishu_title").val(),
+            "content": $("#feishu_content").val(),
+            "params": $("#feishu_params").val()
+        };
+
+        var webhook_config = {
+            "channel_pool": $("#webhook_channel_pool").val(),
+            "title": $("#webhook_title").val(),
+            "content": $("#webhook_content").val(),
+            "params": $("#webhook_params").val()
+        };
+
+        var config = {
+            "sms": sms_config,
+            "voice": voice_config,
+            "email": email_config,
+            "apppush": apppush_config,
+            "miniprogramwechat": miniprogramwechat_config,
+            "miniprogrambaidu": miniprogrambaidu_config,
+            "miniprogramdouyin": miniprogramdouyin_config,
+            "wechatofficialaccount": wechatofficialaccount_config,
+            "wechatcustommessage": wechatcustommessage_config,
+            "wechatnews": wechatnews_config,
+            "feishurobot": feishurobot_config,
+            "feishu": feishu_config,
+            "webhook": webhook_config
+        };
+
+        return config;
+    }
+
+    function buildPushServer(){
+        var push_server = "";
+        if($('#check_sms').is(":checked")){
+            push_server = "sms";
+        }
+        if($('#check_voice').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "voice"
+            }else{
+                push_server = push_server +",voice"
+            }
+        }
+        if($('#check_email').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "email"
+            }else{
+                push_server = push_server +",email"
+            }
+        }
+        if($('#check_apppush').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "apppush"
+            }else{
+                push_server = push_server +",apppush"
+            }
+        }
+
+        if($('#check_miniprogramwechat').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "miniprogramwechat"
+            }else{
+                push_server = push_server +",miniprogramwechat"
+            }
+        }
+
+        if($('#check_miniprogrambaidu').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "miniprogrambaidu"
+            }else{
+                push_server = push_server +",miniprogrambaidu"
+            }
+        }
+
+        if($('#check_miniprogramdouyin').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "miniprogramdouyin"
+            }else{
+                push_server = push_server +",miniprogramdouyin"
+            }
+        }
+
+        if($('#check_wechatofficialaccount').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "wechatofficialaccount"
+            }else{
+                push_server = push_server +",wechatofficialaccount"
+            }
+        }
+
+        if($('#check_wechatcustommessage').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "wechatcustommessage"
+            }else{
+                push_server = push_server +",wechatcustommessage"
+            }
+        }
+
+        if($('#check_wechatnews').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "wechatnews"
+            }else{
+                push_server = push_server +",wechatnews"
+            }
+        }
+
+        if($('#check_feishurobot').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "feishurobot"
+            }else{
+                push_server = push_server +",feishurobot"
+            }
+        }
+
+        if($('#check_feishu').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "feishu"
+            }else{
+                push_server = push_server +",feishu"
+            }
+        }
+
+        if($('#check_webhook').is(":checked")){
+            if(is_empty(push_server)){
+                push_server = "webhook"
+            }else{
+                push_server = push_server +",webhook"
+            }
+        }
+
+        return push_server;
+    }
+
+    $('#save_dispatch_task').click(function () {
+
+
+        var config = buildConfig();
+        var push_server = buildPushServer();
+        $('#config').val(JSON.stringify(config));
+        $('#push_server').val(push_server);
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        var config = buildConfig();
+        var push_server = buildPushServer();
+        $('#config').val(JSON.stringify(config));
+        $('#push_server').val(push_server);
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/push_template_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != '200'){
+                    parent.layer.msg("更新失败"+data.msg);
+                    return ;
+                }
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+               // closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>ZDH - 主页</title>
+
+    <meta name="keywords" content="ZDH,大数据平台">
+    <meta name="description" content="ZDH,大数据平台">
+
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="wrapper">
+        <!--左侧导航开始-->
+        <nav class="navbar-default navbar-static-side" role="navigation" style="display: block;">
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+<!--                            <span><img alt="image" class="img-circle" src="img/zdh.png" /></span>-->
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear">
+                                    <span class="block m-t-xs"><strong id="userName" class="font-bold"></strong></span>
+                                <span class="text-muted text-xs block" id="signature">缺个签名<b class="caret"></b></span>
+                                     <span class="block m-t-xs"><strong id="version" class="font-bold"></strong></span>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a href="logout">安全退出</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="logo-element">ZDH
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom" style="z-index: 5">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                        <p id="notice"></p>
+                    </div>
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                <i class="fa fa-bell"></i> <span class="label label-danger" id="notice_num"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-alerts" id="msg_ul" style="z-index: 5">
+
+                            </ul>
+                        </li>
+                        <!--<li class="hidden-xs">
+                            <a href="index_v1.html" class="J_menuItem" data-index="0"><i class="fa fa-cart-arrow-down"></i> 购买</a>
+                        </li>-->
+                        <li class="dropdown">
+                            <a class="right-sidebar-toggle" aria-expanded="false">
+                                <i class="fa fa-tasks"></i> 主题
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row content-tabs">
+                <button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i>
+                </button>
+                <nav class="page-tabs J_menuTabs">
+                   <div class="page-tabs-content">
+<!--                     <a href="javascript:void(0);" class="active J_menuTab" data-id="monitor.html">监控</a>-->
+                    </div>
+                </nav>
+                <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i>
+                </button>
+                <div class="btn-group roll-nav roll-right">
+                    <button class="dropdown J_tabClose" data-toggle="dropdown">关闭操作<span class="caret"></span>
+
+                    </button>
+                    <ul role="menu" class="dropdown-menu dropdown-menu-right">
+                        <li class="J_tabShowActive"><a>定位当前选项卡</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="J_tabCloseAll"><a>关闭全部选项卡</a>
+                        </li>
+                        <li class="J_tabCloseOther"><a>关闭其他选项卡</a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="logout" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="monitor.html" frameborder="0" data-id="monitor.html" seamless></iframe>
+            </div>
+            <div class="footer">
+                <div class="pull-right" id="web_date">&copy; 2014-2023 <a href="" target="_blank"></a>
+                </div>
+            </div>
+        </div>
+        <!--右侧部分结束-->
+        <!--右侧边栏开始-->
+        <div id="right-sidebar">
+            <div class="sidebar-container">
+
+                <ul class="nav nav-tabs navs-3">
+
+                    <li class="active">
+                        <a data-toggle="tab" href="#tab-1">
+                            <i class="fa fa-gear"></i> 主题
+                        </a>
+                    </li>
+                   <!-- <li class=""><a data-toggle="tab" href="#tab-2">
+                        通知
+                    </a>-->
+                    </li>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="sidebar-title">
+                            <h3> <i class="fa fa-comments-o"></i> 主题设置</h3>
+                            <small><i class="fa fa-tim"></i> 你可以从这里选择和预览主题的布局和样式，这些设置会被保存在本地，下次打开的时候会直接应用这些设置。</small>
+                        </div>
+                        <div class="skin-setttings">
+                            <div class="title">主题设置</div>
+                            <div class="setings-item">
+                                <span>收起左侧菜单</span>
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="collapsemenu">
+                                        <label class="onoffswitch-label" for="collapsemenu">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setings-item">
+                                <span>固定顶部</span>
+
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="fixednavbar" class="onoffswitch-checkbox" id="fixednavbar">
+                                        <label class="onoffswitch-label" for="fixednavbar">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setings-item">
+                                <span>
+                        固定宽度
+                    </span>
+
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="boxedlayout" class="onoffswitch-checkbox" id="boxedlayout">
+                                        <label class="onoffswitch-label" for="boxedlayout">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="title">皮肤选择</div>
+                            <div class="setings-item default-skin nb">
+                                <span class="skin-name ">
+                         <a href="#" class="s-skin-0">
+                             默认皮肤
+                         </a>
+                    </span>
+                            </div>
+                            <div class="setings-item blue-skin nb">
+                                <span class="skin-name ">
+                        <a href="#" class="s-skin-1">
+                            蓝色主题
+                        </a>
+                    </span>
+                            </div>
+                            <div class="setings-item yellow-skin nb">
+                                <span class="skin-name ">
+                        <a href="#" class="s-skin-3">
+                            黄色/紫色主题
+                        </a>
+                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+
+
+    <!-- 第三方插件 -->
+    <script src="js/plugins/pace/pace.min.js"></script>
+
+    <script>
+
+        (function(document, window, $) {
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/getUserInfo",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    if(data.result.userName !='' ){
+                     $('#userName').text(data.result.userName);
+                     $('#signature').text(data.result.signature);
+                     if(data.result.userName != "admin"){
+                         $('#li_del_system_job').hide()
+                     }
+                    }else{
+                        window.location.href="login"
+                    }
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/version",
+                async:true,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    if(data.code != "200" ){
+                        $('#version').text("未知版本");
+                        layer.msg("查询版本失败: "+data.msg);
+                        return ;
+                    }
+                    $('#version').text(data.result);
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+            function load_notice() {
+
+                $.ajax({
+                    type: 'POST',
+                    url: server_context+"/notice_list",
+                    dataType: 'json',
+                    data: {},
+                    //成功返回
+                    success: function (data) {
+                        //console.info("success")
+                        //console.info(data.length)
+                        if(data.code=="200"){
+
+                            $('#notice_num').html(data.result.total_num);
+                            $('#msg_ul').html("");
+                                for(var i=0;i<data.result.notices.length;i++){
+                                var html_li="<li>"+
+                                    " <a href="+server_context+"/notice_detail_index.html?id="+data.result.notices[i].id+"\ target=\"_blank\">"+
+                                    " <div>"+
+                                    " <i class=\"fa fa-envelope\"></i>  "+data.result.notices[i].msg_title+
+                                    "</div>"+
+                                    " </a>"+
+                                    " </li>";
+
+                                    //console.info(html_li)
+                                    $('#msg_ul').append(html_li);
+                                    $('#msg_ul').append("<li class=\"divider\"></li>");
+                                }
+                            var end_li=
+                            " <li>\n" +
+                            "     <div class=\"text-center link-block\">\n" +
+                            "        <a class=\"J_menuItem\" href="+server_context+"/notice_index.html" +">\n" +
+                            "           <strong>查看所有 </strong>\n" +
+                            "           <i class=\"fa fa-angle-right\"></i>\n" +
+                            "        </a>\n" +
+                            "     </div>\n" +
+                            " </li> ";
+                            $('#msg_ul').append(end_li)
+
+                        }else{
+                            $('#msg_ul').html("");
+                            var html_li="<li>"+
+                                " <a href="+server_context+"/notice_index.html"+">"+
+                                " <div>"+
+                                " <i class=\"fa fa-weixin\"></i>  暂无消息"+
+                                "</div>"+
+                                " </a>"+
+                                " </li>";
+                            $('#notice_num').html("");
+                            $('#msg_ul').append(html_li)
+                        }
+                    },
+                    //处理完成
+                    complete: function () {
+                    },
+                    //报错
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+                });
+
+
+            }
+
+            load_notice();
+
+
+
+            setInterval(function () {
+                load_notice();
+            },60000);
+
+
+            //加载目录菜单
+            $.ajax({
+                type : "POST",
+                url : server_context+"/jstree_permission_list2",
+                dataType : "json",
+                async:'false',
+                success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    var runPath = new Map();
+                    //当前最大支持层级数是10级
+                    for(var j=1;j<=10;j++){
+                        for(var i=0;i<data.result.length;i++){
+                            if(data.result[i].level == j) {
+                                runPath.set(data.result[i].resource_id, "1");
+                                if(j == 1){
+                                    //第一级跳过执行
+                                    continue ;
+                                }
+
+                                var level_tmp = data.result[i].level;
+
+                                var span_notice_title="";
+                                if(data.result[i].notice_title != ''){
+                                    span_notice_title = "<span class=\"label label-danger pull-right\">"+data.result[i].notice_title+"</span>";
+                                }
+
+                                ul_class = "nav nav-second-level";
+                                li_class = '';
+                                //获取level
+                                if(data.result[i].level == "3"){
+                                    ul_class = "nav nav-third-level";
+                                }
+                                if(data.result[i].level == "4"){
+                                    ul_class = "nav nav-four-level";
+                                }
+                                if(data.result[i].level == "5"){
+                                    ul_class = "nav nav-five-level";
+
+                                }
+                                if(data.result[i].level >= "6"){
+                                    ul_class = "nav nav-five-level";
+                                }
+
+                                var li_tmplete =
+                                    "<li class=\""+li_class+"\">" +
+                                    "<a class=\"J_menuItem\" href=\"" + data.result[i].url + "\"><i class=\""+ data.result[i].icon+"\"></i>" +
+                                    "<span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>" +
+                                    "</li>";
+
+                                //console.info(data[i].text+"==="+data[i].url+"==="+data[i].level+"==="+data[i].parent);
+                                //目录
+                                if(data.result[i].resource_type == "1"){
+
+                                    var ul_tmplate =
+                                        "<li class=\"\">"+
+                                        "<a href=\"\#\" class=\"\"><i class=\""+data.result[i].icon+"\"></i><span class=\"nav-label\">"+data.result[i].text+"</span>"+span_notice_title+"</a>"+
+                                        "<ul class=\""+ul_class+"\" id=\"ul_"+data.result[i].resource_id+"\">"+
+                                        "</ul>"+
+                                        "</li>";
+                                    if( level_tmp > "2") {
+                                        $('#ul_'+data.result[i].parent).append(ul_tmplate);
+                                        $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                    }else{
+                                        $('#side-menu').append(ul_tmplate);
+                                        $('#side-menu').metisMenu();
+                                    }
+
+                                }else if(data.result[i].resource_type == "4"){
+                                    //函数
+                                    li_tmplete =
+                                        "<li class=\"\"><a href=\"javascript:void(0);\" onclick=\"" +data.result[i].url.split("function:")[1] +"\">" + "<i class=\""+ data.result[i].icon+"\"></i>"+data.result[i].text+"</a>";
+                                    $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                    $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                }else if(data.result[i].resource_type == "2"){
+                                    //菜单
+                                    if(runPath.has(data.result[i].parent)){
+                                        if($('#ul_'+data.result[i].parent).length >0 ){
+                                            //多级目录
+                                            $('#ul_'+data.result[i].parent).append(li_tmplete);
+                                            $('#'+"ul_"+data.result[i].parent).metisMenu();
+                                        }else{
+                                            //根级目录
+                                            $('#side-menu').append(li_tmplete);
+                                        }
+                                    }else{
+                                        //父节点存在,才可展示菜单
+                                        //console.info(data.result[i].text+ " , 父节点不存在");
+                                        if(runPath.has(data.result[i].parent)){
+                                            $('#side-menu').append(li_tmplete);
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+
+                    }
+                    runPath = new Map();
+                    //计算元素集合的总宽度
+                    function calSumWidth(elements) {
+                        var width = 0;
+                        $(elements).each(function () {
+                            width += $(this).outerWidth(true);
+                        });
+                        return width;
+                    }
+                    //滚动到指定选项卡
+                    function scrollToTab(element) {
+                        var marginLeftVal = calSumWidth($(element).prevAll()), marginRightVal = calSumWidth($(element).nextAll());
+                        // 可视区域非tab宽度
+                        var tabOuterWidth = calSumWidth($(".content-tabs").children().not(".J_menuTabs"));
+                        //可视区域tab宽度
+                        var visibleWidth = $(".content-tabs").outerWidth(true) - tabOuterWidth;
+                        //实际滚动宽度
+                        var scrollVal = 0;
+                        if ($(".page-tabs-content").outerWidth() < visibleWidth) {
+                            scrollVal = 0;
+                        } else if (marginRightVal <= (visibleWidth - $(element).outerWidth(true) - $(element).next().outerWidth(true))) {
+                            if ((visibleWidth - $(element).next().outerWidth(true)) > marginRightVal) {
+                                scrollVal = marginLeftVal;
+                                var tabElement = element;
+                                while ((scrollVal - $(tabElement).outerWidth()) > ($(".page-tabs-content").outerWidth() - visibleWidth)) {
+                                    scrollVal -= $(tabElement).prev().outerWidth();
+                                    tabElement = $(tabElement).prev();
+                                }
+                            }
+                        } else if (marginLeftVal > (visibleWidth - $(element).outerWidth(true) - $(element).prev().outerWidth(true))) {
+                            scrollVal = marginLeftVal - $(element).prev().outerWidth(true);
+                        }
+                        $('.page-tabs-content').animate({
+                            marginLeft: 0 - scrollVal + 'px'
+                        }, "fast");
+                    }
+                    //查看左侧隐藏的选项卡
+                    function scrollTabLeft() {
+                        var marginLeftVal = Math.abs(parseInt($('.page-tabs-content').css('margin-left')));
+                        // 可视区域非tab宽度
+                        var tabOuterWidth = calSumWidth($(".content-tabs").children().not(".J_menuTabs"));
+                        //可视区域tab宽度
+                        var visibleWidth = $(".content-tabs").outerWidth(true) - tabOuterWidth;
+                        //实际滚动宽度
+                        var scrollVal = 0;
+                        if ($(".page-tabs-content").width() < visibleWidth) {
+                            return false;
+                        } else {
+                            var tabElement = $(".J_menuTab:first");
+                            var offsetVal = 0;
+                            while ((offsetVal + $(tabElement).outerWidth(true)) <= marginLeftVal) {//找到离当前tab最近的元素
+                                offsetVal += $(tabElement).outerWidth(true);
+                                tabElement = $(tabElement).next();
+                            }
+                            offsetVal = 0;
+                            if (calSumWidth($(tabElement).prevAll()) > visibleWidth) {
+                                while ((offsetVal + $(tabElement).outerWidth(true)) < (visibleWidth) && tabElement.length > 0) {
+                                    offsetVal += $(tabElement).outerWidth(true);
+                                    tabElement = $(tabElement).prev();
+                                }
+                                scrollVal = calSumWidth($(tabElement).prevAll());
+                            }
+                        }
+                        $('.page-tabs-content').animate({
+                            marginLeft: 0 - scrollVal + 'px'
+                        }, "fast");
+                    }
+                    //查看右侧隐藏的选项卡
+                    function scrollTabRight() {
+                        var marginLeftVal = Math.abs(parseInt($('.page-tabs-content').css('margin-left')));
+                        // 可视区域非tab宽度
+                        var tabOuterWidth = calSumWidth($(".content-tabs").children().not(".J_menuTabs"));
+                        //可视区域tab宽度
+                        var visibleWidth = $(".content-tabs").outerWidth(true) - tabOuterWidth;
+                        //实际滚动宽度
+                        var scrollVal = 0;
+                        if ($(".page-tabs-content").width() < visibleWidth) {
+                            return false;
+                        } else {
+                            var tabElement = $(".J_menuTab:first");
+                            var offsetVal = 0;
+                            while ((offsetVal + $(tabElement).outerWidth(true)) <= marginLeftVal) {//找到离当前tab最近的元素
+                                offsetVal += $(tabElement).outerWidth(true);
+                                tabElement = $(tabElement).next();
+                            }
+                            offsetVal = 0;
+                            while ((offsetVal + $(tabElement).outerWidth(true)) < (visibleWidth) && tabElement.length > 0) {
+                                offsetVal += $(tabElement).outerWidth(true);
+                                tabElement = $(tabElement).next();
+                            }
+                            scrollVal = calSumWidth($(tabElement).prevAll());
+                            if (scrollVal > 0) {
+                                $('.page-tabs-content').animate({
+                                    marginLeft: 0 - scrollVal + 'px'
+                                }, "fast");
+                            }
+                        }
+                    }
+
+                    //通过遍历给菜单项加上data-index属性
+                    $(".J_menuItem").each(function (index) {
+                        if (!$(this).attr('data-index')) {
+                            $(this).attr('data-index', index);
+                        }
+                    });
+
+                    function menuItem() {
+                        // 获取标识数据
+                        var dataUrl = $(this).attr('href'),
+                            dataIndex = $(this).data('index'),
+                            menuName = $.trim($(this).text()),
+                            flag = true;
+                        if (dataUrl == undefined || $.trim(dataUrl).length == 0)return false;
+
+                        // 选项卡菜单已存在
+                        $('.J_menuTab').each(function () {
+                            if ($(this).data('id') == dataUrl) {
+                                if (!$(this).hasClass('active')) {
+                                    $(this).addClass('active').siblings('.J_menuTab').removeClass('active');
+                                    scrollToTab(this);
+                                    // 显示tab对应的内容区
+                                    $('.J_mainContent .J_iframe').each(function () {
+                                        if ($(this).data('id') == dataUrl) {
+                                            $(this).show().siblings('.J_iframe').hide();
+                                            return false;
+                                        }
+                                    });
+                                }
+                                flag = false;
+                                return false;
+                            }
+                        });
+
+                        // 选项卡菜单不存在
+                        if (flag) {
+                            var str = '<a href="javascript:;" class="active J_menuTab" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
+                            $('.J_menuTab').removeClass('active');
+
+                            // 添加选项卡对应的iframe
+                            var str1 = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + dataUrl + '" frameborder="0" data-id="' + dataUrl + '" seamless></iframe>';
+                            $('.J_mainContent').find('iframe.J_iframe').hide().parents('.J_mainContent').append(str1);
+
+                            //显示loading提示
+//            var loading = layer.load();
+//
+//            $('.J_mainContent iframe:visible').load(function () {
+//                //iframe加载完成后隐藏loading提示
+//                layer.close(loading);
+//            });
+                            // 添加选项卡
+                            $('.J_menuTabs .page-tabs-content').append(str);
+                            scrollToTab($('.J_menuTab.active'));
+                        }
+                        return false;
+                    }
+
+                    $('.J_menuItem').on('click', menuItem);
+
+                    // 关闭选项卡菜单
+                    function closeTab() {
+                        var closeTabId = $(this).parents('.J_menuTab').data('id');
+                        var currentWidth = $(this).parents('.J_menuTab').width();
+
+                        // 当前元素处于活动状态
+                        if ($(this).parents('.J_menuTab').hasClass('active')) {
+
+                            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+                            if ($(this).parents('.J_menuTab').next('.J_menuTab').size()) {
+
+                                var activeId = $(this).parents('.J_menuTab').next('.J_menuTab:eq(0)').data('id');
+                                $(this).parents('.J_menuTab').next('.J_menuTab:eq(0)').addClass('active');
+
+                                $('.J_mainContent .J_iframe').each(function () {
+                                    if ($(this).data('id') == activeId) {
+                                        $(this).show().siblings('.J_iframe').hide();
+                                        return false;
+                                    }
+                                });
+
+                                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                                if (marginLeftVal < 0) {
+                                    $('.page-tabs-content').animate({
+                                        marginLeft: (marginLeftVal + currentWidth) + 'px'
+                                    }, "fast");
+                                }
+
+                                //  移除当前选项卡
+                                $(this).parents('.J_menuTab').remove();
+
+                                // 移除tab对应的内容区
+                                $('.J_mainContent .J_iframe').each(function () {
+                                    if ($(this).data('id') == closeTabId) {
+                                        $(this).remove();
+                                        return false;
+                                    }
+                                });
+                            }
+
+                            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+                            if ($(this).parents('.J_menuTab').prev('.J_menuTab').size()) {
+                                var activeId = $(this).parents('.J_menuTab').prev('.J_menuTab:last').data('id');
+                                $(this).parents('.J_menuTab').prev('.J_menuTab:last').addClass('active');
+                                $('.J_mainContent .J_iframe').each(function () {
+                                    if ($(this).data('id') == activeId) {
+                                        $(this).show().siblings('.J_iframe').hide();
+                                        return false;
+                                    }
+                                });
+
+                                //  移除当前选项卡
+                                $(this).parents('.J_menuTab').remove();
+
+                                // 移除tab对应的内容区
+                                $('.J_mainContent .J_iframe').each(function () {
+                                    if ($(this).data('id') == closeTabId) {
+                                        $(this).remove();
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
+                        // 当前元素不处于活动状态
+                        else {
+                            //  移除当前选项卡
+                            $(this).parents('.J_menuTab').remove();
+
+                            // 移除相应tab对应的内容区
+                            $('.J_mainContent .J_iframe').each(function () {
+                                if ($(this).data('id') == closeTabId) {
+                                    $(this).remove();
+                                    return false;
+                                }
+                            });
+                            scrollToTab($('.J_menuTab.active'));
+                        }
+                        return false;
+                    }
+
+                    $('.J_menuTabs').on('click', '.J_menuTab i', closeTab);
+
+                    //关闭其他选项卡
+                    function closeOtherTabs(){
+                        $('.page-tabs-content').children("[data-id]").not(":first").not(".active").each(function () {
+                            $('.J_iframe[data-id="' + $(this).data('id') + '"]').remove();
+                            $(this).remove();
+                        });
+                        $('.page-tabs-content').css("margin-left", "0");
+                    }
+                    $('.J_tabCloseOther').on('click', closeOtherTabs);
+
+                    //滚动到已激活的选项卡
+                    function showActiveTab(){
+                        scrollToTab($('.J_menuTab.active'));
+                    }
+                    $('.J_tabShowActive').on('click', showActiveTab);
+
+
+                    // 点击选项卡菜单
+                    function activeTab() {
+                        if (!$(this).hasClass('active')) {
+                            var currentId = $(this).data('id');
+                            // 显示tab对应的内容区
+                            $('.J_mainContent .J_iframe').each(function () {
+                                if ($(this).data('id') == currentId) {
+                                    $(this).show().siblings('.J_iframe').hide();
+                                    return false;
+                                }
+                            });
+                            $(this).addClass('active').siblings('.J_menuTab').removeClass('active');
+                            scrollToTab(this);
+                        }
+                    }
+
+                    $('.J_menuTabs').on('click', '.J_menuTab', activeTab);
+
+                    //刷新iframe
+                    function refreshTab() {
+                        var target = $('.J_iframe[data-id="' + $(this).data('id') + '"]');
+                        var url = target.attr('src');
+//        //显示loading提示
+//        var loading = layer.load();
+//        target.attr('src', url).load(function () {
+//            //关闭loading提示
+//            layer.close(loading);
+//        });
+                    }
+
+                    $('.J_menuTabs').on('dblclick', '.J_menuTab', refreshTab);
+
+                    // 左移按扭
+                    $('.J_tabLeft').on('click', scrollTabLeft);
+
+                    // 右移按扭
+                    $('.J_tabRight').on('click', scrollTabRight);
+
+                    // 关闭全部
+                    $('.J_tabCloseAll').on('click', function () {
+                        $('.page-tabs-content').children("[data-id]").not(":first").each(function () {
+                            $('.J_iframe[data-id="' + $(this).data('id') + '"]').remove();
+                            $(this).remove();
+                        });
+                        $('.page-tabs-content').children("[data-id]:first").each(function () {
+                            $('.J_iframe[data-id="' + $(this).data('id') + '"]').show();
+                            $(this).addClass("active");
+                        });
+                        $('.page-tabs-content').css("margin-left", "0");
+                    });
+
+                }
+            });
+
+
+            //动态修改版权时间
+            var date = new Date();
+            var year = date.getFullYear();
+            $('#web_date').text('©'+ "2018-"+year);
+
+        })(document, window, jQuery);
+
+        function load_meta_databases() {
+
+            var index1 = layer.load(1, {
+                shade: [0.1,'#fff'] //0.1透明度的白色背景
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/load_meta_databases",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    layer.msg(data.msg)
+                },
+                //处理完成
+                complete: function () {
+                    layer.close(index1);
+                    layer.msg("同步元数据完成");
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function del_system_job() {
+            var index1 = layer.load(1, {
+                shade: [0.1,'#fff'] //0.1透明度的白色背景
+            });
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/del_system_job",
+                async:false,
+                dataType: 'json',
+                data: '',
+                //成功返回
+                success: function (data) {
+                    parent.layer.msg(data.msg);
+                },
+                //处理完成
+                complete: function () {
+                    layer.close(index1)
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function every_day_notice(){
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/every_day_notice",
+                dataType: 'json',
+                data: {},
+                //成功返回
+                success: function (data) {
+                    if(data.code != '200'){
+                        return ;
+                    }
+                    if(data.result.show_type == "1"){
+                        layer.open({
+                            type: 1
+                            ,title: false //不显示标题栏
+                            ,closeBtn: true
+                            ,area: [$(document.body).width()*0.48+"px", "auto"]
+                            ,shade: 0.8
+                            ,id: 'notice_layer' //设定一个id，防止重复弹出
+                            ,btnAlign: 'c'
+                            ,moveType: 1 //拖拽模式，0或者1
+                            ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">系统公告！<br>'+data.result.msg+'<br></div>'
+                        });
+                    }else if(data.result.show_type == "2"){
+                        $('#notice').html(data.result.msg);
+                    }else{
+                        //暂无通知
+                    }
+
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function check_browser(){
+            var browserType = getBrowserType();
+            if(browserType != "Chrome" && browserType != "Firefox"){
+                layer.msg("使用谷歌浏览器或火狐浏览器体验更好");
+            }
+        }
+        check_browser();
+        every_day_notice();
+        function jump_spark_web() {
+            $.ajax({
+                type: 'get',
+                url: server_context+"/spark_web_ui_port",
+                dataType: 'json',
+                data: {},
+                //成功返回
+                success: function (data) {
+                    if(data.length>=1){
+                        window.open("http://"+data[0].zdh_host+":"+data[0].web_port)
+                    }else{
+                        layer.msg("请检查zdh_server服务是否正常启动")
+                    }
+                },
+                //处理完成
+                complete: function () {
+                },
+                //报错
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+    </script>
+
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <!-- 自定义js -->
+    <script src="js/hplus.js?v=4.1.0"></script>
+    <script type="text/javascript" src="js/contabs.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,386 @@
+package com.zyc.zdh.controller;
+
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.zyc.zdh.dao.DataSourcesMapper;
+import com.zyc.zdh.dao.EtlTaskMapper;
+import com.zyc.zdh.dao.EtlTaskUpdateLogsMapper;
+import com.zyc.zdh.dao.ZdhNginxMapper;
+import com.zyc.zdh.entity.*;
+import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.service.EtlTaskService;
+import com.zyc.zdh.service.ZdhPermissionService;
+import com.zyc.zdh.util.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 单源ETL任务服务
+ */
+@Controller
+public class ZdhEtlController extends BaseController{
+
+    @Autowired
+    private DataSourcesMapper dataSourcesMapper;
+    @Autowired
+    private EtlTaskService etlTaskService;
+    @Autowired
+    private EtlTaskUpdateLogsMapper etlTaskUpdateLogsMapper;
+    @Autowired
+    private ZdhNginxMapper zdhNginxMapper;
+    @Autowired
+    private EtlTaskMapper etlTaskMapper;
+    @Autowired
+    private ZdhPermissionService zdhPermissionService;
+
+
+    /**
+     * 系统参数
+     * @return
+     */
+    @RequestMapping("/system_params_index")
+    public String system_params() {
+
+        return "etl/system_params_index";
+    }
+
+    /**
+     * 单源ETL首页
+     * @return
+     */
+    @RequestMapping("/etl_task_index")
+    public String etl_task_index() {
+
+        return "etl/etl_task_index";
+    }
+
+    /**
+     * 获取单源ETL任务明细
+     * @param id 主键ID
+     * @return
+     */
+    @SentinelResource(value = "etl_task_detail", blockHandler = "handleReturn")
+    @RequestMapping(value = "/etl_task_detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<EtlTaskInfo> etl_task_detail(String id) {
+        try{
+            EtlTaskInfo eti=etlTaskService.selectById(id);
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, eti.getProduct_code(), eti.getDim_group(), getAttrSelect());
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", eti);
+        }catch (Exception e){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
+        }
+
+    }
+
+    /**
+     * 根据条件模糊查询单源ETL任务信息
+     * @param etl_context 关键字
+     * @param file_name 数据源关键字
+     * @return
+     */
+    @SentinelResource(value = "etl_task_list2", blockHandler = "handleReturn")
+    @RequestMapping(value = "/etl_task_list2", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<EtlTaskInfo>> etl_task_list2(String etl_context, String file_name, String product_code, String dim_group) {
+        try{
+            List<EtlTaskInfo> list = new ArrayList<>();
+            if(!StringUtils.isEmpty(etl_context)){
+                etl_context=getLikeCondition(etl_context);
+            }
+            if(!StringUtils.isEmpty(file_name)){
+                file_name=getLikeCondition(file_name);
+            }
+            Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
+            list = etlTaskMapper.selectByParams(getOwner(),etl_context,file_name, product_code, dim_group, dimMap.get("product_codes"), dimMap.get("dim_groups"));
+            dynamicAuth(zdhPermissionService, list);
+            return ReturnInfo.buildSuccess(list);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.buildError("单源ETL任务列表查询失败", e);
+        }
+
+    }
+
+    /**
+     * 批量删除单源ETL任务
+     * @param ids id数组
+     * @return
+     */
+    @SentinelResource(value = "etl_task_delete", blockHandler = "handleReturn")
+    @RequestMapping(value = "/etl_task_delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo etl_task_delete(String[] ids) {
+        try{
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskMapper, etlTaskMapper.getTable(), ids, getAttrDel());
+            etlTaskMapper.deleteLogicByIds(etlTaskMapper.getTable(), ids, new Timestamp(System.currentTimeMillis()));
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
+    }
+
+    /**
+     * 新增单源ETL任务首页
+     * @param request
+     * @param edit 废弃
+     * @return
+     */
+    @RequestMapping("/etl_task_add_index")
+    public String etl_task_add(HttpServletRequest request, String edit) {
+        return "etl/etl_task_add_index";
+    }
+
+
+    /**
+     * 新增单源ETL任务
+     * 如果输入数据源类型是外部上传,会补充文件服务器信息
+     * @param etlTaskInfo
+     * @return
+     */
+    @SentinelResource(value = "etl_task_add", blockHandler = "handleReturn")
+    @RequestMapping(value="/etl_task_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo etl_task_add(EtlTaskInfo etlTaskInfo) {
+        //String json_str=JsonUtil.formatJsonString(request.getParameterMap());
+        try{
+            String owner = getOwner();
+            etlTaskInfo.setOwner(owner);
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group(), getAttrAdd());
+            etlTaskInfo.setId(SnowflakeIdWorker.getInstance().nextId() + "");
+            etlTaskInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+            etlTaskInfo.setIs_delete(Const.NOT_DELETE);
+            if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
+                } else {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + etlTaskInfo.getData_sources_file_name_input());
+                }
+
+            }
+
+            etlTaskService.insert(etlTaskInfo);
+            if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(etlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                etlTaskUpdateLogs.setOwner(owner);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
+    }
+
+
+    /**
+     * 单源ETL任务输入数据源是外部上传时,上传文件服务
+     * @param up_file 上传文件
+     * @param request 请求回话
+     * @return
+     */
+    @SentinelResource(value = "etl_task_add_file", blockHandler = "handleReturn")
+    @RequestMapping(value="/etl_task_add_file", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo etl_task_add_file(MultipartFile up_file, HttpServletRequest request) {
+        try{
+            String owner = getOwner();
+            if (up_file != null) {
+                String fileName = MultipartFileUtil.getFileName(up_file);
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                String localDir = zdhNginx.getTmp_dir() + "/" + owner;
+                LogUtil.info(this.getClass(), "fileName: {}, fileDir: {}", fileName, localDir);
+                File tempFile = new File(localDir + "/" + fileName);
+                File fileDir = new File(localDir);
+                if (!fileDir.exists()) {
+                    fileDir.mkdirs();
+                }
+                String nginx_dir = zdhNginx.getNginx_dir();
+
+                FileCopyUtils.copy(up_file.getInputStream(), Files.newOutputStream(tempFile.toPath()));
+                if (!StringUtils.isEmpty(zdhNginx.getHost())) {
+                    SFTPUtil sftp = new SFTPUtil(zdhNginx.getUsername(), zdhNginx.getPassword(),
+                            zdhNginx.getHost(), new Integer(zdhNginx.getPort()));
+                    sftp.login();
+                    InputStream is = new FileInputStream(tempFile);
+                    sftp.upload(nginx_dir + "/" + owner + "/", fileName, is);
+                    sftp.logout();
+                }
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
+    }
+
+    /**
+     * 单源ETL任务更新
+     * todo 此次是否每次都更新文件服务器信息,待优化
+     * @param etlTaskInfo
+     * @return
+     */
+    @SentinelResource(value = "etl_task_update", blockHandler = "handleReturn")
+    @RequestMapping(value="/etl_task_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @Transactional(propagation= Propagation.NESTED)
+    public ReturnInfo etl_task_update(EtlTaskInfo etlTaskInfo) {
+        try{
+            String owner = getOwner();
+            etlTaskInfo.setOwner(owner);
+            etlTaskInfo.setIs_delete(Const.NOT_DELETE);
+            etlTaskInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            //获取旧数据是否更新说明
+            EtlTaskInfo oldEtlTaskInfo = etlTaskService.selectById(etlTaskInfo.getId());
+
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, etlTaskInfo.getProduct_code(), etlTaskInfo.getDim_group(), getAttrEdit());
+            checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldEtlTaskInfo.getProduct_code(), oldEtlTaskInfo.getDim_group(), getAttrEdit());
+
+            if (etlTaskInfo.getData_source_type_input().equals("外部上传")) {
+                ZdhNginx zdhNginx = zdhNginxMapper.selectByOwner(owner);
+                String[] file_name_ary = etlTaskInfo.getData_sources_file_name_input().split("/");
+                String file_name = file_name_ary[0];
+                if (file_name_ary.length > 0) {
+                    file_name = file_name_ary[file_name_ary.length - 1];
+                }
+
+                if (zdhNginx != null && !zdhNginx.getHost().equals("")) {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getNginx_dir() + "/" + owner + "/" + file_name);
+                } else {
+                    etlTaskInfo.setData_sources_file_name_input(zdhNginx.getTmp_dir() + "/" + owner + "/" + file_name);
+                }
+
+            }
+
+
+
+            etlTaskService.update(etlTaskInfo);
+
+            if (etlTaskInfo.getUpdate_context() != null && !etlTaskInfo.getUpdate_context().equals("")
+                    && !oldEtlTaskInfo.getUpdate_context().equals(etlTaskInfo.getUpdate_context())) {
+                //插入更新日志表
+                EtlTaskUpdateLogs etlTaskUpdateLogs = new EtlTaskUpdateLogs();
+                etlTaskUpdateLogs.setId(etlTaskInfo.getId());
+                etlTaskUpdateLogs.setUpdate_context(etlTaskInfo.getUpdate_context());
+                etlTaskUpdateLogs.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+                etlTaskUpdateLogs.setOwner(owner);
+                etlTaskUpdateLogsMapper.insertSelective(etlTaskUpdateLogs);
+            }
+            return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(),RETURN_CODE.SUCCESS.getDesc(), null);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(),e.getMessage(), null);
+        }
+    }
+
+
+    /**
+     * 根据数据源id 获取数据源下所有的表名字
+     * @param id 数据源id
+     * @return
+     */
+    @SentinelResource(value = "etl_task_tables", blockHandler = "handleReturn")
+    @RequestMapping(value = "/etl_task_tables", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<String>> etl_task_tables(String id) {
+        try{
+            DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
+            List<String> tables = tables(dataSourcesInfo);
+            return ReturnInfo.buildSuccess(tables);
+        }catch (Exception e){
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.buildError("获取数据源表列表失败",e);
+        }
+
+    }
+
+    private List<String> tables(DataSourcesInfo dataSourcesInfo) {
+        String url = dataSourcesInfo.getUrl();
+
+        try {
+            return new DBUtil().R3(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    "");
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return new ArrayList<>();
+        }
+
+
+    }
+
+
+    /**
+     * 根据数据源id,表名获取表的schema
+     * @param id
+     * @param table_name
+     * @return
+     */
+    @SentinelResource(value = "etl_task_schema", blockHandler = "handleReturn")
+    @RequestMapping(value="/etl_task_schema", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<List<String>> etl_task_schema(String id, String table_name) {
+
+        DataSourcesInfo dataSourcesInfo = dataSourcesMapper.selectByPrimaryKey(id);
+        List<String> columns = schema(dataSourcesInfo, table_name);
+        if(columns==null || columns.size()==0){
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询结果为空", columns);
+        }
+        return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", columns);
+    }
+
+
+    private List<String> schema(DataSourcesInfo dataSourcesInfo, String table_name) {
+
+        String url = dataSourcesInfo.getUrl();
+
+        try {
+            if(!DBUtil.validTableName(table_name)){
+                throw new Exception("表名不合法");
+            }
+            return new DBUtil().R4(dataSourcesInfo.getDriver(), dataSourcesInfo.getUrl(), dataSourcesInfo.getUsername(), dataSourcesInfo.getPassword(),
+                    "select * from " + table_name + " where 1=2 limit 1", table_name);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return new ArrayList<>();
+        }
+    }
+
+    public void create_etl(){
+        //整库迁移-生成小工具,根据输入源(JDBC)获取对应的表,批量生成ETL任务
+
+
+    }
+
+}

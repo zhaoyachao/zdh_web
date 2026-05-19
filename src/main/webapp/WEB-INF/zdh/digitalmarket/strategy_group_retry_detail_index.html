@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 策略组实例重试</title>
+    <meta name="keywords" content="ZDH 策略组实例重试">
+    <meta name="description" content="ZDH 策略组实例重试">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+</head>
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+    <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>任务流程图</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ibox-content col-sm-12">
+                <form id="strategy_group_instance_form" name="strategy_group_instance_form" method="post" class="form-horizontal"
+                      action="">
+                    <div class="form-group">
+                        <div class="text-center">
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                    type="button" style="background-color: #C2DFFF">初始化
+                            </button>
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                    type="button" style="background-color: #00bb00">运行中
+                            </button>
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                    type="button" style="background-color: #2B65EC">完成
+                            </button>
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                     type="button" style="background-color: #ec4758">失败
+                            </button>
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                     type="button" style="background-color: LightGrey">跳过
+                            </button>
+                            <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                     type="button" style="background-color: #f7a54a">未知
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">子任务</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox i-checks" id="sub_task_div">
+
+                            </div>
+                        </div>
+                        <div  class="col-sm-12">
+                            <div class="container device col-sm-12">
+                                <div class="deviceLeft2">
+<!--                                    <div class="deviceLeft_box">-->
+<!--                                        <div class="node node1css" data-type="tasks">ETL任务</div>-->
+<!--                                        <div class="node node1css" data-type="shell">SHELL</div>-->
+<!--                                    </div>-->
+<!--                                    <input id="refash" οnsubmit='return false' type="button" class="btn btn-primary form-control"-->
+<!--                                           style="margin-bottom:0px" value="刷新"/>-->
+                                </div>
+                                <div id="deviceRight">
+                                    <div id="m1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <div class="text-center">
+                            <button id="execute" name="execute" class="btn btn-primary" οnsubmit='return false'
+                                    type="button">执行
+                            </button>
+                            <button id="execute_newversion" name="execute" class="btn btn-default" οnsubmit='return false'
+                                    type="button">最新版执行
+                            </button>
+                            <button id="cancel" name="cancel" class="btn btn-white" οnsubmit='return false'
+                                    type="button">取消
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/digitalmarket/strategy_jsplumb_common.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    function get_color_by_status(status){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(status=='create'  ){
+            return "#C2DFFF"
+        }
+        // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
+        if(status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry"){
+            return "#00bb00"
+        }
+        if(status=="finish"){
+            return "#2B65EC"
+        }
+
+        if(status=="error" || status=="killed"){
+            return "#ec4758"
+        }
+        if(status == "skip"){
+            return "LightGrey"
+        }
+
+        return "#f7a54a"
+
+
+    }
+
+    function open_json(json,strategy_group_instance_id) {
+        var jsplumb_json=JSON.parse(json);
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        var map4 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data;
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null");
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].strategy_instance_id;
+                var divId=run_data[i].divId;
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : server_context+"/strategy_instance_list",
+                data : "strategy_group_instance_id=" +strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success");
+                    for(var j=0;j<data.result.length;j++){
+                        //divId->status
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(data.result[j].id, data.result[j].run_time);
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        //添加div 数据
+
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var divId=rs.divId;
+            var etl_context='';
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            var tp=rs.type;
+            var strategy_instance_id=map.get(divId);
+            var run_time = map4.get(strategy_instance_id);
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(map3.get(divId));
+            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
+            if(map3.get(divId) == "error" || map3.get(divId) == "killed"){
+                $('#checkbox_'+divId).iCheck('check');
+            }
+
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("etl_context",rs.etl_context);
+            $("#" + divId).attr("rule_id",rs.rule_id);
+            $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+
+            if(tp == "label"){
+
+            }
+            if(tp == "crowd_file"){
+
+            }
+            if(tp == "user_pool"){
+
+            }
+            if(tp == "crowd_rule"){
+
+            }
+            if(tp == "crowd_operate"){
+
+            }
+
+            if(tp == "filter"){
+                $("#" + divId).attr("title",rs.filter_title);
+            }
+
+            if(tp == "shunt"){
+                $("#" + divId).attr("shunt_param",rs.shunt_param);
+            }
+
+            if(tp == "rights"){
+                $("#" + divId).attr("rights_param",rs.rights_param);
+            }
+
+            if(tp == "touch"){
+                $("#" + divId).attr("touch_context",rs.touch_context);
+                $("#" + divId).attr("touch_task",rs.touch_task);
+            }
+            if(tp == "plugin"){
+                $("#" + divId).attr("rule_id",rs.rule_id);
+                $("#" + divId).html(rs.rule_context);
+            }
+
+            if(tp == "data_node"){
+                $("#" + divId).attr("data_node",rs.data_node);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "id_mapping"){
+                $("#" + divId).attr("data_engine",rs.data_engine);
+            }
+            if(tp == "risk"){
+
+            }
+
+            if(tp == "tn"){
+
+            }
+
+            if(tp == "manual_confirm"){
+
+            }
+            if(tp == "code_block"){
+
+            }
+            if(tp == "custom_list"){
+
+            }
+            if(tp == "function"){
+
+            }
+
+            //新增数据流转状态
+            var new_title = "表达式: "+$("#" + divId).html();
+            var more_task = "任务类型: "+tp;
+            var chudashiji = "触发时机: 上游成功";
+            var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+            if(!is_empty(rs.depend_level)){
+                if(rs.depend_level == "1"){
+                    chudashiji = "触发时机: 上游杀死";
+                }else if(rs.depend_level == "2"){
+                    chudashiji = "触发时机: 上游失败";
+                }else if(rs.depend_level == "3"){
+                    chudashiji = "触发时机: 上游执行后";
+                }
+            }
+            if(!is_empty(rs.data_status)){
+                if(rs.data_status == "1"){
+                    shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                }else if(rs.data_status == "2"){
+                    shujuzhuangtai = "依赖数据状态: 上游失败数据";
+                }else if(rs.data_status == "3"){
+                    shujuzhuangtai = "依赖数据状态: 上游所有数据";
+                }
+            }
+
+            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+
+            $("#" + divId).attr("title", new_title);
+
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+            $("#" + divId).html(rs.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + divId,strategy_instance_id,run_time);
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+            })
+        }
+
+    }
+
+    function refash(json,strategy_group_instance_id){
+        var jsplumb_json=JSON.parse(json);
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data;
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null");
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].strategy_instance_id;
+                var divId=run_data[i].divId;
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : server_context+"/strategy_instance_list",
+                data : "strategy_group_instance_id=" +strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success");
+                    for(var j=0;j<data.length;j++){
+                        //divId->status
+                        console.info(data[j].id+","+data[j].status+","+map2.get(data[j].id));
+                        map3.set(map2.get(data[j].id),data[j].status)
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        map3.forEach(function(value,key){
+            console.log(value,key);
+            var color=get_color_by_status(value);
+            $('#'+key).css("background-color",color);
+        });
+
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(divId,strategy_instance_id,run_time) {
+        $(divId).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+            var checkbox_id = "checkbox_"+$(this).attr('id');
+            if( $('#'+checkbox_id).is(":checked")){
+                $('#'+checkbox_id).iCheck('uncheck');
+            }else{
+                $('#'+checkbox_id).iCheck('check');
+            }
+        });
+    }
+
+    $('#execute').click(function () {
+
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        $.ajax({
+            url: server_context+"/retry_strategy_group_instance",
+            data:  $("#strategy_group_instance_form").serialize()+"&strategy_group_instance_id=" + s.id,
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                layer.msg(data.msg);
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },
+            error: function (data) {
+                console.info("error: " + data.responseText);
+            },
+            //处理完成
+            complete: function () {
+                console.info("complete")
+            }
+        });
+
+
+    });
+
+    $('#cancel').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+
+    })
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        let strategy_group_instance_id=s.id;
+
+        function init(){
+            $.ajax({
+                url : server_context+"/strategy_group_instance_list2",
+                data : "id=" + strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+
+                    //获取所有子任务
+                    $('#sub_task_div').empty();
+                    $('#sub_task_div').addClass("checkbox");
+                    $('#sub_task_div').addClass("i-checks");
+                    var jsplumb_json=JSON.parse(data.result.jsmind_data);
+
+                    for(var i=0;i<jsplumb_json.tasks.length;i++){
+                        var divId=jsplumb_json.tasks[i].divId;
+                        if(jsplumb_json.tasks[i].is_disenable == "true"){
+                            //continue;
+                        }
+                        $('#sub_task_div').append('<label class="no-padding">');
+                        $('#sub_task_div').append('<input type="checkbox" name="sub_tasks" value='+divId +' divId='+ divId+' id="checkbox_'+divId+'"><i></i>'+jsplumb_json.tasks[i].name+'</label>')
+                    }
+                    $('.i-checks').iCheck({
+                        checkboxClass: 'icheckbox_square-green',
+                        radioClass: 'iradio_square-green',
+                    });
+
+                    //初始化输入数据源select 组件
+                    var run_jsmind_data=data.result.run_jsmind_data;
+                    open_json(run_jsmind_data,strategy_group_instance_id)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+        init();
+
+    });
+</script>
+</body>
+
+</html>

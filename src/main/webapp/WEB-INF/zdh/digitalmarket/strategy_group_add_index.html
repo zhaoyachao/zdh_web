@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 策略组新增首页</title>
+    <meta name="keywords" content="ZDH 策略组新增首页">
+    <meta name="description" content="ZDH 策略组新增首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="js/plugins/magicsuggest/magicsuggest.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>策略组配置</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <input type="hidden" id="etl_task_text" name="etl_task_text" value="">
+                    <input type="hidden" id="jdbc_url_text" name="jdbc_url_text" value="">
+                    <input type="hidden" id="jdbc_sql_text" name="jdbc_sql_text" value="">
+                    <input type="hidden" id="shell_text" name="shell_text" value="">
+                    <input type="hidden" id="hdfs_url_text" name="hdfs_url_text" value="">
+                    <input type="hidden" id="hdfs_path_text" name="hdfs_path_text" value="">
+                    <input type="hidden" id="http_params" name="http_params" value="">
+                    <input type="hidden" id="http_url_text" name="http_url_text" value="">
+                    <input type="hidden" id="to_emails" name="to_emails" value="">
+                    <input type="hidden" id="email_context" name="email_context" value="">
+                    <input type="hidden" id="rule_param" name="rule_param" value="">
+                    <input type="hidden" id="shunt_param" name="shunt_param" value="">
+                    <input type="hidden" id="rights_param" name="rights_param" value="">
+                    <input type="hidden" id="code_text" name="code_text" value="">
+                    <input type="hidden" id="function_text" name="function_text" value="">
+                    <input type="hidden" id="varpool_param" name="varpool_param" value="">
+                    <input type="hidden" id="user_pool_param" name="user_pool_param" value="">
+
+                    <form id="dispatch_task_add_form" name="dispatch_task_add_form" method="post" class="form-horizontal"
+                          action="">
+                        <input type="hidden" id="jsmind_data" name="jsmind_data" value="">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属产品</label>
+                            <div class="col-sm-10">
+                                <select id="product_code" name="product_code"
+                                        data-placeholder="归属产品...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">归属组</label>
+                            <div class="col-sm-10">
+                                <select id="dim_group" name="dim_group"
+                                        data-placeholder="归属组...."
+                                        class="chosen-select form-control m-b" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">策略组说明</label>
+                            <div class="col-sm-10">
+                                <input id="group_context" name="group_context" type="text"
+                                       placeholder="策略组说明,不可为空" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="div_start_end_time">
+                            <label class="col-sm-2 control-label">起始日期</label>
+                            <div class="col-sm-10">
+                                <input placeholder="开始日期" class="form-control layer-date" id="start_time" name="start_time">
+                                <input placeholder="结束日期" class="form-control layer-date" id="end_time" name="end_time">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">策略组类型</label>
+                            <div class="col-sm-10">
+                                <select id="group_type" name="group_type"
+                                        data-placeholder="选择策略类型..."
+                                        class="chosen-select form-control m-b" tabindex="2">
+                                    <option value="" mytype="">选择策略组类型...</option>
+                                    <option value="online" mytype="">实时</option>
+                                    <option value="offline" mytype="">离线</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">在线节点</label>
+                            <div class="col-sm-10">
+                                <input id="data_node" name="data_node" type="text"
+                                       placeholder="在线节点" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">表达式</label>
+                            <div class="col-sm-10">
+                                <input id="expr" name="expr" type="text"
+                                       placeholder="example:100s,100m,100h,1d or corn 表达式,默认1d" class="form-control" aria-required="true"> </span>
+                                <span class="help-block m-b-none"><a id="" href="javascript:void(0);" onclick="cron()">生成Cron表达式</a></span>
+                            </div>
+<!--                            <label class="col-sm-2 control-label">调度时间策略</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <div class="checkbox i-checks">-->
+<!--                                    <label class="no-padding">-->
+<!--                                        <input id="use_quartz_time" name="use_quartz_time"  onclick="abc()" type="checkbox"><i></i> 使用调度触发时间</label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+
+                        <div class="form-group" id="div_time_diff">
+                            <label class="col-sm-2 control-label">回退时间差</label>
+                            <div class="col-sm-10">
+                                <input id="time_diff" name="time_diff" type="text"
+                                       placeholder="时间差,默认单位秒 example:60(60秒)" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">策略配置</label>
+                            <div  class="col-sm-10">
+                                <span class="help-block m-b-none"><a id="system_params" href="javascript:void(0);" onclick="system_params()">系统内置参数</a>
+                                <a href="javascript:void(0);" onclick="strategy_params()">策略独有参数</a>
+                                </span>
+                                <div class="container device col-sm-12">
+                                    <div class="deviceLeft2">
+                                        <div class="deviceLeft_box">
+                                            <div class="node nodedata_nodecss" data-type="data_node">在线节点</div>
+                                            <div class="node nodelabelcss" data-type="label">标签</div>
+                                            <div class="node nodecrowd_filecss" data-type="crowd_file">人群文件</div>
+                                            <div class="node nodeuser_poolcss" data-type="user_pool">用户池</div>
+                                            <div class="node nodecrowd_operatecss" data-type="crowd_operate">运算符</div>
+                                            <div class="node nodefiltercss" data-type="filter">过滤</div>
+                                            <div class="node nodeshuntcss" data-type="shunt">分流器</div>
+                                            <div class="node noderightscss" data-type="rights">权益配置</div>
+                                            <div class="node nodetouchcss" data-type="touch">触达配置</div>
+                                            <div class="node nodetncss" data-type="tn">T+N</div>
+                                            <div class="node nodeplugincss" data-type="plugin">插件</div>
+                                            <div class="node nodeid_mappingcss" data-type="id_mapping">ID转换</div>
+                                            <div class="node noderiskcss" data-type="risk">决策事件</div>
+                                            <div class="node nodemanual_confirmcss" data-type="manual_confirm">人工确认</div>
+                                            <div class="node nodecode_blockcss" data-type="code_block">代码块</div>
+                                            <div class="node nodecustom_listcss" data-type="custom_list">用户名单</div>
+                                            <div class="node nodefunctioncss" data-type="function">函数</div>
+                                            <div class="node nodevarpoolcss" data-type="varpool">变量池</div>
+                                            <div class="node nodevariablecss" data-type="variable">变量计算</div>
+                                            <div class="node nodecrowd_rulecss" data-type="crowd_rule" title="废弃">人群规则</div>
+                                            <div class="node nodemessagecss" data-type="message" title="待开发">消息</div>
+                                            <div class="node nodeactive_eventcss" data-type="active_event" title="待开发">活动</div>
+                                            <div class="node nodemodelcss" data-type="model" title="待开发">模型</div>
+
+                                        </div>
+                                    </div>
+                                    <div id="deviceRight2">
+                                        <div id="m1"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">默认小流量比例</label>
+                            <div class="col-sm-10">
+                                <input id="small_flow_rate" name="small_flow_rate" type="text"
+                                       placeholder="默认小流量比例 默认空,返回[1-100],example:1,100" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">优先级</label>
+                            <div class="col-sm-10">
+                                <input id="priority" name="priority" type="text"
+                                       placeholder="优先级 默认5,最高级100,example:25" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">版本说明</label>
+                            <div class="col-sm-10">
+                                <input id="version_context" name="version_context" type="text"
+                                       placeholder="版本说明,用户手动保存版本,可根据历史版本还原当前配置" class="form-control" aria-required="true"> </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button id="save_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">保存
+                                </button>
+                                <button id="update_dispatch_task" name="save_zdh" class="btn btn-primary" οnsubmit='return false'
+                                        type="button">更新
+                                </button>
+                                <button id="save_log_dispatch_task" name="save_log_zdh" class="btn btn-warning" οnsubmit='return false'
+                                        type="button">保存版本
+                                </button>
+                                <button id="reset" class="btn btn-white" type=reset>清空</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+<!--<script type="text/javascript" src="js/plugins/suggest/bootstrap-suggest.min.js"></script>-->
+<script type="text/javascript" src="js/plugins/magicsuggest/magicsuggest.js"></script>
+
+<!-- 自定义js -->
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/hplus.js?v=4.1.0"></script>
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<!-- Toastr script -->
+<script src="js/plugins/toastr/toastr.min.js"></script>
+
+<!-- iCheck -->
+<script src="js/plugins/iCheck/icheck.min.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+
+<script src="js/admin/dim_product_common.js"></script>
+<script src="js/admin/dim_group_common.js"></script>
+
+<script type="text/javascript" src="js/digitalmarket/strategy_jsplumb_common.js"></script>
+<script type="text/javascript" src="js/digitalmarket/strategy_group_add.js"></script>
+
+<script type="text/javascript">
+
+
+    function get_color_by_status(is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable=='true'){
+            return "LightGrey"
+        }
+        return ""
+    }
+
+    function open_json(json,is_copy) {
+        var jsplumb_json=JSON.parse(json);
+        // 创建新的 Map
+        const newDivIds = new Map();
+        //添加div 数据
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var tp=rs.type;
+            var divId=rs.divId;
+            if(is_copy == "true"){
+                divId = guid2();
+                newDivIds.set(rs.divId, divId);
+            }
+
+            var etl_context=rs.etl_context;
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(rs.is_disenable);
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background: '+color+'" id="' + divId + '" data-type="'+ tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("rule_id",is_empty(rs.rule_id)?"":rs.rule_id);
+            $("#" + divId).attr("rule_context",is_empty(rs.rule_context)?"":rs.rule_context);
+            $("#" + divId).attr("is_disenable",is_empty(rs.is_disenable)?"false":rs.is_disenable);
+            $("#" + divId).attr("depend_level",is_empty(rs.depend_level)?"0":rs.depend_level);
+            $("#" + divId).attr("time_out",is_empty(rs.time_out)?"86400":rs.time_out);
+            $("#" + divId).attr("is_base",is_empty(rs.is_base)?"false":rs.is_base);
+            $("#" + divId).attr("data_status",is_empty(rs.data_status)?"1":rs.data_status);
+            $("#" + divId).attr("project_code",is_empty(rs.project_code)?"":rs.project_code);
+            $("#" + divId).attr("project_scene",is_empty(rs.project_scene)?"":rs.project_scene);
+            $("#" + divId).attr("version_tag",is_empty(rs.version_tag)?"":rs.version_tag);
+            $("#" + divId).attr("is_async",is_empty(rs.is_async)?"false":rs.is_async);
+            $("#" + divId).attr("plan_retry_count",is_empty(rs.plan_retry_count)?"0":rs.plan_retry_count);
+
+            $("#" + divId).attr("more_task",is_empty(rs.more_task)?"":rs.more_task);
+            $("#" + divId).attr("zdh_instance",is_empty(rs.zdh_instance)?"":rs.zdh_instance);
+
+            $("#" + divId).attr("touch_type",is_empty(rs.touch_type)?"":rs.touch_type);
+
+            $("#" + divId).attr("rule_param",is_empty(rs.rule_param)?"":rs.rule_param);
+            $("#" + divId).attr("operate",is_empty(rs.operate)?"and":rs.operate);
+            $("#" + divId).attr("rule_expression_cn", is_empty(rs.rule_expression_cn)?"":rs.rule_expression_cn);
+            $("#" + divId).attr("title", is_empty(rs.rule_expression_cn)?"":rs.rule_expression_cn);
+            //div.width(etl_task_info.etl_context.length*16)
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+
+            if(tp == "label"){
+                $("#" + divId).attr("label_use_type",is_empty(rs.label_use_type)?"batch":rs.label_use_type);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "crowd_file"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "user_pool"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                $("#" + divId).attr("param_code",is_empty(rs.param_code)?"":rs.param_code);
+                $("#" + divId).attr("param_type",is_empty(rs.param_type)?"":rs.param_type);
+                $("#" + divId).attr("param_operate",is_empty(rs.param_operate)?"":rs.param_operate);
+                $("#" + divId).attr("param_value",is_empty(rs.param_value)?"":rs.param_value);
+                $("#" + divId).attr("product_code",is_empty(rs.product_code)?"":rs.product_code);
+                $("#" + divId).attr("uid_type",is_empty(rs.uid_type)?"":rs.uid_type);
+                $("#" + divId).attr("source",is_empty(rs.source)?"":rs.source);
+            }
+            if(tp == "crowd_rule"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "crowd_operate"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "filter"){
+                $("#" + divId).attr("title",is_empty(rs.filter_title)?"":rs.filter_title);
+                //$("#" + divId).attr("filter_context",rs.filter_context);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "shunt"){
+                $("#" + divId).attr("shunt_param",is_empty(rs.shunt_param)?"":rs.shunt_param);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "rights"){
+                $("#" + divId).attr("rights_param",is_empty(rs.rights_param)?"":rs.rights_param);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "touch"){
+                $("#" + divId).attr("touch_context",is_empty(rs.touch_context)?"":rs.touch_context);
+                $("#" + divId).attr("touch_task",is_empty(rs.touch_task)?"":rs.touch_task);
+                $("#" + divId).attr("touch_template_id",is_empty(rs.touch_template_id)?"":rs.touch_template_id);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "plugin"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "data_node"){
+                $("#" + divId).attr("data_node",is_empty(rs.data_node)?"":rs.data_node);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "id_mapping"){
+                $("#" + divId).attr("data_engine",is_empty(rs.data_engine)?"file":rs.data_engine);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "risk"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "tn"){
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+                $("#" + divId).attr("tn_unit",is_empty(rs.tn_unit)?"":rs.tn_unit);
+                $("#" + divId).attr("tn_type",is_empty(rs.tn_type)?"":rs.tn_type);
+                $("#" + divId).attr("tn_value",is_empty(rs.tn_value)?"":rs.tn_value);
+            }
+            if(tp == "manual_confirm"){
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("confirm_notice_type",is_empty(rs.confirm_notice_type)?"":rs.confirm_notice_type);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "code_block"){
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("code_type",is_empty(rs.code_type)?"":rs.code_type);
+                $("#" + divId).attr("command",is_empty(rs.command)?"":rs.command);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "custom_list"){
+                $("#" + divId).attr("title",is_empty(rs.rule_context)?"":rs.rule_context);
+                $("#" + divId).attr("name_list",is_empty(rs.name_list)?"":rs.name_list);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "function"){
+                $("#" + divId).attr("return_diff_enable",is_empty(rs.return_diff_enable)?"false":rs.return_diff_enable);
+                $("#" + divId).attr("return_value_type",is_empty(rs.return_value_type)?"":rs.return_value_type);
+                $("#" + divId).attr("return_value_express",is_empty(rs.return_value_express)?"":rs.return_value_express);
+                $("#" + divId).attr("return_operate",is_empty(rs.return_operate)?"":rs.return_operate);
+                $("#" + divId).attr("return_operate_value",is_empty(rs.return_operate_value)?"":rs.return_operate_value);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "varpool"){
+                $("#" + divId).attr("varpool_param",is_empty(rs.varpool_param)?"":rs.varpool_param);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "variable"){
+                $("#" + divId).attr("varpool_domain",is_empty(rs.varpool_domain)?"":rs.varpool_domain);
+                $("#" + divId).attr("varpool_operate",is_empty(rs.varpool_operate)?"":rs.varpool_operate);
+                $("#" + divId).attr("varpool_type",is_empty(rs.varpool_type)?"":rs.varpool_type);
+                $("#" + divId).attr("varpool_code",is_empty(rs.varpool_code)?"":rs.varpool_code);
+                $("#" + divId).attr("varpool_expre",is_empty(rs.varpool_expre)?"":rs.varpool_expre);
+                $("#" + divId).attr("varpool_value",is_empty(rs.varpool_value)?"":rs.varpool_value);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            //新增数据流转状态
+            var new_title = "表达式: "+$("#" + divId).html();
+            var more_task = "任务类型: "+tp;
+            var chudashiji = "触发时机: 上游成功";
+            var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+            if(!is_empty(rs.depend_level)){
+                if(rs.depend_level == "1"){
+                    chudashiji = "触发时机: 上游杀死";
+                }else if(rs.depend_level == "2"){
+                    chudashiji = "触发时机: 上游失败";
+                }else if(rs.depend_level == "3"){
+                    chudashiji = "触发时机: 上游执行后";
+                }
+            }
+            if(!is_empty(rs.data_status)){
+                if(rs.data_status == "1"){
+                    shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                }else if(rs.data_status == "2"){
+                    shujuzhuangtai = "依赖数据状态: 上游失败数据";
+                }else if(rs.data_status == "3"){
+                    shujuzhuangtai = "依赖数据状态: 上游所有数据";
+                }
+            }
+
+            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title;
+
+            $("#" + divId).attr("title", new_title);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous",
+                maxConnections: -1  // 明确指定允许无限连接
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+
+            doubleclick("#" + divId,tp);
+
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            var source = jsplumb_json.line[i].pageSourceId;
+            var target = jsplumb_json.line[i].pageTargetId;
+            if(is_copy == "true"){
+                source = newDivIds.get(source);
+                target = newDivIds.get(target)
+            }
+            jsPlumb.connect({
+                uuids:[source+"_bottom",target+"_top"]
+            })
+        }
+
+
+    }
+
+    function jsplumb_data(){
+        var ojson={
+            tasks:[],
+            line:[]
+        };
+        //服务器
+        $("#m1 .tasks").each(function (idx, elem) {
+            var $elem = $(elem);
+            var param={
+                more_task:$elem.attr('more_task'),
+                zdh_instance:$elem.attr('zdh_instance'),
+                is_disenable: $elem.attr('is_disenable'),
+                depend_level: $elem.attr('depend_level'),
+                time_out: $elem.attr('time_out'),
+                touch_type: $elem.attr('touch_type'),
+                is_base: $elem.attr('is_base'),
+                data_status: $elem.attr('data_status'),
+                project_code: $elem.attr('project_code'),
+                project_scene: $elem.attr('project_scene'),
+                version_tag: $elem.attr('version_tag'),
+                is_async: $elem.attr('is_async'),
+                plan_retry_count: $elem.attr('plan_retry_count'),
+
+                id: $elem.attr('id'),
+                operate: $elem.attr('operate'),
+
+                rule_id: $elem.attr('rule_id'),
+                rule_context:$elem.attr('rule_context'),
+
+                //label
+                label_use_type: $elem.attr('label_use_type'),
+                rule_param: $elem.attr('rule_param'),
+
+                rule_expression_cn: $elem.attr('rule_expression_cn'),
+                rule_expression: $elem.attr('rule_expression'),
+
+                //crowd_file
+                crowd_file_context: $elem.attr('crowd_file_context'),
+                crowd_file: $elem.attr('crowd_file'),
+
+                //user_pool
+                param_code: $elem.attr('param_code'),
+                param_type: $elem.attr('param_type'),
+                param_operate: $elem.attr('param_operate'),
+                param_value: $elem.attr('param_value'),
+                product_code: $elem.attr('product_code'),
+                uid_type: $elem.attr('uid_type'),
+                source: $elem.attr('source'),
+
+                //crowd_rule
+                crowd_rule_context: $elem.attr('crowd_rule_context'),
+                crowd_rule: $elem.attr('crowd_rule'),
+
+                crowd_operate_context: $elem.attr('crowd_operate_context'),
+
+                //filter_context: $elem.attr('filter_context'),
+                filter_title: $elem.attr('filter_title'),
+                filter: $elem.attr('filter'),
+
+                //shunt
+                shunt_context: $elem.attr('shunt_context'),
+                shunt: $elem.attr('shunt'),
+                shunt_param: $elem.attr('shunt_param'),
+
+                //rights
+                rights_context: $elem.attr('rights_context'),
+                rights: $elem.attr('rights'),
+                rights_param: $elem.attr('rights_param'),
+
+                //touch
+                touch_context: $elem.attr('touch_context'),
+                touch_id: $elem.attr('touch_id'),
+                touch_task: $elem.attr('touch_task'),
+                touch_template_id: $elem.attr('touch_template_id'),
+
+                //data_node
+                data_node: $elem.attr('data_node'),
+
+                //id_mapping
+                id_mapping_code: $elem.attr('id_mapping_code'),
+                data_engine: $elem.attr('data_engine'),
+
+                //tn
+                tn_unit: $elem.attr('tn_unit'),
+                tn_type: $elem.attr('tn_type'),
+                tn_value: $elem.attr('tn_value'),
+
+                //manual_confirm
+                confirm_notice_type: $elem.attr('confirm_notice_type'),
+
+                //code_block
+                command: $elem.attr('command'),
+                code_type: $elem.attr('code_type'),
+
+                //name_list
+                name_list: $elem.attr('name_list'),
+
+                //function
+                return_diff_enable: $elem.attr('return_diff_enable'),
+                return_value_type: $elem.attr('return_value_type'),
+                return_value_express: $elem.attr('return_value_express'),
+                return_operate: $elem.attr('return_operate'),
+                return_operate_value: $elem.attr('return_operate_value'),
+
+                //variable, varpool
+                varpool_param: $elem.attr('varpool_param'),
+
+                varpool_domain: $elem.attr('varpool_domain'),
+                varpool_operate: $elem.attr('varpool_operate'),
+                varpool_type: $elem.attr('varpool_type'),
+                varpool_code: $elem.attr('varpool_code'),
+                varpool_expre: $elem.attr('varpool_expre'),
+                varpool_value: $elem.attr('varpool_value'),
+
+                divId:$elem.attr('id'),
+                name: $elem[0].innerText,
+                positionX: parseInt($elem.css("left"), 10),
+                positionY: parseInt($elem.css("top"), 10),
+                type:$elem.data('type')
+            };
+            ojson.tasks.push(param)
+        });
+
+        $.each(jsPlumb.getConnections(), function (idx, connection) {
+            var param={
+                connectionId: connection.id,
+                pageSourceId: connection.sourceId,
+                pageTargetId: connection.targetId
+            };
+            ojson.line.push(param)
+        });
+        return ojson
+    }
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+    });
+
+    function closeTab() {
+        // var currentWidth = $(this).parents('.J_menuTab').width();
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
+        var currentTab=pageTabs.find(".J_menuTab.active");
+        var closeTabId = currentTab.data('id');
+        mainContent.find('.J_iframe');
+
+        // 当前元素处于活动状态
+        if (currentTab.hasClass('active')) {
+
+            // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+            if (pageTabs.next('.J_menuTab').size()) {
+
+                var activeId = currentTab.next('.J_menuTab:eq(0)').data('id');
+                currentTab.next('.J_menuTab:eq(0)').addClass('active');
+
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+                if (marginLeftVal < 0) {
+                    pageTabs.animate({
+                        marginLeft: (marginLeftVal + currentTab.width()) + 'px'
+                    }, "fast");
+                }
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+            }
+
+            // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+            if (currentTab.prev('.J_menuTab').size()) {
+                var activeId = currentTab.prev('.J_menuTab:last').data('id');
+                currentTab.prev('.J_menuTab:last').addClass('active');
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == activeId) {
+                        $(e).show().siblings('.J_iframe').hide();
+                        return false;
+                    }
+                });
+
+                //  移除当前选项卡
+                currentTab.remove();
+
+                // 移除tab对应的内容区
+                mainContent.find('.J_iframe').each(function (index,e) {
+                    if ($(e).data('id') == closeTabId) {
+                        $(e).remove();
+                        return false;
+                    }
+                });
+
+            }
+        }
+        // 当前元素不处于活动状态
+        else {
+
+            //  移除当前选项卡
+            currentTab.remove();
+
+            // 移除相应tab对应的内容区
+            mainContent.find('.J_iframe').each(function (index,e) {
+                if ($(e).data('id') == closeTabId) {
+                    $(e).remove();
+                    return false;
+                }
+            });
+            // scrollToTab($('.J_menuTab.active'));
+        }
+        return false;
+    }
+
+    (function(document, window, $) {
+
+
+        (function () {
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            //init_job_sources();
+            //s.id=-1 表示新增,否则表示更新
+            if(s.id==-1){
+                $('#update_dispatch_task').hide();
+                $('#save_dispatch_task').show();
+            }else{
+                if(s.is_copy == "true"){
+                    $('#update_dispatch_task').hide();
+                    $('#save_dispatch_task').show();
+                }else{
+                    $('#save_dispatch_task').hide();
+                    $('#update_dispatch_task').show();
+                }
+
+            }
+            // ------------------------------------------------------------------
+            //日期范围限制
+            var start = {
+                elem: '#start_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    end.min = datas; //开始日选好后，重置结束日的最小日期
+                    end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+            var end = {
+                elem: '#end_time',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                min: '2000-01-01 00:00:00',
+                max: '2099-06-16 23:59:59',
+                istime: true,
+                istoday: false,
+                choose: function (datas) {
+                    start.max = datas; //结束日选好后，重置开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+
+            $("#start_time").val(getCurrentDate());
+            $("#end_time").val(getCurrentDate());
+
+            function getCurrentDate(){
+                var oDate = new Date(),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+
+            function getMyDate(str){
+                var oDate = new Date(str),
+                    oYear = oDate.getFullYear(),
+                    oMonth = oDate.getMonth()+1,
+                    oDay = oDate.getDate(),
+                    oHour = oDate.getHours(),
+                    oMin = oDate.getMinutes(),
+                    oSen = oDate.getSeconds(),
+                    oTime = oYear +'-'+ getzf(oMonth) +'-'+ getzf(oDay)+" "+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+                return oTime;
+            };
+            //补0操作
+            function getzf(num){
+                if(parseInt(num) < 10){
+                    num = '0'+num;
+                }
+                return num;
+            }
+
+            if(s.id !='-1'){
+                console.info("更新-拷贝按钮触发");
+                //开始赋值
+                $.ajax({
+                    url : server_context+"/strategy_group_detail",
+                    data : "id=" + s.id,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.code != "200"){
+                            layer.msg(data.msg);
+                            return ;
+                        }
+                       // layer.alert(JSON.stringify(data[0]))
+                        //获取调度任务说明
+                        var group_context=data.result.group_context;
+                        $("#group_context").val(group_context);
+                        if(s.is_copy == "true"){
+                            $("#group_context").val(group_context+"_复制");
+                        }
+
+                        var product_code=data.result.product_code;
+                        $("#product_code").val(product_code);
+                        $("#product_code").trigger("chosen:updated");
+
+                        var dim_group=data.result.dim_group;
+                        $("#dim_group").val(dim_group);
+                        $("#dim_group").trigger("chosen:updated");
+
+                        var group_type=data.result.group_type;
+                        $("#group_type").val(group_type);
+
+                        var data_node=data.result.data_node;
+                        $("#data_node").val(data_node);
+                        //开始时间
+                        var start_time=data.result.start_time;
+                        if(start_time!='' && typeof(start_time) !="undefined"){
+                            $("#start_time").val(getMyDate(start_time));
+                        }
+
+                        //结束时间
+                        var end_time=data.result.end_time;
+                        if(end_time!='' && typeof(end_time) !="undefined"){
+                            $("#end_time").val(getMyDate(end_time));
+                        }
+                        var expr=data.result.expr;
+                        $("#expr").val(expr);
+
+                        var time_diff=data.result.time_diff;
+                        $("#time_diff").val(time_diff);
+
+                        var jsmind_data=data.result.jsmind_data;
+                        open_json(jsmind_data,s.is_copy);
+
+                        var small_flow_rate=data.result.small_flow_rate;
+                        $("#small_flow_rate").val(small_flow_rate);
+
+                        var priority=data.result.priority;
+                        $("#priority").val(priority);
+
+                    },
+                    error: function (data) {
+                        console.info("error: " + data.responseText);
+                    }
+
+                });
+            }
+
+
+
+        })();
+
+
+
+    })(document, window, jQuery);
+
+
+    function cron() {
+        parent.layer.open({
+            type: 2,
+            title: 'cron表达式生成',
+            shadeClose: false,
+            resize: true,
+            fixed: false,
+            maxmin: true,
+            shade: 0.1,
+            area : ['45%', '60%'],
+            //area: ['450px', '500px'],
+            content: server_context+"/cron.html", //iframe的url
+            end : function () {
+                console.info("弹框结束")
+            }
+        });
+    }
+
+
+    $('#save_dispatch_task').click(function () {
+
+        if($('#group_context').val()==''){
+            layer.msg("策略组说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/strategy_group_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize(),
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+
+    $('#update_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+
+        if($('#group_context').val()==''){
+            layer.msg("策略组说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/strategy_group_update",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#update_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != '200'){
+                    parent.layer.msg("更新失败"+data.msg);
+                    return ;
+                }
+                $("#update_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+               // closeTab()
+            },
+            //处理完成
+            complete: function () {
+                $("#update_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#update_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+    });
+
+    $('#save_log_dispatch_task').click(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        if(is_empty(s.id)){
+            layer.msg("策略组需要点击保存后,可保存版本");
+            return false
+        }
+        if($('#group_context').val()==''){
+            layer.msg("策略组说明不可为空");
+            return false
+        }
+
+        var ojson=jsplumb_data();
+        $('#jsmind_data').val(JSON.stringify(ojson));
+
+
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/strategy_group_version_add",
+            dataType: 'json',
+            data: $("#dispatch_task_add_form").serialize()+'&id='+s.id,
+            //发送数据前
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#save_dispatch_task").attr({disabled: "disabled"});
+            },
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return
+                }
+                $("#save_dispatch_task").removeAttr('disabled');
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+                //closeTab();
+            },
+            //处理完成
+            complete: function () {
+                $("#save_dispatch_task").removeAttr('disabled');
+                console.info("complete")
+            },
+            //报错
+            error: function (data) {
+                $("#save_dispatch_task").removeAttr('disabled');
+                layer.msg(data.responseText);
+                console.info("error: " + data.responseText);
+            }
+        });
+
+
+    });
+</script>
+
+
+</body>
+
+</html>

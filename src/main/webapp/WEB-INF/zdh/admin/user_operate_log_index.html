@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 操作日志首页</title>
+    <meta name="keywords" content="ZDH 操作日志首页">
+    <meta name="description" content="ZDH 操作日志首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>日志列表</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form role="form" class="form-inline" id="user_form">
+
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <input id="log_context" name="log_context" class="form-control" type="text" value="" placeholder="关键字">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <input id="owner" name="owner" class="form-control" type="text" value="" placeholder="用户名">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group" >
+                            <input id="operate_url" name="operate_url" class="form-control" type="text" value="" placeholder="url">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="start_time" name="start_time" class="form-control" type="text" value=""
+                                   placeholder="开始时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date form_datetime">
+                            <input id="end_time" name="end_time" class="form-control" type="text" value=""
+                                   placeholder="结束时间" readonly>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-calendar"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="查询"/>
+                    </div>
+
+                </form>
+
+                <div class="row row-lg">
+
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                             <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true" data-content-type="application/x-www-form-urlencoded" data-query-params="queryParams">
+                            </table>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script src="js/plugins/layer/laydate/laydate.js"></script>
+    <!-- layer javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+
+    <!-- Bootstrap table -->
+    <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <script src="js/admin/user_operate_log.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+
+        var start = {
+            elem: '#start_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01',
+            max: '2099-06-16', //最大日期
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end_time',
+            format: 'YYYY-MM-DD hh:mm:ss',
+            min: '2000-01-01',
+            max: '2099-06-16',
+            istime: true,
+            istoday: false,
+            choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(start);
+        laydate(end);
+        $("#start_time").val(getCurrentDate());
+        $("#end_time").val(getCurrentDate());
+        function getCurrentDate() {
+            var oDate = new Date(),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth() + 1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + ' '+getzf(oHour)+":"+getzf(oMin)+":"+getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+        //补0操作
+        function getzf(num) {
+            if (parseInt(num) < 10) {
+                num = '0' + num;
+            }
+            return num;
+        }
+        $('#search').click(function () {
+            $('#exampleTableEvents').bootstrapTable('refresh', {
+                url: server_context+"/user_operate_log_list?"+$("#user_form").serialize()+"&random="+new Date().getTime(),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                queryParams: function (params) {
+                    // 此处使用了LayUi组件 是为加载层
+                    loadIndex = layer.load(1);
+                    let resRepor = {
+                        //服务端分页所需要的参数
+                        limit: params.limit,
+                        offset: params.offset
+                    };
+                    return resRepor;
+                },
+            });
+        })
+
+    })
+
+
+
+</script>
+
+</body>
+
+</html>

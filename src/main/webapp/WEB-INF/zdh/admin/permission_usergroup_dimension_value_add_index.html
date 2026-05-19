@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 用户组维度关系配置首页</title>
+
+    <meta name="keywords" content="ZDH 用户组维度关系配置首页">
+    <meta name="description" content="ZDH 用户组维度关系配置首页">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="css/plugins/jsTree/style.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>维度列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <form role="form" class="form-inline" id="data_sources_form">
+                            <div class="form-group">
+                                <input id="search1" onclick="get_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="获取绑定"/>
+                                <input id="search2" onclick="update_auth()"  οnsubmit='return false' type="button" class="btn btn-primary form-control" style="margin-bottom:0px" value="更新"/>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group" style="width: 100%">
+                            <select id="dim_code" name="dim_code"
+                                    data-placeholder="维度code"
+                                    class="chosen-select form-control m-b" tabindex="2" style="width: 35%">
+                                <option value="">空</option>
+                            </select>
+                            </div>
+                            <div class="form-group" style="width: 100%;"></div>
+
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div> <input id="search_input" name="search_input" class="form-control" type="text" value="" placeholder="资源信息"></div><br />
+                                <div id="using_json3"></div>
+                            </div>
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>扩展属性配置</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form role="form" class="form-horizontal" id="data_sources_form2">
+                            <input type="hidden" name="dim_value_code" id="dim_value_code">
+                            <input type="hidden" name="product_code" id="product_code">
+                            <input type="hidden" name="group_code" id="group_code">
+                            <input type="hidden" name="dim_code" id="dim_code2">
+
+                            <div id="using_json6" style="width: 100%;">
+                                <input id="dim_value_name" name="dim_value_name" type="text"
+                                       placeholder="当前维度值" class="form-control" aria-required="true" readonly>
+                                <div class="checkbox i-checks">
+                                    <label class="no-padding">
+                                        <input id="add" name="add" type="checkbox"><i></i> 新增</label>
+                                    <label class="no-padding">
+                                        <input id="edit" name="edit" type="checkbox"><i></i> 更新</label>
+                                    <label class="no-padding">
+                                        <input id="del" name="del" type="checkbox"><i></i> 删除</label>
+                                    <label class="no-padding">
+                                        <input id="approve" name="approve" type="checkbox"><i></i> 审批</label>
+                                    <input id="auto_attr" name="auto_attr" type="text"
+                                           placeholder="自定义属性多个逗号分割,edit:true;del:true" class="form-control" aria-required="true">
+                                </div>
+
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <div class="text-center">
+                                        <button id="attr_update" name="attr_update" class="btn btn-primary" οnsubmit='return false'
+                                                type="button">更新属性
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <script src="js/zdh_common.js"></script>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="js/content.js?v=1.0.0"></script>
+    <!-- Chosen -->
+    <script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script src="js/plugins/iCheck/icheck.min.js"></script>
+
+    <!-- jsTree plugin javascript -->
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <script src="js/plugins/jsTree/jstree.min.js"></script>
+
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+
+
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+
+        function init_jstree(product_code, dim_code, group_code){
+            $('#using_json3').jstree("destroy");
+            $('#using_json3').jstree({
+                "plugins" : [ "types","checkbox", "search"],
+                'checkbox': { cascade: "", three_state: false }, //级联
+                'core' : {
+                    "check_callback": true,
+                    'data' :  function (obj, callback){
+                        $.ajax({
+                            type : "post",
+                            url : server_context+"/permission_dimension_value_node",//getAreaBuild=getTreeArea
+                            data: {"product_code": product_code, "dim_code": dim_code},
+                            dataType : "json",
+                            async:'false',
+                            success : function(data) {
+                                console.info(data);
+                                if(data.code == "200") {
+                                    callback.call(this, data.result);
+                                }else{
+                                    callback.call(this, []);
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+
+
+                } }).bind('dblclick.jstree',function(e){
+                console.info(e.target.id);
+                var id=e.target.id.split("_anchor")[0];//资源id
+                console.info("event:"+e.target.id.split("_anchor")[0]);
+                if(!id){
+                    layer.msg("请双击资源名称！");
+                    return ;
+                }
+
+                var nodeText = $('#using_json3').jstree(true).get_node(id).text;
+                console.info("id:"+id);
+                console.info("nodeText:"+nodeText);
+                console.info("user_account:"+group_code);
+
+                $('#product_code').val(product_code);
+                $('#dim_code2').val(dim_code);
+                $('#group_code').val(group_code);
+                $('#dim_value_code').val(id);
+
+                $('#dim_value_name').val(nodeText);
+
+                $('#add').iCheck('uncheck');
+                $('#edit').iCheck('uncheck');
+                $('#del').iCheck('uncheck');
+                $('#approve').iCheck('uncheck');
+                $('#auto_attr').val("");
+
+                //根据product_code, dim_code, dim_value_code, user_account 获取绑定关系
+                $.ajax({
+                    type : "post",
+                    url : server_context+"/permission_usergroup_dimension_value_attr",//getAreaBuild=getTreeArea
+                    data: {"product_code": product_code, "dim_code": dim_code, "dim_value_code": id, "group_code": group_code},
+                    dataType : "json",
+                    async:'false',
+                    success : function(data) {
+                        console.info(data);
+                        layer.msg(data.msg);
+                        if(is_empty( data.result.extMap)){
+                            return ;
+                        }
+                        for (let key in data.result.extMap) {
+                            if(key=="add" && data.result.extMap[key]== "true"){
+                                $('#add').iCheck('check');
+                            }else if(key=="edit" && data.result.extMap[key]== "true"){
+                                $('#edit').iCheck('check');
+                            }else if(key=="del" && data.result.extMap[key]== "true"){
+                                $('#del').iCheck('check');
+                            }else if(key=="approve" && data.result.extMap[key]== "true"){
+                                $('#approve').iCheck('check');
+                            }else{
+                                var old = $('#auto_attr').val();
+                                if(old == ""){
+                                    $('#auto_attr').val(key+":"+data.result.extMap[key]);
+                                }else{
+                                    $('#auto_attr').val(old+";"+key+":"+data.result.extMap[key])
+                                }
+                            }
+                        }
+
+                    }
+                });
+
+
+
+                //$("#ifm").attr("src", encodeURI(server_context+"/jstree_add_index?id="+node.id+"&text="+node.text+"&level="+level+"&product_code="+product_code));
+            }).bind('loaded.jstree', function (e, data) {
+                get_auth();
+            });
+            $('#search_input').keyup(function () {
+                $('#using_json3').jstree(true).search($('#search_input').val());
+
+            });
+        }
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();
+        for(var i = 0; i < pa.length; i ++){
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        var product_code = s.product_code;
+        var group_code = s.group_code;
+        var dim_code = s.dim_code;
+
+        //初始化维度下拉框
+        $.ajax({
+            type: 'POST',
+            url: server_context+"/permission_dimension_list_by_product_code",
+            async:false,
+            dataType: 'json',
+            data: {"product_code": product_code},
+            //成功返回
+            success: function (data) {
+                if(data.code != "200"){
+                    layer.msg(data.msg);
+                    return ;
+                }
+                var str = '<option value=\"\" hassubinfo=\"true\">空</option>';
+                for (var i = 0; i < data.result.length; i++) {
+                    str += '<option value=\"' + data.result[i].dim_code + '\" hassubinfo=\"true\">' + data.result[i].dim_name + '</option>';
+                }
+                $('#dim_code').html(str);
+                $("#dim_code").trigger("chosen:updated");
+                $('#dim_code').chosen().on("change", function (evt, params) {
+                    init_jstree(product_code, $('#dim_code').val(), group_code);
+                });
+            },
+            //处理完成
+            complete: function () {
+            },
+            //报错
+            error: function (data) {
+            }
+        });
+
+
+        if(s.id != '-1'){
+            $("#dim_code").val(dim_code);
+            $("#dim_code").attr("disenabled", "disenabled");
+            $("#dim_code").trigger("chosen:updated");
+            init_jstree(product_code, dim_code, group_code);
+        }
+
+        function get_auth(){
+            $.ajax({
+                type : "POST",
+                url : server_context+"/permission_usergroup_dimension_value_list",
+                dataType : "json",
+                data : {"product_code":product_code, "dim_code": $("#dim_code").val(), "group_code": group_code},
+                async:'false',
+                success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    for(var i=0;i<data.result.length;i++){
+                        $('#using_json3').jstree('check_node',data.result[i].dim_value_code);
+                    }
+                    $('#using_json3').jstree('open_all')
+                }
+            });
+        }
+
+        function update_auth() {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+            if($('#dim_code').val() == ''){
+                layer.msg("维度code不可为空")
+            }
+
+            var ids = $('#using_json3').jstree("get_checked");
+
+            if(ids.length < 1){
+                layer.msg("未选择权限,无法更新");
+                return ;
+            }
+
+            var level = parseInt(s.level)+1;
+
+            var index1 = layer.load(1, {
+                shade: [0.1,'#fff'] //0.1透明度的白色背景
+            });
+
+            //用户id->功能id
+            $.ajax({
+                type : "POST",
+                url : server_context+"/permission_usergroup_dimension_value_update",
+                dataType : "json",
+                data : {
+                    dim_code:$('#dim_code').val(),
+                    dim_value_codes:ids,
+                    level:level,
+                    group_code: group_code,
+                    product_code: product_code
+                },
+                async:'false',
+                traditional: true,
+                success : function(data) {
+                    console.info(data);
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        layer.msg("执行失败");
+                        return ;
+                    }
+                    layer.msg("完成更新");
+                    layer.close(index1)
+                },
+                //处理完成
+                complete: function () {
+                    layer.close(index1);
+                    console.info("complete")
+                },
+            });
+
+
+        }
+
+        $('#attr_update').click(function () {
+
+
+            var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+            var params = url.substr(1);//去掉问号
+            var pa = params.split("&");
+            var s = new Object();
+            for(var i = 0; i < pa.length; i ++){
+                s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+            }
+
+
+            //增加子节点,返回子节点id
+            $.ajax({
+                type: 'POST',
+                url: server_context+"/permission_usergroup_dimension_value_attr_update",
+                dataType: 'json',
+                async:'false',
+                data: $("#data_sources_form2").serialize(),
+                //发送数据前
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#attr_update").attr({disabled: "disabled"});
+                },
+                //成功返回
+                success: function (data) {
+                    $("#attr_update").removeAttr('disabled');
+                    if(data.code != '200'){
+                        console.error(data.msg);
+                        parent.layer.msg("执行失败");
+                        return ;
+                    }
+                    parent.layer.msg("执行成功");
+                    get_auth();
+                    //window.parent.create_node(s.id,node);
+                    // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    // parent.layer.close(index); //再执行关闭
+
+                },
+                //处理完成
+                complete: function () {
+                    $("#attr_update").removeAttr('disabled');
+                    //layer.close(index1);
+                    console.info("complete")
+                },
+                //报错
+                error: function (data) {
+                    $("#attr_update").removeAttr('disabled');
+                    console.info("error: " + data.responseText);
+                }
+            });
+
+
+
+        });
+        //$("#search1").click();
+    </script>
+
+</body>
+
+</html>

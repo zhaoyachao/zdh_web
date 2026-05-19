@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>ZDH 策略实例执行</title>
+    <meta name="keywords" content="ZDH 策略实例执行">
+    <meta name="description" content="ZDH 策略实例执行">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/plugins/chosen/chosen.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="css/plugins/datetimepicker/datetimepicker.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/jsplumb/style.css">
+</head>
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+    <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>任务流程图</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" onclick="getResourceDesc()">功能说明</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ibox-content col-sm-12">
+                <div class="form-group">
+                    <div class="text-center">
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                type="button" style="background-color: #C2DFFF">初始化
+                        </button>
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                type="button" style="background-color: #00bb00">运行中
+                        </button>
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                type="button" style="background-color: #2B65EC">完成
+                        </button>
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                 type="button" style="background-color: #ec4758">失败
+                        </button>
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                 type="button" style="background-color: LightGrey">跳过
+                        </button>
+                        <button  class="btn btn-primary btn-sm" οnsubmit='return false'
+                                 type="button" style="background-color: #f7a54a">未知
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div  class="col-sm-12">
+                        <div class="container device col-sm-12">
+                            <div class="deviceLeft2">
+<!--                                <div class="deviceLeft_box">-->
+<!--                                    <div class="node node1css" data-type="tasks">ETL任务</div>-->
+<!--                                    <div class="node node1css" data-type="shell">SHELL</div>-->
+<!--                                </div>-->
+                                <input id="refash" οnsubmit='return false' type="button" class="btn btn-primary form-control"
+                                       style="margin-bottom:0px" value="刷新"/>
+                            </div>
+                            <div id="deviceRight2">
+                                <div id="m1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>任务状态查询</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+
+            <form role="form" class="form-inline" id="task_logs_form">
+                <div class="form-group">
+                    <div class="input-group">
+                        <select data-placeholder="状态" class="chosen-select" style="width:110px;" tabindex="2"
+                                id="status" name="status">
+                            <option value="">状态</option>
+                            <option value="etl" hassubinfo="true">运行中</option>
+                            <option value="finish" hassubinfo="true">成功</option>
+                            <option value="error" hassubinfo="true">失败</option>
+                        </select>
+                    </div>
+                    <input id="search" οnsubmit='return false' type="button" class="btn btn-primary form-control"
+                           style="margin-bottom:0px" value="查询"/>
+                </div>
+
+            </form>
+
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <div class="btn-group" id="exampleTableEventsToolbar" role="group">
+                            <button id="remove" type="button" class="btn btn-outline btn-default">
+                                <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <table id="exampleTableEvents" data-height="500" data-mobile-responsive="true">
+
+                        </table>
+                    </div>
+                </div>
+                <!-- End Example Events -->
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+<script src="js/zdh_common.js"></script>
+<!-- 全局js -->
+<script src="js/jquery.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui.custom.min.js?v=2.1.4"></script>
+<script src="js/jquery-ui-1.10.4.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<!-- 自定义js -->
+<script src="js/content.js?v=1.0.0"></script>
+
+<!-- Chosen -->
+<script src="js/plugins/chosen/chosen.jquery.js"></script>
+
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="js/plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<!-- Bootstrap table -->
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="js/plugins/layer/laydate/laydate.js"></script>
+<!-- layer javascript -->
+<script src="js/plugins/layer/layer.min.js"></script>
+
+<script type="text/javascript" src="js/jsplumb/jquery.jsPlumb.min.js"></script>
+<script type="text/javascript" src="js/digitalmarket/strategy_jsplumb_common.js"></script>
+
+<script type="text/javascript">
+
+    function openTabPage(url, title) {
+        var wpd = $(window.parent.document);
+        var mainContent = wpd.find('.J_mainContent');
+        var thisIframe = mainContent.find("iframe[data-id='" + url + "']");
+        var pageTabs = wpd.find('.J_menuTabs .page-tabs-content ');
+        pageTabs.find(".J_menuTab.active").removeClass("active");
+        mainContent.find("iframe").css("display", "none");
+        if (thisIframe.length > 0) {	// 选项卡已打开
+            thisIframe.css("display", "inline");
+            pageTabs.find(".J_menuTab[data-id='" + url + "']").addClass("active");
+        } else {
+            var menuItem = wpd.find("a.J_menuItem[href='" + url + "']");
+            var dataIndex = title == undefined ? menuItem.attr("data-index") : '9999';
+            var _title = title == undefined ? menuItem.find('.nav-label').text() : title;
+            var iframe = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + url + '" frameborder="0" data-id="' + url
+                + '" seamless="" style="display: inline;"></iframe>';
+            pageTabs.append(
+                ' <a href="javascript:;" class="J_menuTab active" data-id="' + url + '">' + _title + ' <i class="fa fa-times-circle"></i></a>');
+            mainContent.append(iframe);
+            //显示loading提示
+            var loading = top.layer.load();
+            mainContent.find('iframe:visible').load(function () {
+                //iframe加载完成后隐藏loading提示
+                top.layer.close(loading);
+            });
+        }
+
+    }
+
+    function get_color_by_status(status, is_disenable){
+        //create,dispatch,check_dep,wait_retry,finish,error,etl,kill,killed
+        if(is_disenable == "true"){
+            return "LightGrey";
+        }
+        if(status=='create'  ){
+            return "#C2DFFF";
+        }
+        // value == "etl"  || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch"
+        if(status=="running"||status=="etl"|| status=="kill" || status=="sub_task_dispatch" || status == "dispatch" || status=="check_dep" || status=="wait_retry" || status=="check_dep_finish"){
+            return "#00bb00";
+        }
+        if(status=="finish"){
+            return "#2B65EC";
+        }
+
+        if(status=="error" || status=="killed"){
+            return "#ec4758";
+        }
+        if(status == "skip"){
+            return "LightGrey"
+        }
+
+        return "#f7a54a";
+
+
+    }
+
+    function open_json(json,strategy_group_instance_id) {
+        var jsplumb_json=JSON.parse(json);
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        var map4 = new Map();
+        var map5 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data;
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null");
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].strategy_instance_id;
+                var divId=run_data[i].divId;
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : server_context+"/strategy_instance_list",
+                data : "strategy_group_instance_id=" +strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    if(data.code != "200"){
+                        layer.msg(data.msg);
+                        return ;
+                    }
+                    console.info("task_log_instance_list success");
+                    for(var j=0;j<data.result.length;j++){
+                        //divId->status
+                        //console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(data.result[j].id, data.result[j].run_time);
+                        map5.set(data.result[j].id, data.result[j].run_jsmind_data);
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        //添加div 数据
+        $("#m1").html("");
+        for(var i=0;i< jsplumb_json.tasks.length;i++){
+            var rs=jsplumb_json.tasks[i];
+            var divId=rs.divId;
+            var etl_context='';
+            var positionX=rs.positionX;
+            var positionY=rs.positionY;
+            var tp=rs.type;
+            var strategy_instance_id=map.get(divId);
+            var run_time = map4.get(strategy_instance_id);
+            var strategy_run_jsmind_data = JSON.parse(map5.get(strategy_instance_id));
+            cls_str="node node"+tp+"css tasks";
+            var color=get_color_by_status(map3.get(divId), rs.is_disenable);
+            console.info("divId:"+divId+",status:"+map3.get(divId)+",color:"+color);
+
+            $("#m1").append('<div class="'+cls_str+'" style="position: absolute;background:'+color+'" id="' + divId + '" data-type="'+tp+'"'+' data-id=" " >' +etl_context+ '</div>');
+            $("#" + divId).css("left", positionX).css("top", positionY);
+            $("#" + divId).attr("type",tp);
+            $("#" + divId).attr("etl_context",rs.etl_context);
+            $("#" + divId).attr("rule_id",rs.rule_id);
+            $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+
+            if(tp == "label"){
+
+            }
+            if(tp == "crowd_file"){
+
+            }
+            if(tp == "user_pool"){
+
+            }
+            if(tp == "crowd_rule"){
+
+            }
+            if(tp == "crowd_operate"){
+
+            }
+
+            if(tp == "filter"){
+
+            }
+
+            if(tp == "shunt"){
+                $("#" + divId).attr("shunt_param",rs.shunt_param);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+
+            if(tp == "rights"){
+                $("#" + divId).attr("rights_param",rs.rights_param);
+            }
+
+            if(tp == "touch"){
+                $("#" + divId).attr("touch_task",rs.touch_task);
+            }
+            if(tp == "plugin"){
+
+            }
+            if(tp == "data_node"){
+                $("#" + divId).attr("data_node",rs.data_node);
+                $("#" + divId).html("("+ rs.operate +")"+rs.rule_context);
+            }
+            if(tp == "id_mapping"){
+
+            }
+            if(tp == "risk"){
+
+            }
+            if(tp == "tn"){
+
+            }
+            if(tp == "manual_confirm"){
+
+            }
+
+            if(tp == "code_block"){
+
+            }
+            if(tp == "custom_list"){
+
+            }
+            if(tp == "function"){
+
+            }
+
+            //新增数据流转状态
+            var new_title = "表达式: "+$("#" + divId).html();
+            var more_task = "任务类型: "+tp;
+            var chudashiji = "触发时机: 上游成功";
+            var shujuzhuangtai = "依赖数据状态: 上游成功数据";
+            var success_num = "成功量级: 未知";
+            var failed_num = "失败量级: 未知";
+            if(!is_empty(rs.depend_level)){
+                if(rs.depend_level == "1"){
+                    chudashiji = "触发时机: 上游杀死";
+                }else if(rs.depend_level == "2"){
+                    chudashiji = "触发时机: 上游失败";
+                }else if(rs.depend_level == "3"){
+                    chudashiji = "触发时机: 上游执行后";
+                }
+            }
+            if(!is_empty(rs.data_status)){
+                if(rs.data_status == "1"){
+                    shujuzhuangtai = "依赖数据状态: 上游成功数据";
+                }else if(rs.data_status == "2"){
+                    shujuzhuangtai = "依赖数据状态: 上游失败数据";
+                }else if(rs.data_status == "3"){
+                    shujuzhuangtai = "依赖数据状态: 上游所有数据";
+                }
+            }
+            if(!is_empty_strict(strategy_run_jsmind_data.success_num)){
+                success_num = "成功量级: "+strategy_run_jsmind_data.success_num;
+            }
+            if(!is_empty_strict(strategy_run_jsmind_data.failed_num)){
+                failed_num = "失败量级: "+strategy_run_jsmind_data.failed_num;
+            }
+
+            new_title = more_task + "\n" + chudashiji + "\n" + shujuzhuangtai+ "\n" + new_title+"\n"+success_num+"\n"+failed_num;
+
+            $("#" + divId).attr("title", new_title);
+
+            $("#" + divId).css("width","auto");
+            $("#" + divId).css("display","inline-block");
+            $("#" + divId).css("*display","inline");
+            $("#" + divId).css("*zoom","1");
+            $("#" + divId).html(rs.etl_context);
+            jsPlumb.addEndpoint(divId, { anchors: "Bottom",uuid:divId+"_bottom"}, hollowCircle);
+            jsPlumb.addEndpoint(divId, { anchors: "Top" ,uuid:divId+"_top"}, hollowCircle);
+            jsPlumb.draggable(divId);
+            jsPlumb.makeTarget(divId, {
+                anchor: "Continuous"
+            });
+            $("#" + divId).draggable({ containment: "parent",grid: [10, 10] });
+            doubleclick("#" + divId,strategy_instance_id,run_time);
+        }
+
+        for(var i=0;i< jsplumb_json.line.length;i++){
+            jsPlumb.connect({
+                uuids:[jsplumb_json.line[i].pageSourceId+"_bottom",jsplumb_json.line[i].pageTargetId+"_top"]
+            })
+        }
+
+    }
+
+    function refash(json,strategy_group_instance_id){
+        var jsplumb_json=JSON.parse(json);
+        var ids = new Array();// 声明一个数组
+        var map = new Map();
+        var map2 = new Map();
+        var map3 = new Map();
+        var map4 = new Map();
+        //获取任务运行状态
+        var run_data=jsplumb_json.run_data;
+        if (run_data.length >= 1 ){
+            console.info("run_data is not null");
+            for(var i=0;i<run_data.length;i++){
+                var id=run_data[i].strategy_instance_id;
+                var divId=run_data[i].divId;
+                map.set(divId,id);
+                map2.set(id,divId);
+            }
+            //请求状态
+            $.ajax({
+                url : server_context+"/strategy_instance_list",
+                data : "strategy_group_instance_id=" +strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                async: false,
+                success : function(data) {
+                    console.info("task_log_instance_list success");
+                    for(var j=0;j<data.result.length;j++){
+                        //divId->status
+                        console.info(data.result[j].id+","+data.result[j].status+","+map2.get(data.result[j].id));
+                        map3.set(map2.get(data.result[j].id),data.result[j].status);
+                        map4.set(map2.get(data.result[j].id),data.result[j].is_disenable);
+                    }
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        console.info(map4);
+        map3.forEach(function(value,key){
+            console.log(value,key, map4.get(key));
+            var color=get_color_by_status(value, map4.get(key));
+            $('#'+key).css("background-color",color);
+        });
+
+
+    }
+
+    //双击节点内容区域时的事件
+    function doubleclick(divId,strategy_instance_id,run_time) {
+        $(divId).dblclick(function () {
+            var text = $(this).text();
+            var div = $(this);
+            var etl_task_id=div.attr("etl_task_id");
+
+            window.open(server_context+"/log_txt.html?task_log_id="+strategy_instance_id+"&start_time="+run_time)
+            //openTabPage("log_txt.html?task_log_id="+task_log_instance_id, etl_context + "日志")
+        });
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        var url = location.search; //这一条语句获取了包括问号开始到参数的最后，不包括前面的路径
+        var params = url.substr(1);//去掉问号
+        var pa = params.split("&");
+        var s = new Object();//定义一个全局变量-存储任务ID
+        for (var i = 0; i < pa.length; i++) {
+            s[pa[i].split("=")[0]] = unescape(pa[i].split("=")[1]);
+        }
+
+        let strategy_group_instance_id=s.strategy_group_instance_id;
+
+        var height=400;
+        if($(document.body).height()*0.8>height){
+            height=$(document.body).height()*0.8
+        }
+        $('#exampleTableEvents').attr("data-height",height);
+
+        $('#status').chosen();
+
+        function getMyDate(str) {
+            var oDate = new Date(str),
+                oYear = oDate.getFullYear(),
+                oMonth = oDate.getMonth() + 1,
+                oDay = oDate.getDate(),
+                oHour = oDate.getHours(),
+                oMin = oDate.getMinutes(),
+                oSen = oDate.getSeconds(),
+                oTime = oYear + '-' + getzf(oMonth) + '-' + getzf(oDay) + " " + getzf(oHour) + ":" + getzf(oMin) + ":" + getzf(oSen);//最后拼接时间
+            return oTime;
+        };
+
+        //补0操作
+        function getzf(num) {
+            if (parseInt(num) < 10) {
+                num = '0' + num;
+            }
+            return num;
+        }
+
+        function get_task_log(){
+            $('#exampleTableEvents').bootstrapTable('refresh', {
+                url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json"
+            });
+        }
+
+        $('#search').click(function () {
+            refash_graph();
+            get_task_log();
+        });
+
+        $('#remove').click(function () {
+
+            var rows = $("#exampleTableEvents").bootstrapTable('getSelections');// 获得要删除的数据
+            if (rows.length == 0) {// rows 主要是为了判断是否选中，下面的else内容才是主要
+                layer.msg("请先选择要删除的记录!");
+                return;
+            } else {
+                layer.confirm('是否删除执行记录', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    var ids = new Array();// 声明一个数组
+                    $(rows).each(function () {// 通过获得别选中的来进行遍历
+                        ids.push(this.id);// cid为获得到的整条数据中的一列
+                    });
+                    console.log(ids);
+                    deleteMs(ids);
+                    layer.close(layer.index);
+                }, function(){
+
+                });
+
+
+            }
+
+        });
+
+        function deleteMs(ids) {
+            $.ajax({
+                url: server_context+"/task_logs_delete",
+                data: "ids=" + ids,
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    $('#exampleTableEvents').bootstrapTable('refresh', {
+                        url: server_context+"/task_log_instance_list?" + $("#task_logs_form").serialize()+"&group_id="+s.group_id,
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json"
+                    });
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+
+        window.operateEvents = {
+            'click #log_txt': function (e, value, row, index) {
+                row.job_context
+                window.open(server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.run_time + "&update_time=" + row.update_time)
+                //openTabPage("log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&start_time=" + row.start_time + "&update_time=" + row.update_time, row.job_context + "日志")
+            },
+            'click #retry': function (e, value, row, index) {
+                layer.confirm('确定重试任务吗?', {
+                    // area: ['600px', '200px'],
+                    btn: ['重试', '重试下游'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    btn1:function(){
+                        $.ajax({
+                            url: server_context+"/strategy_retry",
+                            data: "id=" + row.id+"&new_version=false",
+                            type: "post",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.code != "200"){
+                                    layer.msg(data.msg);
+                                    return
+                                }
+                                layer.close(index);
+
+                                $('#exampleTableEvents').bootstrapTable('refresh', {
+                                    url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                    contentType: "application/json;charset=utf-8",
+                                    dataType: "json"
+                                });
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.responseText);
+                            }
+
+                        });
+                    },
+                    // btn2:function () {
+                    //     $.ajax({
+                    //         url: server_context+"/strategy_retry",
+                    //         data: "id=" + row.id+"&new_version=true",
+                    //         type: "post",
+                    //         dataType: "json",
+                    //         success: function (data) {
+                    //             console.info("success");
+                    //             if(data.code != "200"){
+                    //                 layer.msg(data.msg);
+                    //                 return
+                    //             }
+                    //             layer.close(index);
+                    //             $('#exampleTableEvents').bootstrapTable('refresh', {
+                    //                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                    //                 contentType: "application/json;charset=utf-8",
+                    //                 dataType: "json"
+                    //             });
+                    //         },
+                    //         error: function (data) {
+                    //             console.info("error: " + data.responseText);
+                    //         }
+                    //
+                    //     });
+                    // },
+                    btn2:function(){
+                        $.ajax({
+                            url: server_context+"/strategy_retry",
+                            data: "id=" + row.id+"&new_version=false&downstream=true",
+                            type: "post",
+                            dataType: "json",
+                            success: function (data) {
+                                if(data.code != "200"){
+                                    layer.msg(data.msg);
+                                    return
+                                }
+                                layer.close(index);
+
+                                $('#exampleTableEvents').bootstrapTable('refresh', {
+                                    url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                    contentType: "application/json;charset=utf-8",
+                                    dataType: "json"
+                                });
+                            },
+                            error: function (data) {
+                                console.info("error: " + data.responseText);
+                            }
+
+                        });
+                    },
+                    // btn4:function () {
+                    //     $.ajax({
+                    //         url: server_context+"/strategy_retry",
+                    //         data: "id=" + row.id+"&new_version=true&downstream=true",
+                    //         type: "post",
+                    //         dataType: "json",
+                    //         success: function (data) {
+                    //             console.info("success");
+                    //             if(data.code != "200"){
+                    //                 layer.msg(data.msg);
+                    //                 return
+                    //             }
+                    //             layer.close(index);
+                    //             $('#exampleTableEvents').bootstrapTable('refresh', {
+                    //                 url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                    //                 contentType: "application/json;charset=utf-8",
+                    //                 dataType: "json"
+                    //             });
+                    //         },
+                    //         error: function (data) {
+                    //             console.info("error: " + data.responseText);
+                    //         }
+                    //
+                    //     });
+                    // }
+                });
+            },
+            'click #kill': function (e, value, row, index) {
+                row.job_context
+//                if (row.status != "running") {
+//                    layer.msg("当前任务状态不支持杀死")
+//                    return
+//                }
+                layer.confirm('确定杀死任务吗?', {
+                    btn: ['确定', '取消'] //按钮
+                }, function (index) {
+
+                    $.ajax({
+                        url: server_context+"/killStrategy",
+                        data: "id=" + row.id,
+                        type: "post",
+                        dataType: "json",
+                        success: function (data) {
+                            layer.close(index);
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+                    layer.msg("杀死中")
+                }, function () {
+
+                });
+
+            },
+            'click #skip': function (e, value, row, index) {
+                row.job_context
+//                if (row.status != "running") {
+//                    layer.msg("当前任务状态不支持杀死")
+//                    return
+//                }
+                layer.confirm('确定手动跳过任务吗?', {
+                    btn: ['确定', '取消'] //按钮
+                }, function (index) {
+
+                    $.ajax({
+                        url: server_context+"/strategy_skip",
+                        data: "id=" + row.id,
+                        type: "post",
+                        dataType: "json",
+                        success: function (data) {
+                            if(data.code != "200"){
+                                layer.msg(data.msg);
+                                return ;
+                            }
+                            layer.close(index);
+                            $('#exampleTableEvents').bootstrapTable('refresh', {
+                                url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json"
+                            });
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+
+                    });
+                    layer.msg("跳过成功")
+                }, function () {
+
+                });
+
+            },
+            'click #strategy_task_download': function (e, value, row, index) {
+                window.open(server_context+"/strategy_task_download?id="+row.id);
+            },
+            'click #edit': function (e, value, row, index) {
+                layer.confirm('确定编辑修改吗?', {
+                    btn: ['确定编辑', '放弃'], //按钮
+                    cancel:function(index, layero){
+                        console.log('关闭x号');
+                    },
+                    btn1:function(){
+                        var id = row.id;
+                        // 根据id获取具体信息
+                        parent.layer.msg("暂未实现");
+                        // parent.layer.open({
+                        //     type: 2,
+                        //     title: '编辑新任务',
+                        //     shadeClose: false,
+                        //     resize: true,
+                        //     fixed: false,
+                        //     maxmin: true,
+                        //     shade: 0.1,
+                        //     area : ['60%', '80%'],
+                        //     //area: ['450px', '500px'],
+                        //     content: server_context+"/xxx_index?id="+row.id, //iframe的url
+                        //     end : function () {
+                        //         console.info("弹框结束");
+                        //         $('#exampleTableEvents').bootstrapTable('refresh', {
+                        //             url: server_context+"/strategy_group_instance_list?"+$("#strategy_group_form").serialize()
+                        //         });
+                        //     }
+                        // });
+                    },
+                    btn2:function () {
+                        layer.close();
+                    }
+                });
+            },
+        };
+
+        function operateFormatter(value, row, index) {
+            return [
+                ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
+                // ' <button id="log_txt" name="log_txt" type="button" class="btn btn-outline btn-sm" title="日志">日志\n' +
+                // '                                        <i class="glyphicon glyphicon-file" aria-hidden="true"></i>\n' +
+                // '                                    </button>' +
+                // ' <button id="kill" name="kill" type="button" class="btn btn-outline btn-sm" title="杀死任务">杀死\n' +
+                // '                                        <i class="glyphicon glyphicon-stop" aria-hidden="true"></i>\n' +
+                // '                                    </button>'
+                // +
+                ' <button id="spark_monitor" name="spark_monitor" type="button" class="btn btn-outline btn-sm" title="SPARK监控">监控\n' +
+                '                                        <i class="glyphicon glyphicon-stop" aria-hidden="true"></i>\n' +
+                '                                    </button>'
+                +
+                '</div>'
+
+            ].join('');
+
+        }
+
+        $('#exampleTableEvents').bootstrapTable({
+            method: 'POST',
+            url: server_context+"/strategy_instance_list?" + $("#task_logs_form").serialize()+"&strategy_group_instance_id="+strategy_group_instance_id,
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            search: true,
+            pagination: true,
+            showRefresh: false,
+            showToggle: true,
+            showColumns: true,
+            iconSize: 'outline',
+            toolbar: '#exampleTableEventsToolbar',
+            icons: {
+                refresh: 'glyphicon-repeat',
+                toggle: 'glyphicon-list-alt',
+                columns: 'glyphicon-list'
+            },
+            // 请求完成回调 可处理请求到的数据
+            responseHandler: res => {
+                // 关闭加载层
+                layer.msg(res.msg);
+                return res.result;
+            },
+            columns: [{
+                checkbox: true,
+                field: 'state',
+                sortable: true
+            }, {
+                field: 'id',
+                title: 'ID',
+                visible: true
+            }, {
+                field: 'strategy_context',
+                title: '子任务说明',
+                sortable: true
+            }, {
+                field: 'group_instance_id',
+                title: '任务组实例ID',
+                sortable: false,
+                visible: false
+            }, {
+                field: 'instance_type',
+                title: '任务类型',
+                sortable: true
+            },{
+                field: 'group_id',
+                title: '任务组ID',
+                sortable: false,
+                visible: false
+            }, {
+                field: 'group_context',
+                title: '任务组',
+                sortable: true
+            }, {
+                field: 'cur_time',
+                title: '数据处理日期',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            }, {
+                field: 'schedule_source',
+                title: '调度来源',
+                sortable: true,
+                visible: true,
+                formatter: function (value, row, index) {
+                    if(value == "2")
+                        return "手动";
+                    return "例行";
+                }
+            },{
+                field: 'depend_level',
+                title: '依赖级别',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    if(value == "0"){
+                        return "成功触发";
+                    }else if(value == "1"){
+                        return "杀死触发";
+                    }else if(value == "2"){
+                        return "失败触发";
+                    }else if(value == "3"){
+                        return "上游完成触发";
+                    }
+                    return "未知";
+                }
+            }, {
+                field: 'process_msg',
+                title: '进度信息',
+                sortable: true,
+                visible: false
+            }, {
+                field: 'run_time',
+                title: '任务触发时间',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            }, {
+                field: 'update_time',
+                title: '任务更新时间',
+                sortable: true,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            }, {
+                field: 'count',
+                title: '重试次数',
+                sortable: true,
+                visible: true,
+                formatter: function (value, row, index) {
+                    if(value > 0){
+                        return value - 1
+                    }
+                    return value
+                }
+            },  {
+                field: 'executor',
+                title: '执行器',
+                sortable: true,
+                visible: false
+            },{
+                field: 'status',
+                title: '任务执行状态',
+                sortable: true,
+                width:250,
+                events: operateEvents,//给按钮注册事件
+                formatter: function (value, row, index) {
+                    var r1=row;
+                    var class_str = "btn-primary  btn-xs";
+                    var class_str2 = "btn-primary  ";
+                    var context = "未运行";
+                    var btn_retry_str='';
+                    var btn_kill_str='<button id="kill" type="button" class="btn btn-danger btn-xs">杀死</button>';
+                    if(row.is_retryed==1){
+                        btn_retry_str='<button disabled="disabled" id="retry" type="button" class="btn btn-primary btn-xs">重试</button>'
+                    }
+                    var btn_skip_str='';
+
+                    var process=100;
+
+                    if (value == "finish") {
+                        context = "完成";
+                        class_str = "btn-primary btn-xs";
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-info btn-xs">重新执行</button>';
+                        btn_kill_str=''
+                    }
+                    if (value == "running" || value == "etl" || value == "dispatch" || value == "wait_retry" || value=="check_dep" || value=="check_dep_finish" || value=="sub_task_dispatch") {
+                        context = "运行中";
+                        class_str = "btn-primary  btn-xs";
+                        class_str2= "btn-danger  ";
+                        btn_retry_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                    }
+                    if (value == "error") {
+                        context = "失败";
+                        class_str = "btn-danger btn-xs";
+                        class_str2 = "btn-primary ";
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
+                    }
+                    if (value == "retry") {
+                        context = "重试";
+                        class_str = "btn-danger btn-xs"
+                    }
+                    if (value == "kill" ){
+                        context = "杀死中";
+                        class_str = "btn-danger btn-xs";
+                        btn_kill_str=''
+                    }
+                    if (value=="killed" ){
+                        context = "已杀死";
+                        class_str = "btn-danger btn-xs";
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                        btn_retry_str='<button id="retry" type="button" class="btn btn-primary btn-xs">重试</button>';
+                    }
+
+
+                    if(value=="skip"){
+                        btn_retry_str='';
+                        class_str = "btn-default btn-xs";
+                        btn_kill_str='';
+                        process= '100';
+                        context= '跳过'
+                    }
+
+                    if(context=="未运行"){
+                        class_str = "btn-warning btn-xs";
+                        btn_retry_str='';
+                        btn_kill_str='';
+                        btn_skip_str='<button id="skip" type="button" class=" btn btn-info btn-xs">跳过</button>';
+                    }
+
+                    var url=server_context+"/log_txt.html?job_id=" + row.job_id+"&task_log_id="+row.id + "&run_time=" + row.run_time + "&update_time=" + row.update_time;
+                    var title=row.job_context + "日志";
+                    return [
+                        '<div style="text-align:center" >'+
+                        '<div class="btn-group">'+
+                        '<button type="button" class="btn '+class_str+'" >'+context+'</button>'+
+                         btn_retry_str +
+                        btn_kill_str +
+                        btn_skip_str +
+                        '<button type="button" id="log_txt" class="btn btn-warning btn-xs">日志</button>'+
+                        //'</div>'+
+                        '<button type="button" id="strategy_task_download" class="btn btn-success btn-xs">下载</button>'+
+                        '<button type="button" id="edit" class="btn btn-warning btn-xs">编辑</button>'+
+                        '</div>'+
+                        '</div>'
+                    ].join('');
+                }
+            }]
+        });
+
+        get_task_log();
+
+        function init(){
+            $.ajax({
+                url : server_context+"/strategy_group_instance_list2",
+                data : "id=" + strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    //初始化输入数据源select 组件
+                    var run_jsmind_data=data.result.run_jsmind_data;
+                    open_json(run_jsmind_data,strategy_group_instance_id)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+        init();
+
+        function refash_graph(){
+            $.ajax({
+                url : server_context+"/strategy_group_instance_list2",
+                data : "id=" + strategy_group_instance_id,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    //重新渲染图
+                    var run_jsmind_data=data.result.run_jsmind_data;
+                    open_json(run_jsmind_data,strategy_group_instance_id)
+
+                },
+                error: function (data) {
+                    console.info("error: " + data.responseText);
+                }
+
+            });
+        }
+
+        $('#refash').click(function () {
+            refash_graph();
+            get_task_log();
+        })
+    });
+</script>
+</body>
+
+</html>
