@@ -57,7 +57,9 @@ public interface ApplyMapper extends BaseApplyMapper<ApplyInfo> {
             "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
             "#{product_code}",
             "</foreach>",
+            "<when test='product_code!=null and product_code !=\"\"'>",
             "and product_code=#{product_code}",
+            "</when>",
             "</script>"})
     public List<ApplyInfo> selectByParams(@Param("apply_context") String apply_context, @Param("status") String status,
                                           @Param("approve_id") String approve_id, @Param("owner") String owner ,@Param("product_code") String product_code, @Param("product_codes") List<String> product_codes);

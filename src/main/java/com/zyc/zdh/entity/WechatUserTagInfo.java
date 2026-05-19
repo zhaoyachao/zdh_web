@@ -33,6 +33,9 @@ public class WechatUserTagInfo {
      */
     private String tag_id;
 
+    @Transient
+    private String tag_name;
+
     /**
      * 创建时间
      */
@@ -151,6 +154,15 @@ public class WechatUserTagInfo {
     public void setTag_id(String tag_id) {
         this.tag_id = tag_id;
     }
+
+
+    public String getTag_name() {
+		return tag_name;
+	}
+
+    public void setTag_name(String tag_name) {
+		this.tag_name = tag_name;
+	}
 
     /**
      * 获取创建时间

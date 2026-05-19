@@ -52,8 +52,9 @@ public interface IssueDataMapper extends BaseIssueDataMapper<IssueDataInfo> {
             "<foreach collection='product_codes' item='product_code' open='(' separator=',' close=')'>",
             "#{product_code}",
             "</foreach>",
-
-            "and product_code=#{product_code}",
+            "<when test='product_code!=null and product_code !=\"\"'>",
+            "AND product_code = #{product_code}",
+            "</when>",
             "</script>"})
     public List<IssueDataInfo> selectByParams(@Param("issue_context") String issue_context,@Param("label_params") String[] label_params,@Param("product_code") String product_code, @Param("product_codes") List<String> product_codes);
 

@@ -80,6 +80,7 @@ public class HttpUtil {
 
             httpClient = HttpClients.custom()
                     .setConnectionManager(connectionManager)
+                    .setConnectionManagerShared(true)
                     .setRetryHandler(retryStrategy)
                     .setDefaultRequestConfig(RequestConfig.custom()
                             .setConnectTimeout(config.getConnectionTimeout())
@@ -557,6 +558,7 @@ public class HttpUtil {
 
                 CloseableHttpClient httpclientCustom = HttpClients.custom()
                         .setConnectionManager(connectionManager)
+                        .setConnectionManagerShared(true)
                         .setRetryHandler(retryStrategy)
                         .setProxy(proxy)
                         .setDefaultRequestConfig(RequestConfig.custom()

@@ -4,11 +4,9 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.google.common.collect.Lists;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatMapper;
+import com.zyc.zdh.dao.WechatTagMapper;
 import com.zyc.zdh.dao.WechatUserTagMapper;
-import com.zyc.zdh.entity.PageResult;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.WechatUserTagInfo;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.pushx.PushxWechatTagService;
 import com.zyc.zdh.pushx.entity.WechatTagResponse;
@@ -29,6 +27,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,6 +39,8 @@ import java.util.stream.Collectors;
 @Controller
 public class WechatUserTagController extends BaseController {
 
+    @Autowired
+    private WechatTagMapper wechatTagMapper;
     @Autowired
     private WechatUserTagMapper wechatUserTagMapper;
     @Autowired
@@ -134,6 +135,20 @@ public class WechatUserTagController extends BaseController {
 
             List<WechatUserTagInfo> wechatUserTagInfos = wechatUserTagMapper.selectByExampleAndRowBounds(example, rowBounds);
             dynamicAuth(zdhPermissionService, wechatUserTagInfos);
+
+            //替换tag枚举
+            Example example3=new Example(WechatTagInfo.class);
+            Example.Criteria criteria3=example3.createCriteria();
+            criteria3.andEqualTo("is_delete", Const.NOT_DELETE);
+            dynamicPermissionByProduct(zdhPermissionService, criteria3);
+            List<WechatTagInfo> wechatTagInfos = wechatTagMapper.selectByExample(example3);
+
+            //生成tid和tname的映射关系
+            Map<String, String> tidAndTname = wechatTagInfos.stream().collect(Collectors.toMap(WechatTagInfo::getTid, WechatTagInfo::getTname));
+
+            wechatUserTagInfos.forEach(wechatUserTagInfo -> {
+                wechatUserTagInfo.setTag_name(tidAndTname.get(wechatUserTagInfo.getTag_id()));
+            });
 
             PageResult<List<WechatUserTagInfo>> pageResult=new PageResult<>();
             pageResult.setTotal(total);

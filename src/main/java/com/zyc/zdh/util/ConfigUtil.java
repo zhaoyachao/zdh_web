@@ -118,6 +118,8 @@ public class ConfigUtil {
     public static String ZDH_PUSHX_BASE_URL = "zdh.pushx.base.url";
     public static String ZDH_PUSHX_SERVICE_KEY = "zdh.pushx.service.key";
 
+    public static String ZDH_RAG_URL = "zdh.rag.url";
+
     public static String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
 
     public static String getProductCode(){

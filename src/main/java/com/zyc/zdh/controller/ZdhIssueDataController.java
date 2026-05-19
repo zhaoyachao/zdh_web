@@ -157,7 +157,7 @@ public class ZdhIssueDataController extends BaseController {
             if(!StringUtils.isEmpty(issue_context)){
                 issue_context = getLikeCondition(issue_context);
             }
-            checkParam(product_code, "产品code");
+            //checkParam(product_code, "产品code");
             Map<String,List<String>> dimMap = dynamicPermissionByProductAndGroup(zdhPermissionService);
 
             list = issueDataMapper.selectByParams(issue_context,new String[]{}, product_code, dimMap.get("product_codes"));
@@ -183,7 +183,7 @@ public class ZdhIssueDataController extends BaseController {
     @ResponseBody
     public ReturnInfo<List<IssueDataInfo>> data_ware_house_list3(String issue_context, String product_code) throws Exception {
         try{
-            checkProductCode(product_code);
+            //checkProductCode(product_code);
             List<IssueDataInfo> list = new ArrayList<>();
             String owner = getOwner();
             if(!StringUtils.isEmpty(issue_context)){
@@ -491,7 +491,7 @@ public class ZdhIssueDataController extends BaseController {
     public ReturnInfo<List<ApplyInfo>> data_apply_list(String product_code, String apply_context) throws Exception {
 
         try{
-            checkProductCode(product_code);
+            //checkProductCode(product_code);
             ApplyInfo applyInfo = new ApplyInfo();
             applyInfo.setOwner(getOwner());
             if(!StringUtils.isEmpty(apply_context)){

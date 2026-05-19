@@ -223,8 +223,8 @@
               sortable:false
           },
           {
-              field: 'tag_id',
-              title: '微信标签id',
+              field: 'tag_name',
+              title: '微信标签',
               sortable:false
           },
 
