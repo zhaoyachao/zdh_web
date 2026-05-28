@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问卷预览 - 加载中...</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:Arial,"Microsoft YaHei",sans-serif;max-width:800px;margin:40px auto;padding:20px;background:#f5f5f5;color:#333;line-height:1.6;}
+        .container{background:#fff;border-radius:10px;padding:30px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+        .survey-title{text-align:center;font-size:28px;font-weight:bold;margin-bottom:15px;color:#2c3e50;}
+        .survey-desc{text-align:center;color:#7f8c8d;margin-bottom:30px;font-size:14px;}
+        .question{margin:20px 0;padding:20px;border:1px solid #e8e8e8;border-radius:8px;background:#fafafa;transition:all 0.3s ease;}
+        .question:hover{box-shadow:0 3px 10px rgba(0,0,0,0.08);border-color:#3498db;}
+        .question-title{font-weight:bold;margin-bottom:15px;color:#2c3e50;font-size:16px;display:flex;align-items:center;}
+        .question-number{display:inline-block;width:28px;height:28px;background:#3498db;color:white;border-radius:50%;text-align:center;line-height:28px;margin-right:10px;font-size:14px;}
+        .required{color:#e74c3c;margin-left:5px;font-weight:bold;}
+        .options{margin-left:38px;margin-top:10px;}
+        .option{margin:10px 0;padding:8px 12px;border-radius:6px;background:#fff;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;}
+        .option:hover{background:#ecf0f1;transform:translateX(5px);}
+        .option input{margin-right:10px;cursor:pointer;}
+        .option label{cursor:pointer;flex:1;}
+        .text-input,.textarea-input{width:100%;padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-size:14px;transition:border-color 0.3s;margin-left:38px;margin-top:10px;}
+        .text-input:focus,.textarea-input:focus{outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+        .textarea-input{min-height:100px;resize:vertical;font-family:inherit;}
+        .score-container{margin-left:38px;margin-top:10px;display:flex;gap:8px;}
+        .star{font-size:32px;color:#ddd;cursor:pointer;transition:color 0.2s,user-select:none;}
+        .star:hover,.star.active{color:#f39c12;}
+        .date-input{padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-size:14px;margin-left:38px;margin-top:10px;cursor:pointer;}
+        .date-input:focus{outline:none;border-color:#3498db;}
+
+        .select-input{width:calc(100% - 38px);padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-size:14px;margin-left:38px;margin-top:10px;cursor:pointer;background-color:#fff;transition:border-color 0.3s;}
+        .select-input:focus{outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+
+        .number-input{padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-size:14px;margin-left:38px;margin-top:10px;width:200px;transition:border-color 0.3s;}
+        .number-input:focus{outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+
+        .phone-input{padding:10px 12px;border:2px solid #ddd;border-radius:6px;font-size:14px;margin-left:38px;margin-top:10px;width:250px;transition:border-color 0.3s;}
+        .phone-input:focus{outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+
+        .matrix-container{margin-left:38px;margin-top:15px;overflow-x:auto;}
+        .matrix-table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .matrix-table th,.matrix-table td{padding:12px;text-align:center;border:1px solid #e8e8e8;font-size:13px;}
+        .matrix-header{background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:bold;font-size:13px;}
+        .matrix-row-label{background:#f8f9fa;font-weight:600;color:#333;text-align:left;padding-left:20px;min-width:120px;}
+        .matrix-cell{background:white;position:relative;padding:8px;}
+        .matrix-cell input[type='radio']{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0;z-index:2;}
+        .matrix-cell label{display:block;width:24px;height:24px;border:2px solid #ddd;border-radius:50%;cursor:pointer;transition:all 0.2s;margin:0 auto;}
+        .matrix-cell input[type='radio']:checked + label{background:#667eea;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.2);}
+        .matrix-cell:hover label{border-color:#667eea;}
+        .submit-section{text-align:center;margin-top:40px;padding-top:30px;border-top:2px solid #e8e8e8;}
+        .submit-btn{display:inline-block;padding:15px 60px;background:linear-gradient(135deg,#3498db,#2980b9);color:white;border:none;border-radius:50px;font-size:18px;font-weight:bold;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(52,152,219,0.4);letter-spacing:2px;}
+        .submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(52,152,219,0.6);background:linear-gradient(135deg,#2980b9,#1a5276);}
+        .submit-btn:active{transform:translateY(0);box-shadow:0 2px 10px rgba(52,152,219,0.4);}
+        .submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+        .success-message{display:none;text-align:center;padding:40px;margin-top:20px;}
+        .success-icon{font-size:80px;color:#27ae60;margin-bottom:20px;}
+        .success-text{font-size:24px;color:#27ae60;font-weight:bold;margin-bottom:10px;}
+        .success-desc{color:#7f8c8d;font-size:14px;}
+        .error-message{text-align:center;color:#e74c3c;padding:40px;font-size:16px;}
+        .loading{text-align:center;padding:60px 20px;}
+        .loading-spinner{display:inline-block;width:50px;height:50px;border:5px solid #f3f3f3;border-top:5px solid #3498db;border-radius:50%;animation:spin 1s linear infinite;}
+        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+        .no-questions{text-align:center;color:#95a5a6;padding:60px 20px;font-size:18px;background:#f9f9f9;border-radius:10px;border:2px dashed #bdc3c7;}
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <!-- 加载状态 -->
+    <div class="loading" id="loadingDiv">
+        <div class="loading-spinner"></div>
+        <p style="margin-top:20px;color:#666;">正在加载问卷数据...</p>
+    </div>
+
+    <!-- 问卷内容（初始隐藏） -->
+    <div id="surveyContent" style="display:none;">
+        <h1 class="survey-title" id="surveyTitle">未命名问卷</h1>
+        <p class="survey-desc" id="surveyDesc" style="display:none;"></p>
+
+        <div id="questionsContainer"></div>
+
+        <div class="submit-section" id="submitSection">
+            <button class="submit-btn" onclick="submitSurvey()">提交问卷</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <div class="success-text">提交成功！</div>
+            <div class="success-desc">感谢您的参与，您的回答已成功提交。</div>
+        </div>
+    </div>
+
+    <!-- 错误信息（初始隐藏） -->
+    <div class="error-message" id="errorDiv" style="display:none;">
+        <h2>加载失败</h2>
+        <p id="errorMessage"></p>
+        <p><a href="javascript:window.close();">关闭页面</a> | <a href="javascript:location.reload();">重试</a></p>
+    </div>
+</div>
+
+<script>
+var server_context = '';
+var surveyId = null;
+var questionsData = [];
+
+function generateBrowserId() {
+    var EXPIRY_DAYS = 7;
+    var STORAGE_KEY = 'survey_browser_id_data';
+    var now = new Date();
+
+    var storedData = localStorage.getItem(STORAGE_KEY);
+
+    if (storedData) {
+        try {
+            var data = JSON.parse(storedData);
+            var createdTime = new Date(data.createdTime);
+            var diffTime = now - createdTime;
+            var diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+            if (diffDays < EXPIRY_DAYS) {
+                var remainingDays = Math.ceil(EXPIRY_DAYS - diffDays);
+                console.log('✅ 使用有效期内标识:', data.id, '(剩余' + remainingDays + '天过期)');
+                return data.id;
+            } else {
+                console.log('⏰ 标识已过期(' + Math.floor(diffDays) + '天前生成)，将重新生成');
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        } catch (e) {
+            console.warn('⚠️ 解析存储数据失败，将重新生成标识:', e);
+            localStorage.removeItem(STORAGE_KEY);
+        }
+    }
+
+    var browserId = 'BR' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+    var newData = {
+        id: browserId,
+        createdTime: now.toISOString(),
+        expiryDays: EXPIRY_DAYS
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+
+    var expiryDate = new Date(now.getTime() + EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+    console.log('🆕 生成新浏览器标识:', browserId, '(将于', expiryDate.toLocaleString(), '过期)');
+
+    return browserId;
+}
+
+var browserUserId = generateBrowserId();
+
+(function() {
+    console.log('=== 问卷预览页面开始加载 ===');
+
+    // 从URL获取surveyId参数
+    var urlParams = new URLSearchParams(window.location.search);
+    surveyId = urlParams.get('id');
+    
+    if (!surveyId) {
+        showError('缺少问卷ID参数');
+        return;
+    }
+
+    console.log('问卷ID:', surveyId);
+
+    // 发起AJAX请求获取问卷详情
+    loadSurveyDetail(surveyId);
+})();
+
+function loadSurveyDetail(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/survey_detail', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log('服务器响应:', response);
+
+                    if (response.code === '200' && response.result) {
+                        handleSurveyData(response.result);
+                    } else {
+                        showError(response.msg || '获取问卷数据失败');
+                    }
+                } catch(e) {
+                    console.error('解析响应失败:', e);
+                    showError('服务器返回数据格式错误');
+                }
+            } else {
+                console.error('请求失败，状态码:', xhr.status);
+                showError('网络错误：HTTP ' + xhr.status);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error('网络请求异常');
+        showError('网络连接失败，请检查网络后重试');
+    };
+
+    xhr.send('id=' + encodeURIComponent(id));
+}
+
+function handleSurveyData(data) {
+    console.log('处理问卷数据:', data);
+
+    try {
+        // 提取问卷基本信息
+        var survey = data.survey;
+        if (!survey) {
+            throw new Error('问卷基本信息为空');
+        }
+
+        // 设置标题
+        document.title = (survey.survey_title || '未命名问卷') + ' - 问卷预览';
+        document.getElementById('surveyTitle').textContent = survey.survey_title || '未命名问卷';
+
+        // 设置描述
+        if (survey.survey_desc && survey.survey_desc.trim()) {
+            var descEl = document.getElementById('surveyDesc');
+            descEl.textContent = survey.survey_desc;
+            descEl.style.display = 'block';
+        }
+
+        // 处理题目列表
+        var rawQuestions = data.questions;
+        console.log('原始题目数量:', rawQuestions ? rawQuestions.length : 0);
+
+        if (!rawQuestions || !Array.isArray(rawQuestions) || rawQuestions.length === 0) {
+            showNoQuestions();
+            return;
+        }
+
+        // 转换题目格式
+        questionsData = rawQuestions.map(function(q, index) {
+            return {
+                id: q.id,
+                question_type: q.question_type,
+                question_title: q.question_title,
+                question_options: q.question_options,
+                question_required: q.question_required || '0',
+                sort_order: q.sort_order || index
+            };
+        });
+
+        console.log('转换后的题目数量:', questionsData.length);
+        console.log('题目详情:', questionsData);
+
+        // 渲染题目
+        renderQuestions();
+
+        // 显示内容区域，隐藏加载状态
+        document.getElementById('loadingDiv').style.display = 'none';
+        document.getElementById('surveyContent').style.display = 'block';
+
+        console.log('=== 问卷加载完成 ===');
+
+    } catch(e) {
+        console.error('处理数据失败:', e);
+        showError('数据处理异常: ' + e.message);
+    }
+}
+
+function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+
+    if (!questionsData || questionsData.length === 0) {
+        container.innerHTML = '<div class="no-questions">📝 暂无题目内容</div>';
+        return;
+    }
+
+    var html = '';
+    questionsData.forEach(function(q, index) {
+        html += '<div class="question">';
+        html += '<div class="question-title">';
+        html += '<span class="question-number">' + (index + 1) + '</span>';
+        html += (q.question_title || '未命名问题');
+        if (q.question_required === '1') {
+            html += '<span class="required">*</span>';
+        }
+        html += '</div>';
+
+        if (q.question_type === 'single' || q.question_type === 'multi') {
+            html += '<div class="options">';
+            
+            var options = [];
+            try {
+                options = JSON.parse(q.question_options || '[]');
+                if (!Array.isArray(options)) options = [];
+            } catch(e) {
+                console.error('解析选项失败:', e, q.question_options);
+            }
+            
+            var inputType = q.question_type === 'single' ? 'radio' : 'checkbox';
+            
+            if (options.length > 0) {
+                options.forEach(function(opt, idx) {
+                    html += '<div class="option">';
+                    html += '<input type="' + inputType + '" name="' + q.id + '" value="' + (opt.value || idx) + '" id="opt_' + q.id + '_' + idx + '">';
+                    html += '<label for="opt_' + q.id + '_' + idx + '">' + (opt.label || ('选项' + (idx+1))) + '</label>';
+                    html += '</div>';
+                });
+            } else {
+                html += '<div style="color:#95a5a6;">（暂无选项）</div>';
+            }
+            
+            html += '</div>';
+        } else if (q.question_type === 'text') {
+            html += '<input type="text" name="' + q.id + '" class="text-input" placeholder="请输入您的回答...">';
+        } else if (q.question_type === 'textarea') {
+            html += '<textarea name="' + q.id + '" class="textarea-input" placeholder="请输入您的详细回答..." rows="4"></textarea>';
+        } else if (q.question_type === 'score') {
+            html += '<div class="score-container" data-question-id="' + q.id + '">';
+            for (var s=1; s<=5; s++) {
+                html += '<span class="star" onclick="setScore(this, ' + s + ', this.parentElement)">★</span>';
+            }
+            html += '</div>';
+        } else if (q.question_type === 'date') {
+            html += '<input type="date" name="' + q.id + '" class="date-input">';
+        } else if (q.question_type === 'select') {
+            html += '<select name="' + q.id + '" class="select-input">';
+            html += '<option value="">请选择...</option>';
+            
+            var selectOptions = [];
+            try {
+                selectOptions = JSON.parse(q.question_options || '[]');
+                if (!Array.isArray(selectOptions)) selectOptions = [];
+            } catch(e) {
+                console.error('解析下拉选项失败:', e, q.question_options);
+            }
+            
+            if (selectOptions.length > 0) {
+                selectOptions.forEach(function(opt, idx) {
+                    html += '<option value="' + (opt.value || idx) + '">' + (opt.label || ('选项' + (idx+1))) + '</option>';
+                });
+            }
+            
+            html += '</select>';
+        } else if (q.question_type === 'number') {
+            html += '<input type="number" name="' + q.id + '" class="number-input" placeholder="请输入数字..." min="0" step="1">';
+        } else if (q.question_type === 'matrix_single') {
+            html += '<div class="matrix-container" data-question-id="' + q.id + '">';
+            
+            var matrixData = {};
+            try {
+                matrixData = JSON.parse(q.question_options || '{}');
+            } catch(e) {
+                console.error('解析矩阵数据失败:', e, q.question_options);
+                matrixData = {rows: ['评价项1', '评价项2'], columns: ['选项1', '选项2']};
+            }
+            
+            var rows = matrixData.rows || [];
+            var columns = matrixData.columns || [];
+            
+            if (rows.length > 0 && columns.length > 0) {
+                html += '<table class="matrix-table">';
+                html += '<thead><tr>';
+                html += '<th class="matrix-header">评价项目</th>';
+                columns.forEach(function(col) {
+                    html += '<th class="matrix-header">' + col + '</th>';
+                });
+                html += '</tr></thead>';
+                html += '<tbody>';
+                
+                rows.forEach(function(row, rowIndex) {
+                    html += '<tr>';
+                    html += '<td class="matrix-row-label">' + row + '</td>';
+                    columns.forEach(function(col, colIndex) {
+                        html += '<td class="matrix-cell">';
+                        html += '<input type="radio" name="' + q.id + '_row_' + rowIndex + '" value="' + (colIndex + 1) + '" id="mat_' + q.id + '_' + rowIndex + '_' + colIndex + '">';
+                        html += '<label for="mat_' + q.id + '_' + rowIndex + '_' + colIndex + '"></label>';
+                        html += '</td>';
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+            } else {
+                html += '<div style="color:#95a5a6;">（暂无矩阵数据）</div>';
+            }
+            
+            html += '</div>';
+        } else if (q.question_type === 'phone') {
+            html += '<input type="tel" name="' + q.id + '" class="phone-input" placeholder="请输入手机号码..." pattern="[0-9]{11}" maxlength="11">';
+        } else {
+            html += '<div style="color:#95a5a6;padding:10px;">[未知题型]</div>';
+        }
+        
+        html += '</div>';
+    });
+
+    container.innerHTML = html;
+}
+
+function showNoQuestions() {
+    document.getElementById('loadingDiv').style.display = 'none';
+    document.getElementById('surveyContent').style.display = 'block';
+    document.getElementById('questionsContainer').innerHTML = 
+        '<div class="no-questions">📝 该问卷暂无题目内容</div>';
+    document.getElementById('submitSection').style.display = 'none';
+}
+
+function showError(message) {
+    console.error('显示错误:', message);
+    document.getElementById('loadingDiv').style.display = 'none';
+    document.getElementById('errorDiv').style.display = 'block';
+    document.getElementById('errorMessage').textContent = message;
+}
+
+function setScore(starElement, score, container) {
+    var stars = container.querySelectorAll('.star');
+    stars.forEach(function(st, i) {
+        if (i < score) {
+            st.classList.add('active');
+        } else {
+            st.classList.remove('active');
+        }
+    });
+}
+
+function collectAnswers() {
+    var answers = {};
+    var questions = document.querySelectorAll('.question');
+
+    questions.forEach(function(q) {
+        var inputElement = q.querySelector("input[name], textarea[name]");
+        var nameAttr = null;
+
+        if (inputElement) {
+            nameAttr = inputElement.name;
+        } else {
+            var scoreContainer = q.querySelector(".score-container");
+            if (scoreContainer) {
+                nameAttr = scoreContainer.getAttribute("data-question-id");
+            }
+        }
+
+        if (nameAttr) {
+            var answerObj = {};
+
+            if (q.querySelector("input[type='radio']:checked") && !q.querySelector(".matrix-container")) {
+                var checkedRadio = q.querySelector("input[type='radio']:checked");
+                answerObj.value = checkedRadio.value;
+                answerObj.text = checkedRadio.nextElementSibling ? checkedRadio.nextElementSibling.textContent : checkedRadio.value;
+            } else if (q.querySelectorAll("input[type='checkbox']:checked").length > 0) {
+                var values = [];
+                var texts = [];
+                q.querySelectorAll("input[type='checkbox']:checked").forEach(function(cb) {
+                    values.push(cb.value);
+                    texts.push(cb.nextElementSibling ? cb.nextElementSibling.textContent : cb.value);
+                });
+                answerObj.value = values.join(",");
+                answerObj.text = texts.join(",");
+            } else if (q.querySelector("select")) {
+                var selectEl = q.querySelector("select");
+                if (selectEl.value) {
+                    answerObj.value = selectEl.value;
+                    answerObj.text = selectEl.options[selectEl.selectedIndex].text;
+                }
+            } else if (q.querySelector("input[type='number']")) {
+                answerObj.value = q.querySelector("input[type='number']").value;
+                answerObj.text = answerObj.value;
+            } else if (q.querySelector(".matrix-container")) {
+                var matrixContainer = q.querySelector(".matrix-container");
+                var questionId = matrixContainer.getAttribute("data-question-id");
+                var rowRadios = matrixContainer.querySelectorAll("input[type='radio']:checked");
+                
+                if (rowRadios.length > 0) {
+                    var matrixValues = {};
+                    var matrixTexts = {};
+                    
+                    rowRadios.forEach(function(radio) {
+                        var rowName = radio.name;
+                        var rowIndex = rowName.split('_').pop();
+                        var rowLabel = matrixContainer.querySelector('tr:nth-child(' + (parseInt(rowIndex) + 2) + ') .matrix-row-label');
+                        var colIndex = parseInt(radio.value) - 1;
+                        var colHeader = matrixContainer.querySelectorAll('.matrix-header')[colIndex + 1];
+                        
+                        matrixValues['row_' + rowIndex] = radio.value;
+                        matrixTexts['row_' + rowIndex] = (rowLabel ? rowLabel.textContent : '行' + rowIndex) + ': ' + (colHeader ? colHeader.textContent : '选项' + radio.value);
+                    });
+                    
+                    answerObj.value = JSON.stringify(matrixValues);
+                    answerObj.text = JSON.stringify(matrixTexts);
+                }
+            } else if (q.querySelector("input[type='tel']")) {
+                answerObj.value = q.querySelector("input[type='tel']").value;
+                answerObj.text = answerObj.value;
+            } else if (q.querySelector("input[type='text']")) {
+                answerObj.value = q.querySelector("input[type='text']").value;
+                answerObj.text = answerObj.value;
+            } else if (q.querySelector("textarea")) {
+                answerObj.value = q.querySelector("textarea").value;
+                answerObj.text = answerObj.value;
+            } else if (q.querySelector("input[type='date']")) {
+                answerObj.value = q.querySelector("input[type='date']").value;
+                answerObj.text = answerObj.value;
+            } else if (q.querySelectorAll(".star.active").length > 0) {
+                var score = q.querySelectorAll(".star.active").length;
+                answerObj.value = String(score);
+                answerObj.text = score + "分";
+            }
+
+            answers[nameAttr] = answerObj;
+        }
+    });
+
+    return answers;
+}
+
+function validateAnswers(answers) {
+    var requiredQuestions = document.querySelectorAll('.required');
+    var allValid = true;
+
+    requiredQuestions.forEach(function(req) {
+        var questionDiv = req.closest('.question');
+        var inputElement = questionDiv.querySelector("input[name], textarea[name]");
+        var nameAttr = null;
+
+        if (inputElement) {
+            nameAttr = inputElement.name;
+        } else {
+            var scoreContainer = questionDiv.querySelector(".score-container");
+            if (scoreContainer) {
+                nameAttr = scoreContainer.getAttribute("data-question-id");
+            }
+        }
+
+        if (nameAttr) {
+            var answerObj = answers[nameAttr];
+            if (!answerObj || !answerObj.value || answerObj.value.trim() === '') {
+                allValid = false;
+                questionDiv.style.border = "2px solid #e74c3c";
+                setTimeout(function() {
+                    questionDiv.style.border = "";
+                }, 2000);
+            }
+        }
+    });
+
+    if (!allValid) {
+        alert('请完成所有必填项！');
+    }
+
+    return allValid;
+}
+
+function submitSurvey() {
+    var answers = collectAnswers();
+
+    if (!validateAnswers(answers)) {
+        return;
+    }
+
+    var submitBtn = document.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '提交中...';
+
+    var formattedAnswers = {};
+    for (var key in answers) {
+        if (answers.hasOwnProperty(key)) {
+            var answerObj = answers[key];
+            if (answerObj && typeof answerObj === 'object') {
+                formattedAnswers[key] = {
+                    value: answerObj.value || '',
+                    text: answerObj.text || ''
+                };
+            }
+        }
+    }
+
+    var requestData = {
+        surveyId: surveyId,
+        answerUser: browserUserId,
+        ipAddress: '',
+        answers: formattedAnswers
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/survey_submit', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.code === '200') {
+                        document.getElementById('submitSection').style.display = 'none';
+                        document.getElementById('successMessage').style.display = 'block';
+                        window.scrollTo({top: 0, behavior: 'smooth'});
+                    } else {
+                        alert('提交失败: ' + (response.msg || '未知错误'));
+                        resetButton(submitBtn);
+                    }
+                } catch(e) {
+                    alert('服务器返回数据格式错误');
+                    resetButton(submitBtn);
+                }
+            } else {
+                alert('网络错误，请重试');
+                resetButton(submitBtn);
+            }
+        }
+    };
+    
+    xhr.send('request=' + encodeURIComponent(JSON.stringify(requestData)));
+}
+
+function resetButton(btn) {
+    btn.disabled = false;
+    btn.innerHTML = '提交问卷';
+}
+</script>
+
+</body>
+</html>
