@@ -170,7 +170,7 @@ var browserUserId = generateBrowserId();
 
 function loadSurveyDetail(id) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/survey_detail', true);
+    xhr.open('POST', '/api/survey_detail', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
 
     xhr.onreadystatechange = function() {
@@ -580,7 +580,7 @@ function submitSurvey() {
     };
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/survey_submit', true);
+    xhr.open('POST', '/api/survey_submit', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
     
     xhr.onreadystatechange = function() {

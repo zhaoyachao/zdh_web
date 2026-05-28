@@ -4469,3 +4469,52 @@
     KEY `idx_openid` (`openid`),
     KEY `idx_comment_time` (`comment_time`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信评论回复信息表';
+
+
+## 5.7.3迁移5.7.4
+    CREATE TABLE IF NOT EXISTS `survey_info` (
+    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `survey_title` varchar(500) NOT NULL COMMENT '问卷标题',
+    `survey_desc` text COMMENT '问卷描述',
+    `survey_status` varchar(16) DEFAULT '0' COMMENT '问卷状态:0-草稿,1-已发布,2-已关闭',
+    `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `is_delete` varchar(16) DEFAULT '0' COMMENT '是否删除:0-未删除,1-已删除',
+    `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '产品code',
+    PRIMARY KEY (`id`),
+    KEY `idx_owner` (`owner`),
+    KEY `idx_product_code` (`product_code`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问卷信息表';
+
+    CREATE TABLE IF NOT EXISTS `survey_question_info` (
+    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `survey_id` bigint NOT NULL COMMENT '问卷ID',
+    `question_type` varchar(32) NOT NULL COMMENT '问题类型:single-单选,multi-多选,text-文本,textarea-多行文本,score-评分,date-日期',
+    `question_title` varchar(1000) NOT NULL COMMENT '问题标题',
+    `question_options` text COMMENT '选项内容(JSON格式)',
+    `question_required` varchar(4) DEFAULT '0' COMMENT '是否必填:0-否,1-是',
+    `sort_order` int DEFAULT 0 COMMENT '排序序号',
+    `owner` varchar(100) DEFAULT NULL COMMENT '拥有者',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_survey_id` (`survey_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问卷问题表';
+    
+    CREATE TABLE `survey_answer_info` (
+    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `survey_id` varchar(64) NOT NULL COMMENT '问卷ID',
+    `question_id` varchar(64) NOT NULL COMMENT '问题ID',
+    `question_type` varchar(32) NOT NULL COMMENT '问题类型',
+    `answer_value` text COMMENT '答案内容',
+    `answer_text` text COMMENT '答案文本（中文显示内容）' ,
+    `answer_user` varchar(100) DEFAULT NULL COMMENT '答题人',
+    `ip_address` varchar(64) DEFAULT NULL COMMENT 'IP地址',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '提交时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_survey_id` (`survey_id`),
+    KEY `idx_question_id` (`question_id`),
+    KEY `idx_answer_user` (`answer_user`),
+    KEY `idx_create_time` (`create_time`)
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问卷记录表';

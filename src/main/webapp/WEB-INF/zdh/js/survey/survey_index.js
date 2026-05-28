@@ -186,7 +186,7 @@
         function previewSurveyById(id) {
             console.log('预览问卷 ID:', id);
             
-            var previewUrl = (server_context || '') + '/survey_preview?id=' + id;
+            var previewUrl = (server_context || '') + '/api/survey_preview?id=' + id;
             console.log('打开预览URL:', previewUrl);
             
             var newWindow = window.open(previewUrl, '_blank');
