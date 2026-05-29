@@ -17,7 +17,7 @@
                 maxmin: true,
                 shade: 0.1,
                 area: ['90%', '85%'],
-                content: server_context + "/survey_design",
+                content: server_context + "/survey_design_index",
                 end: function () {
                     $('#exampleTableEvents-table').bootstrapTable('destroy');
                     $('#exampleTableEvents').bootstrapTable('refresh', {
@@ -86,10 +86,12 @@
                     maxmin: true,
                     shade: 0.1,
                     area: ['90%', '85%'],
-                    content: server_context + "/survey_design?id=" + row.id,
+                    content: server_context + "/survey_design_index?id=" + row.id,
                     end: function() {
                         $('#exampleTableEvents').bootstrapTable('refresh', {
-                            url: server_context + '/survey_list_by_page'
+                            url: server_context + "/survey_list_by_page?" + $("#survey_form").serialize(),
+                            contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                            dataType: "json"
                         });
                     }
                 });
@@ -184,17 +186,14 @@
         }
 
         function previewSurveyById(id) {
-            console.log('预览问卷 ID:', id);
-            
             var previewUrl = (server_context || '') + '/api/survey_preview?id=' + id;
-            console.log('打开预览URL:', previewUrl);
-            
+
             var newWindow = window.open(previewUrl, '_blank');
             
             if (newWindow) {
                 newWindow.focus();
             } else {
-                layer.msg('浏览器阻止了新标签页，请允许弹出后重试');
+                alert('浏览器阻止了新标签页，请允许弹出后重试');
             }
         }
 
