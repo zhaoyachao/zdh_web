@@ -5,133 +5,956 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!--360浏览器优先以webkit内核解析-->
-
-
-    <title>ZDH - 主页示例</title>
-
-    <link rel="shortcut icon" href="img/favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <title>ZDH - 智能数据集成平台</title>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
     <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
-
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/style.css?v=4.1.0" rel="stylesheet">
-    
+
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-banner h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-banner p {
+            font-size: 18px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            font-size: 36px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .module-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 10px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .module-title {
+            flex: 1;
+        }
+
+        .module-title h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .module-title p {
+            margin: 5px 0 0 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .data-source-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .tech-stack strong {
+            color: #667eea;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 4px solid #ff6b6b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .stats-row {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 0 30px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .version-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .version-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .version-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .version-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .badge-new {
+            background: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
 
 </head>
 
 <body class="gray-bg">
-    <div class="row  border-bottom white-bg dashboard-header">
-        <div class="col-sm-12">
-            <blockquote class="text-warning" style="font-size:14px">您是否需要数据采集,简单数据加密…
-                <br>您是否一直在苦苦寻找一款适合自己的数据采集平台…
-                <br>您是否想做一款自己的方便管理的数据采集应用…
-                <br>…………
-                <h4 class="text-danger">那么，现在请尝试使用zdh</h4>
-            </blockquote>
 
-            <hr>
+    <!-- 头部横幅 -->
+    <div class="header-banner animated fadeInDown">
+        <h1><i class="fa fa-database"></i> ZDH - 智能数据集成平台</h1>
+        <p>企业级数据采集、转换、调度一体化解决方案 | 支持多数据源、可视化配置、分布式部署</p>
+        <div style="margin-top: 30px;">
+            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-github fa-lg"></i> GitHub
+            </a>
         </div>
     </div>
-    <div class="wrapper wrapper-content">
+
+    <div class="wrapper wrapper-content animated fadeInUp">
+
+        <!-- 核心能力与快速开始 - 置顶展示 -->
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-12">
+                <div class="module-section" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="text-align: center; margin-bottom: 35px;">
+                        <h2 style="color: white; font-size: 32px; font-weight: 700; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">
+                            <i class="fa fa-bolt" style="color: #ffd700; margin-right: 10px;"></i>
+                            核心能力矩阵 · 一站式数据中台解决方案
+                        </h2>
+                        <p style="color: #a0a0c0; font-size: 16px; line-height: 1.8;">从数据采集到智能应用，构建企业级数据全链路管理体系</p>
+                    </div>
 
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>特色</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <p> 开箱即用</p>
-                        <p>支持多数据源</p>
-                        <p>单独的调度器,调度也可和三方调度器对接airflow,azkaban</p>
-                        <p>二次开发</p>
-                    </div>
-                </div>
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>项目信息</h5>
+                    <div class="row">
+                        <!-- 能力1：数据集成 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border: 2px solid rgba(102,126,234,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                    <i class="fa fa-exchange"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据集成</h4>
+                                <p style="color: #b0b0d0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">多源异构数据统一采集、清洗、转换与加载</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(102,126,234,0.2); color: #a0b4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-database"></i> DataX</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #a0b4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-plug"></i> JDBC</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #a0b4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-flash"></i> Flink</span>
+                                </div>
+                            </div>
+                        </div>
 
+                        <!-- 能力2：任务调度 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(250,112,154,0.15) 0%, rgba(254,225,64,0.15) 100%); border: 2px solid rgba(250,112,154,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(250,112,154,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(250,112,154,0.4);">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">任务调度</h4>
+                                <p style="color: #d0b0b0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">Cron定时、时间序列、依赖编排、失败重试</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(250,112,154,0.2); color: #ffb4c8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-calendar"></i> Cron</span>
+                                    <span style="background: rgba(250,112,154,0.2); color: #ffb4c8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-sitemap"></i> DAG</span>
+                                    <span style="background: rgba(250,112,154,0.2); color: #ffb4c8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-refresh"></i> 重试</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力3：数据源管理 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(79,172,254,0.15) 0%, rgba(0,242,254,0.15) 100%); border: 2px solid rgba(79,172,254,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(79,172,254,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(79,172,254,0.4);">
+                                    <i class="fa fa-cloud"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据源管理</h4>
+                                <p style="color: #b0c8d8; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">统一连接池、加密存储、在线测试、健康检查</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(79,172,254,0.2); color: #a8d4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-server"></i> Hive</span>
+                                    <span style="background: rgba(79,172,254,0.2); color: #a8d4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-hdd-o"></i> HDFS</span>
+                                    <span style="background: rgba(79,172,254,0.2); color: #a8d4ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-search"></i> ES</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力4：监控告警 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(67,233,123,0.15) 0%, rgba(56,249,215,0.15) 100%); border: 2px solid rgba(67,233,123,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(67,233,123,0.4);">
+                                    <i class="fa fa-line-chart"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">监控告警</h4>
+                                <p style="color: #b0d8c8; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">实时监控、日志追踪、自动告警、血缘分析</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(67,233,123,0.2); color: #a8ffc8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-eye"></i> 实时</span>
+                                    <span style="background: rgba(67,233,123,0.2); color: #a8ffc8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-envelope-o"></i> 告警</span>
+                                    <span style="background: rgba(67,233,123,0.2); color: #a8ffc8; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-code-fork"></i> 血缘</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ibox-content">
-                        <p><i class="fa fa-github"></i>github：<a href="https://github.com/zhaoyachao/zdh" target="_blank">https://github.com/zhaoyachao/zdh</a>
-                        </p>
-                        <p>本预览版本为dev分支,开发者可拉去dev分支做具体分析</p>
+
+                    <!-- CTA 按钮 -->
+                    <div style="text-align: center; margin-top: 35px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: white; font-size: 22px; margin-bottom: 20px; font-weight: 600;">
+                            <i class="fa fa-rocket" style="color: #ffd700; margin-right: 8px;"></i>
+                            立即开始使用 ZDH
+                        </h3>
+                        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center;">
+                            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 5px 20px rgba(102,126,234,0.4); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 20px rgba(102,126,234,0.4)'">
+                                <i class="fa fa-github"></i> 克隆项目 (Git Clone)
+                            </a>
+                            <div style="color: #808090; font-size: 14px;">
+                                或执行命令：
+                                <code style="background: rgba(255,255,255,0.1); color: #00ff88; padding: 6px 14px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px; margin-left: 8px;">
+                                    git clone https://github.com/zhaoyachao/zdh_web.git && cd zdh_web && sh build.sh && sh bin/start.sh
+                                </code>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; color: #707088; font-size: 13px;">
+                            <i class="fa fa-info-circle"></i>
+                            启动后访问 <strong style="color: #667eea;">http://localhost:8081</strong> | 默认账号：<strong style="color: #43e97b;">zyc / 123456</strong>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>主要功能</h5>
+        </div>
+
+        <!-- 四大核心平台 - 重点展示 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea30;">
+                    <div class="module-header" style="border-bottom: none; margin-bottom: 20px;">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                            <i class="fa fa-diamond"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2 style="font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">四大核心业务平台</h2>
+                            <p style="font-size: 16px; color: #667eea; font-weight: 500;">企业数字化转型的完整解决方案</p>
+                        </div>
                     </div>
-                    <div class="ibox-content no-padding">
-                        <div class="panel-body">
-                            <div class="panel-group" id="version">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h5 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#version" href="#v41">v1.0.0</a><code class="pull-right">2020.04.01</code>
-                                            </h5>
+
+                    <!-- 平台1：数字化经营平台 -->
+                    <div class="col-md-6 col-sm-12" style="margin-bottom: 25px;">
+                        <div class="platform-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 8px 30px rgba(250, 112, 154, 0.15); border-left: 5px solid #fa709a; transition: all 0.3s ease; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="width: 70px; height: 70px; line-height: 70px; text-align: center; font-size: 32px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border-radius: 15px; margin-right: 20px; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">数字化经营平台</h3>
+                                    <p style="margin: 5px 0 0 0; color: #fa709a; font-size: 14px; font-weight: 500;">Digital Marketing Platform</p>
+                                </div>
+                                <span style="background: linear-gradient(135deg, #fa709a, #fee140); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">CORE</span>
+                            </div>
+                            <p style="color: #666; line-height: 1.8; margin-bottom: 18px; font-size: 14px;">构建360°客户画像，实现精准营销与智能风控，助力企业数字化转型</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <span style="background: #fff0f5; color: #fa709a; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-user-circle"></i> 客户画像</span>
+                                <span style="background: #fff0f5; color: #fa709a; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-sitemap"></i> 策略引擎</span>
+                                <span style="background: #fff0f5; color: #fa709a; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-filter"></i> 人群圈选</span>
+                                <span style="background: #fff0f5; color: #fa709a; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-paper-plane"></i> 多渠道触达</span>
+                                <span style="background: #fff0f5; color: #fa709a; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-shield"></i> 风控体系</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 平台2：微信运营平台 -->
+                    <div class="col-md-6 col-sm-12" style="margin-bottom: 25px;">
+                        <div class="platform-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 8px 30px rgba(7, 193, 96, 0.15); border-left: 5px solid #07c160; transition: all 0.3s ease; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="width: 70px; height: 70px; line-height: 70px; text-align: center; font-size: 32px; background: linear-gradient(135deg, #07c160 0%, #1aad19 100%); color: white; border-radius: 15px; margin-right: 20px; box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3);">
+                                    <i class="fa fa-weixin"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">微信运营平台</h3>
+                                    <p style="margin: 5px 0 0 0; color: #07c160; font-size: 14px; font-weight: 500;">WeChat Operation Platform</p>
+                                </div>
+                                <span style="background: linear-gradient(135deg, #07c160, #1aad19); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">HOT</span>
+                            </div>
+                            <p style="color: #666; line-height: 1.8; margin-bottom: 18px; font-size: 14px;">一站式微信公众号管理工具，支持多账号管理、粉丝互动、内容营销与数据分析</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <span style="background: #e8f9ee; color: #07c160; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-wechat"></i> 多账号管理</span>
+                                <span style="background: #e8f9ee; color: #07c160; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-tags"></i> 用户标签</span>
+                                <span style="background: #e8f9ee; color: #07c160; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-send"></i> 群发消息</span>
+                                <span style="background: #e8f9ee; color: #07c160; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-qrcode"></i> 二维码营销</span>
+                                <span style="background: #e8f9ee; color: #07c160; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-comments"></i> 互动功能</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 平台3：消息推送平台 -->
+                    <div class="col-md-6 col-sm-12" style="margin-bottom: 25px;">
+                        <div class="platform-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15); border-left: 5px solid #667eea; transition: all 0.3s ease; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="width: 70px; height: 70px; line-height: 70px; text-align: center; font-size: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; margin-right: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                                    <i class="fa fa-bell"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">消息推送平台</h3>
+                                    <p style="margin: 5px 0 0 0; color: #667eea; font-size: 14px; font-weight: 500;">Message Push Platform</p>
+                                </div>
+                                <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">PRO</span>
+                            </div>
+                            <p style="color: #666; line-height: 1.8; margin-bottom: 18px; font-size: 14px;">统一的消息推送中心，支持短信、邮件、微信、App Push等多通道触达用户</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <span style="background: #f0f3ff; color: #667eea; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-envelope"></i> 短信/邮件</span>
+                                <span style="background: #f0f3ff; color: #667eea; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-mobile"></i> App Push</span>
+                                <span style="background: #f0f3ff; color: #667eea; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-clock-o"></i> 定时发送</span>
+                                <span style="background: #f0f3ff; color: #667eea; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-line-chart"></i> 效果追踪</span>
+                                <span style="background: #f0f3ff; color: #667eea; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-tasks"></i> 任务管理</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 平台4：问卷平台 -->
+                    <div class="col-md-6 col-sm-12" style="margin-bottom: 25px;">
+                        <div class="platform-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 8px 30px rgba(40, 167, 69, 0.15); border-left: 5px solid #28a745; transition: all 0.3s ease; height: 100%;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="width: 70px; height: 70px; line-height: 70px; text-align: center; font-size: 32px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border-radius: 15px; margin-right: 20px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
+                                    <i class="fa fa-edit"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">问卷调研平台</h3>
+                                    <p style="margin: 5px 0 0 0; color: #28a745; font-size: 14px; font-weight: 500;">Survey & Research Platform</p>
+                                </div>
+                                <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">NEW</span>
+                            </div>
+                            <p style="color: #666; line-height: 1.8; margin-bottom: 18px; font-size: 14px;">可视化拖拽式问卷设计器，支持多题型、智能统计与数据分析报告生成</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <span style="background: #e8f9ee; color: #28a745; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-arrows"></i> 可视化设计</span>
+                                <span style="background: #e8f9ee; color: #28a745; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-list-alt"></i> 10+题型支持</span>
+                                <span style="background: #e8f9ee; color: #28a745; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-bar-chart"></i> ECharts统计</span>
+                                <span style="background: #e8f9ee; color: #28a745; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-file-pdf-o"></i> 报告导出</span>
+                                <span style="background: #e8f9ee; color: #28a745; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 500;"><i class="fa fa-user-secret"></i> 匿名收集</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心特性 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>平台核心优势</h2>
+                            <p>为什么选择ZDH？</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                                    <i class="fa fa-rocket"></i>
+                                </div>
+                                <h3>开箱即用</h3>
+                                <p>零代码配置，拖拽式操作，快速上手，降低使用门槛，提升工作效率</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                    <i class="fa fa-database"></i>
+                                </div>
+                                <h3>多源支持</h3>
+                                <p>支持Hive、HDFS、JDBC、HBase、MongoDB、ES、Kafka等主流数据源</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <h3>灵活调度</h3>
+                                <p>内置调度器，支持Cron定时、时间序列、手动触发，可对接Airflow/Azkaban</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                                    <i class="fa fa-code"></i>
+                                </div>
+                                <h3>二次开发</h3>
+                                <p>开源架构，Spring Boot + MyBatis，完善的API接口，易于扩展定制</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">核心业务平台</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">数据源类型</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">ETL任务类型</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">开源免费</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要功能模块 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fa fa-th-large"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>主要功能模块</h2>
+                            <p>覆盖数据全生命周期管理</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- ETL数据集成 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #667eea, #764ba2); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-exchange"></i> ETL数据集成</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>DataX同步：</strong>基于DataX的高性能离线数据同步，支持批量导入导出</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>JDBC传输：</strong>通用JDBC数据源对接，支持MySQL/Oracle/PostgreSQL等</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>Flink流处理：</strong>实时流数据处理，支持窗口聚合、CEP复杂事件处理</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>SQL执行：</strong>在线SQL编辑器，支持多数据源查询与结果预览</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>批量任务：</strong>批量ETL作业管理，支持依赖编排和并行执行</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 任务调度 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #f093fb, #f5576c); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-clock-o"></i> 任务调度中心</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>Cron调度：</strong>标准Cron表达式，灵活配置定时策略（每分钟/每天/每周/每月）</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>时间序列：</strong>按时间维度自动生成实例，适合周期性批处理场景</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>依赖管理：</strong>DAG有向无环图，任务间依赖自动解析和拓扑排序</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>失败重试：</strong>智能重试机制，支持指数退避和最大次数限制</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>外部集成：</strong>提供标准接口，可与Airflow、Azkaban等调度器对接</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 数据源管理 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #4facfe, #00f2fe); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-plug"></i> 数据源管理</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <p style="margin-bottom: 15px;"><strong>支持的数据源类型：</strong></p>
+                                    <div>
+                                        <span class="data-source-item"><i class="fa fa-h-square"></i> Hive</span>
+                                        <span class="data-source-item"><i class="fa fa-server"></i> HDFS</span>
+                                        <span class="data-source-item"><i class="fa fa-database"></i> JDBC (MySQL/Oracle/PG)</span>
+                                        <span class="data-source-item"><i class="fa fa-cubes"></i> HBase / Phoenix</span>
+                                        <span class="data-source-item"><i class="fa fa-leaf"></i> MongoDB</span>
+                                        <span class="data-source-item"><i class="fa fa-search"></i> Elasticsearch</span>
+                                        <span class="data-source-item"><i class="fa fa-bolt"></i> Kafka</span>
+                                        <span class="data-source-item"><i class="fa fa-globe"></i> HTTP接口</span>
+                                        <span class="data-source-item"><i class="fa fa-flash"></i> Redis</span>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse in">
-                                        <div class="panel-body">
-                                            <div class="alert alert-warning">zdh 主要的作用 是从hdfs,hive,jdbc,http-json接口 等数据源拉取数据,并转存到hdfs,hive,jdbc等其他数据源
-                                                支持集群式部署</div>
-                                            <ol>
-                                                <li>支持sql标准函数</li>
-                                                <li>支持界面选择配置</li>
-                                                <li>支持快速复制已有任务</li>
-                                                <li>支持外部调度工具(需要修改,新增特定接口)</li>
-                                                <li>弹性扩展(可单机,可集群)</li>
-                                                <li>支持客户级权限</li>
-                                                <li>简单易用支持二次开发</li>
-                                                <li>自带简单调度工具,可配置定时任务,时间序列任务,设定次数</li>
-                                                <li>支持SHELL 命令检查文件 if [ ! -f "/dir1/file1" ];then echo "文件不存在"; else echo "true"; fi</li>
-                                            </ol>
-                                        </div>
+                                    <div class="tech-stack" style="margin-top: 15px;">
+                                        <i class="fa fa-info-circle"></i> 统一连接池管理，支持加密存储密码，连接状态实时监控
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 监控告警 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #43e97b, #38f9d7); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-line-chart"></i> 监控告警</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>实时监控：</strong>任务运行状态、资源占用、数据量统计实时展示</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>日志追踪：</strong>完整执行日志，支持关键字搜索和日志下载</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>告警通知：</strong>失败/超时/异常自动告警，支持邮件、企业微信通知</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>集群监控：</strong>多节点健康检查，负载均衡，故障自动转移</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>血缘分析：</strong>数据血缘关系图谱，影响范围分析</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 问卷系统 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #fa709a, #fee140); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-edit"></i> 问卷调查系统 <span class="badge-new">NEW</span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>可视化设计器：</strong>拖拽式问卷设计，所见即所得，零代码创建专业问卷</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>丰富题型：</strong>支持单选、多选、文本、评分、日期、矩阵、下拉等10+种题型</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>数据收集：</strong>浏览器唯一标识识别用户，防止重复提交，7天过期机制</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>统计分析：</strong>ECharts图表可视化，饼图/柱状图/表格多维度展示</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>报告导出：</strong>一键生成统计报告，支持PDF/Excel格式导出</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 微信推送 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #a8edea, #fed6e3); color: #333; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-weixin"></i> 微信运营推送</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>公众号管理：</strong>多账号接入，素材库、菜单、模板消息统一管理</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>用户标签：</strong>用户分组打标，精准人群圈选，支持自定义规则</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>群发消息：</strong>图文/文本/图片消息群发，定时发送，效果追踪</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>二维码营销：</strong>参数二维码生成，渠道来源追踪，粉丝增长分析</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>互动功能：</strong>评论管理、关注回复、关键词自动应答</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 数字化营销 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #ffecd2, #fcb69f); color: #333; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-users"></i> 数字化营销平台</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>客户画像：</strong>360度客户视图，行为轨迹分析，RFM模型分层</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>策略引擎：</strong>可视化策略编排，条件分支、A/B测试、灰度发布</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>人群圈选：</strong>多维度筛选，标签组合，动态更新客群</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>触达通道：</strong>短信、邮件、微信、App Push多渠道统一调度</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>风控体系：</strong>实时风险检测，黑名单过滤，频次控制</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 权限安全 -->
+                        <div class="col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title" style="background: linear-gradient(to right, #a18cd1, #fbc2eb); color: white; border-radius: 5px 5px 0 0;">
+                                    <h5><i class="fa fa-shield"></i> 权限与安全</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>RBAC权限：</strong>基于角色的访问控制，细粒度到按钮级别</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>数据隔离：</strong>租户级数据隔离，产品线维度权限管控</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>操作审计：</strong>完整的操作日志记录，支持回溯和合规审计</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>Shiro认证：</strong>成熟的认证框架，支持Session/Token/JWT多种模式</li>
+                                        <li><i class="fa fa-check-circle text-success"></i> <strong>Sentinel流控：</strong>接口限流熔断，防止恶意调用和雪崩效应</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>支持的数据源</h5>
+        </div>
+
+        <!-- 技术架构 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                            <i class="fa fa-cogs"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>技术架构</h2>
+                            <p>现代化技术栈，稳定可靠</p>
+                        </div>
                     </div>
-                    <div class="ibox-content">
-                        <p>都包含那些数据源？</p>
-                        <ol>
-                            <li>hive(单集群使用多个远程hive)</li>
-                            <li>hdfs</li>
-                            <li>jdbc (所有的jdbc,包含特殊jdbc如hbase-phoenix,spark-jdbc)</li>
-                            <li>hbase</li>
-                            <li>mongodb</li>
-                            <li>es</li>
-                            <li>kafka</li>
-                            <li>http</li>
-                            <li>……</li>
-                        </ol>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="tech-stack">
+                                <strong><i class="fa fa-code"></i> 后端技术栈</strong>
+                                <hr style="margin: 10px 0;">
+                                <table class="table table-bordered table-hover" style="margin-bottom: 0;">
+                                    <tbody>
+                                        <tr>
+                                            <td width="30%"><strong>框架基础</strong></td>
+                                            <td>Spring Boot + Spring MVC + MyBatis</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>任务调度</strong></td>
+                                            <td>Quartz + 自研调度引擎</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>数据同步</strong></td>
+                                            <td>DataX + Flink CDC</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>安全框架</strong></td>
+                                            <td>Apache Shiro + JWT Token</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>流控降级</strong></td>
+                                            <td>Alibaba Sentinel</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>数据库</strong></td>
+                                            <td>MySQL + Redis (缓存/会话)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="tech-stack">
+                                <strong><i class="fa fa-desktop"></i> 前端技术栈</strong>
+                                <hr style="margin: 10px 0;">
+                                <table class="table table-bordered table-hover" style="margin-bottom: 0;">
+                                    <tbody>
+                                        <tr>
+                                            <td width="30%"><strong>UI框架</strong></td>
+                                            <td>Bootstrap 3 + jQuery + Font Awesome</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>表格组件</strong></td>
+                                            <td>Bootstrap Table (服务端分页)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>图表库</strong></td>
+                                            <td>ECharts 5 (数据可视化)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>表单验证</strong></td>
+                                            <td>jQuery Validate + Layer弹窗</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>模板引擎</strong></td>
+                                            <td>Thymeleaf + AJAX动态渲染</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>拖拽组件</strong></td>
+                                            <td>SortableJS (问卷设计器)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4><i class="fa fa-lightbulb-o"></i> 架构特点</h4>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>微服务就绪：</strong>模块化解耦，可拆分为独立微服务部署</li>
+                            <li><strong>水平扩展：</strong>无状态设计，支持多节点集群部署</li>
+                            <li><strong>高可用性：</strong>主从切换、故障自愈、数据冗余备份</li>
+                            <li><strong>容器化支持：</strong>Docker镜像构建，Kubernetes编排文件</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 版本历史 -->
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>版本演进</h2>
+                            <p>持续迭代优化</p>
+                        </div>
+                    </div>
+
+                    <div class="version-timeline">
+                        <div class="version-item">
+                            <h4>v2.x - 企业增强版 <small class="pull-right badge badge-primary">当前版本</small></h4>
+                            <ul style="color: #666; font-size: 13px;">
+                                <li>新增问卷调查系统（可视化设计、统计分析）</li>
+                                <li>新增数字化营销平台（客户画像、策略引擎）</li>
+                                <li>新增微信运营工具（多账号管理、群发推送）</li>
+                                <li>增强Flink流处理能力</li>
+                                <li>优化UI交互体验</li>
+                            </ul>
+                        </div>
+                        <div class="version-item">
+                            <h4>v1.0.0 - 基础版 <code class="pull-right" style="font-size: 11px;">2020.04.01</code></h4>
+                            <div class="alert alert-warning" style="padding: 10px; font-size: 13px;">
+                                <strong>ZDH核心定位：</strong>从HDFS、Hive、JDBC、HTTP-JSON等数据源拉取数据，并转存到其他数据源，支持集群式部署。
+                            </div>
+                            <ul style="color: #666; font-size: 13px;">
+                                <li>支持SQL标准函数</li>
+                                <li>支持界面选择配置</li>
+                                <li>支持快速复制已有任务</li>
+                                <li>支持外部调度工具（需修改特定接口）</li>
+                                <li>弹性扩展（可单机、可集群）</li>
+                                <li>支持客户级权限</li>
+                                <li>简单易用，支持二次开发</li>
+                                <li>自带简单调度工具，支持定时任务、时间序列任务、设定次数</li>
+                                <li>支持SHELL命令检查文件</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>项目信息</h2>
+                            <p>开源社区</p>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <img src="img/logo.png" alt="ZDH Logo" onerror="this.style.display='none'" style="max-width: 150px; margin-bottom: 15px;">
+                            <h3 style="margin-top: 10px; color: #333;">ZDH (Zhao Data Hub)</h3>
+                            <p style="color: #666;">智能数据集成中间件</p>
+                        </div>
+
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading"><i class="fa fa-github fa-fw"></i> GitHub地址</h4>
+                                <p class="list-group-item-text" style="margin-top: 8px;">
+                                    <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" style="word-break: break-all;">
+                                        https://github.com/zhaoyachao/zdh_web
+                                    </a>
+                                </p>
+                                <small class="text-muted">本预览版本为dev分支，开发者可拉取dev分支做具体分析</small>
+                            </div>
+
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading"><i class="fa fa-book fa-fw"></i> 文档说明</h4>
+                                <p class="list-group-item-text" style="margin-top: 8px;">
+                                    详细的使用文档请参考项目Wiki或smart_doc目录下的各模块文档
+                                </p>
+                            </div>
+
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading"><i class="fa fa-envelope fa-fw"></i> 技术支持</h4>
+                                <p class="list-group-item-text" style="margin-top: 8px;">
+                                    如有问题，欢迎提交Issue或Pull Request参与贡献
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #999; font-size: 13px; margin-bottom: 15px;">
+                                <i class="fa fa-heart text-danger"></i> 如果觉得对您有帮助，欢迎Star支持！
+                            </p>
+                            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="btn btn-primary btn-lg">
+                                <i class="fa fa-github"></i> Star This Project
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <script src="js/zdh_common.js"></script>
-    <!-- 全局js -->
+    <!-- 页脚 -->
+    <div style="background: #2d2d2d; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px;">
+        <p>&copy; 2020-2026 ZDH Team. All rights reserved.</p>
+        <p style="font-size: 13px; margin-top: 10px;">
+            Built with <i class="fa fa-heart text-danger"></i> using Spring Boot & Bootstrap
+        </p>
+    </div>
+
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
-    <script src="js/plugins/layer/layer.min.js"></script>
-
-    <!-- 自定义js -->
     <script src="js/content.js"></script>
 
-    <!-- 欢迎信息 -->
-    <script src="js/welcome.js"></script>
 </body>
 
 </html>
