@@ -148,21 +148,37 @@ function generateBrowserId() {
     return browserId;
 }
 
-var browserUserId = generateBrowserId();
+var browserUserId = null;
 
 (function() {
     console.log('=== 问卷预览页面开始加载 ===');
 
-    // 从URL获取surveyId参数
+    // 从URL获取参数
     var urlParams = new URLSearchParams(window.location.search);
     surveyId = urlParams.get('id');
-    
+
+    // 获取Token参数（支持非匿名模式）
+    var externalToken = urlParams.get('token');
+
+    console.log('🔍 [调试] URL完整参数:', window.location.search);
+    console.log('🔍 [调试] Token原始值:', externalToken);
+    console.log('🔍 [调试] Token类型:', typeof externalToken);
+
+    if (externalToken && externalToken.trim()) {
+        // 使用传入的Token（非匿名模式）
+        browserUserId = externalToken.trim();
+    } else {
+        // 使用浏览器指纹生成ID（匿名模式）
+        browserUserId = generateBrowserId();
+    }
+
     if (!surveyId) {
         showError('缺少问卷ID参数');
         return;
     }
 
     console.log('问卷ID:', surveyId);
+    console.log('用户身份模式:', (externalToken && externalToken.trim()) ? '非匿名' : '匿名');
 
     // 发起AJAX请求获取问卷详情
     loadSurveyDetail(surveyId);
