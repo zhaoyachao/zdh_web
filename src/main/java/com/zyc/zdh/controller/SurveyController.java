@@ -21,7 +21,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +44,9 @@ public class SurveyController extends BaseController {
         return "survey/survey_index";
     }
 
-    @RequestMapping("survey_design")
-    public String survey_design() {
-        return "survey/survey_design";
+    @RequestMapping("survey_design_index")
+    public String survey_design_index() {
+        return "survey/survey_design_index";
     }
 
     @RequestMapping("survey_preview")

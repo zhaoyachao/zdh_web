@@ -746,6 +746,11 @@
   + v5.7.3 [zdh_web]修复代码生成工具bug
   + v5.7.3 [zdh_web]新增服务号文章,评论等功能
 
+  + v5.7.4 [zdh_web]新增问卷功能
+  + v5.7.4 [zdh_web]优化ai客服页面
+  + v5.7.4 [zdh_web]新增rag调用(需要结合zdh_rag项目使用)
+  + v5.7.4 [zdh_web]优化数据仓库,数据资产等页面
+
 # 版本迁移步骤  
 ## 4.7.15迁移4.7.16
     alter table data_sources_info add column update_time timestamp default null comment '更新时间';
@@ -4472,6 +4477,40 @@
 
 
 ## 5.7.3迁移5.7.4
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509846325749878784, '1251925635509522432', '问卷管理', '3', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:10:16', '2026-05-29 09:10:16', 'survey_index', '2', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454480793600, '1509846325749878784', '问卷管理-列表', '4', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_list', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454484987904, '1509846325749878784', '问卷管理-分页列表', '4', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_list_by_page', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454484987905, '1509846325749878784', '问卷管理-设计页面', '4', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-05-29 09:18:43', '2026-05-29 09:22:36', 'survey_design_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454484987906, '1509846325749878784', '问卷管理-明细', '4', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_detail', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454489182208, '1509846325749878784', '问卷管理-预览页面', '4', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-05-29 09:18:43', '2026-05-29 09:23:06', 'survey_preview', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454489182209, '1509846325749878784', '问卷管理-新增', '4', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-05-29 09:18:43', '2026-05-29 09:23:53', 'survey_add', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509848454489182210, '1509846325749878784', '问卷管理-删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_delete', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509850007283437568, '1509846325749878784', '问卷管理-统计页面', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:24:53', '2026-05-29 09:24:53', 'survey_statistics_index', '3', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509850137424302080, '1509846325749878784', '问卷管理-统计查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:25:24', '2026-05-29 09:25:24', 'survey_statistics', '5', '', '', 'zdh', '');
+    INSERT INTO resource_tree_info
+    (id, parent, text, `level`, owner, icon, resource_desc, `order`, is_enable, create_time, update_time, url, resource_type, notice_title, event_code, product_code, qps)
+    VALUES(1509850213601251328, '1509846325749878784', '问卷管理-提交', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:25:43', '2026-05-29 09:25:43', 'survey_submit', '5', '', '', 'zdh', '');
+
     CREATE TABLE IF NOT EXISTS `survey_info` (
     `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `survey_title` varchar(500) NOT NULL COMMENT '问卷标题',
