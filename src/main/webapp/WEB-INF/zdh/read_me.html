@@ -951,9 +951,118 @@
         </p>
     </div>
 
+    <!-- 悬浮按钮：返回登录页面 -->
+    <a id="link_to_login" class="floating-login-btn" title="返回登录页面">
+        <i class="fa fa-sign-in"></i>
+        <span class="btn-text">登录</span>
+    </a>
+
+    <style>
+        .floating-login-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            height: 50px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .floating-login-btn i {
+            font-size: 18px;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-login-btn .btn-text {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .floating-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            padding: 0 28px;
+        }
+
+        .floating-login-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        @media (max-width: 768px) {
+            .floating-login-btn {
+                bottom: 20px;
+                right: 20px;
+                height: 45px;
+                padding: 0 16px;
+            }
+
+            .floating-login-btn i {
+                font-size: 16px;
+                margin-right: 6px;
+            }
+
+            .floating-login-btn .btn-text {
+                font-size: 13px;
+            }
+        }
+    </style>
+
     <script src="js/jquery.min.js?v=2.1.4"></script>
     <script src="js/bootstrap.min.js?v=3.3.6"></script>
     <script src="js/content.js"></script>
+
+    <script>
+        // 动态设置返回登录链接（支持 context-path）
+        (function() {
+            console.log('=== [调试] 开始设置返回登录链接 ===');
+
+            var currentPath = window.location.pathname;
+            console.log('📍 [调试] 当前路径:', currentPath);
+
+            // 从当前路径提取 context-path
+            // 例如: /readme -> '', /zdh/readme -> /zdh, /app/readme -> /app
+            var pathParts = currentPath.split('/');
+            console.log('🔍 [调试] 路径分割结果:', pathParts);
+
+            var basePath = '';
+
+            // 如果路径格式为 /xxx/readme，则提取 /xxx 作为 basePath
+            if (pathParts.length >= 3 && pathParts[1]) {
+                basePath = '/' + pathParts[1];
+            }
+
+            console.log('✅ [调试] 提取的 basePath:', basePath);
+
+            var loginUrl = basePath + '/login.html';
+            console.log('🎯 [调试] 最终登录URL:', loginUrl);
+
+            var linkElement = document.getElementById('link_to_login');
+            console.log('🔗 [调试] 找到链接元素:', linkElement);
+
+            if (linkElement) {
+                linkElement.setAttribute('href', loginUrl);
+                console.log('✅ [调试] 链接设置成功！href =', linkElement.getAttribute('href'));
+            } else {
+                console.error('❌ [错误] 未找到 id="link_to_login" 的元素！');
+            }
+
+            console.log('=== [调试] 设置完成 ===');
+        })();
+    </script>
 
 </body>
 
