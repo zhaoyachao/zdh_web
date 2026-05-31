@@ -323,6 +323,15 @@
 <script>
 
     $(document).ready(function () {
+        // 监听Enter键触发登录
+        $('#login input').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                login2();
+                return false;
+            }
+        });
+
         //加载平台名称
         $.ajax({
             type: 'GET',
