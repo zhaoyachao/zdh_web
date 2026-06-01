@@ -351,6 +351,46 @@ public class SystemController extends BaseController{
         return "read_me";
     }
 
+    /**
+     * 微智客 - 微信运营平台
+     * @return
+     */
+    @RequestMapping("/weizhike")
+    public String weizhike() {
+
+        return "weizhike";
+    }
+
+    /**
+     * PushX - 消息推送平台
+     * @return
+     */
+    @RequestMapping("/pushx")
+    public String pushx() {
+
+        return "pushx";
+    }
+
+    /**
+     * 数字化经营平台
+     * @return
+     */
+    @RequestMapping("/jingying")
+    public String jingying() {
+
+        return "jingying";
+    }
+
+    /**
+     * 问卷调研平台
+     * @return
+     */
+    @RequestMapping("/wenjuan")
+    public String wenjuan() {
+
+        return "wenjuan";
+    }
+
 
     /**
      * 解析quartz表达式

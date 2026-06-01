@@ -219,6 +219,10 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
         permissions.add("every_day_notice");
         permissions.add("notice_list");
         permissions.add("readme");
+        permissions.add("weizhike");
+        permissions.add("pushx");
+        permissions.add("jingying");
+        permissions.add("wenjuan");
         permissions.add("zdh_help");
         permissions.add("check_captcha");
         permissions.add("get_platform_name");

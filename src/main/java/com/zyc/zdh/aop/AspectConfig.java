@@ -399,6 +399,10 @@ public class AspectConfig implements Ordered {
         permissions.add("retrieve_password");
         permissions.add("register");
         permissions.add("readme");
+        permissions.add("weizhike");
+        permissions.add("pushx");
+        permissions.add("jingying");
+        permissions.add("wenjuan");
         permissions.add("zdh_version");
         permissions.add("zdh_download_index");
         permissions.add("favicon");

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PushX - 企业级消息推送平台</title>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-banner h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-banner p {
+            font-size: 18px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            font-size: 36px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .module-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 10px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .module-title {
+            flex: 1;
+        }
+
+        .module-title h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .module-title p {
+            margin: 5px 0 0 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .data-source-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            color: #e65100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .tech-stack strong {
+            color: #ff6b6b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 4px solid #ff6b6b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .stats-row {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 0 30px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #ff6b6b;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .version-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .version-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .version-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .version-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #ff6b6b;
+        }
+
+        .badge-new {
+            background: #ff6b6b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+
+    <!-- 头部横幅 -->
+    <div class="header-banner animated fadeInDown">
+        <h1><i class="fa fa-bell"></i> PushX - 企业级消息推送平台</h1>
+        <p>多渠道统一消息推送解决方案 | 短信、邮件、微信、App推送一站式服务 | 高可用、高并发、可追踪</p>
+        <div style="margin-top: 30px;">
+            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-github fa-lg"></i> GitHub
+            </a>
+            <a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-git-alt fa-lg"></i> Gitee
+            </a>
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInUp">
+
+        <!-- 核心能力与快速开始 - 置顶展示 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section" style="background: linear-gradient(135deg, #4a1818 0%, #2d1010 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="text-align: center; margin-bottom: 35px;">
+                        <h2 style="color: white; font-size: 32px; font-weight: 700; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(255,107,107,0.5);">
+                            <i class="fa fa-bolt" style="color: #ffd700; margin-right: 10px;"></i>
+                            核心能力矩阵 · 全渠道消息触达引擎
+                        </h2>
+                        <p style="color: #f0c0c0; font-size: 16px; line-height: 1.8;">从单点到海量，构建企业级消息通知基础设施</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- 能力1：多渠道推送 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,142,83,0.15) 100%); border: 2px solid rgba(255,107,107,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(255,107,107,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(255,107,107,0.4);">
+                                    <i class="fa fa-paper-plane"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">多渠道推送</h4>
+                                <p style="color: #f0c0c0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">短信、邮件、微信模板、App推送统一接入</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-sms"></i> 短信</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-envelope"></i> 邮件</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-weixin"></i> 微信</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力2：模板管理 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,142,83,0.15) 100%); border: 2px solid rgba(255,107,107,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(255,107,107,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(255,107,107,0.4);">
+                                    <i class="fa fa-file-code-o"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">模板管理</h4>
+                                <p style="color: #f0c0c0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">可视化模板编辑、变量替换、多语言支持</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-edit"></i> 可视化</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-code"></i> 变量</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-globe"></i> 多语言</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力3：定时调度 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,142,83,0.15) 100%); border: 2px solid rgba(255,107,107,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(255,107,107,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(255,107,107,0.4);">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">定时调度</h4>
+                                <p style="color: #f0c0c0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">Cron表达式、延迟发送、定时批量推送</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-calendar"></i> Cron</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-hourglass-half"></i> 延迟</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-tasks"></i> 批量</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力4：统计分析 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,142,83,0.15) 100%); border: 2px solid rgba(255,107,107,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(255,107,107,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(255,107,107,0.4);">
+                                    <i class="fa fa-line-chart"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">统计分析</h4>
+                                <p style="color: #f0c0c0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">送达率、点击率、转化率实时追踪分析</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-check-circle"></i> 送达</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-mouse-pointer"></i> 点击</span>
+                                    <span style="background: rgba(255,107,107,0.2); color: #ffb3b3; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-exchange"></i> 转化</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA 按钮 -->
+                    <div style="text-align: center; margin-top: 35px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: white; font-size: 22px; margin-bottom: 20px; font-weight: 600;">
+                            <i class="fa fa-rocket" style="color: #ffd700; margin-right: 8px;"></i>
+                            立即开启高效消息推送之旅
+                        </h3>
+                        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center;">
+                            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 5px 20px rgba(255,107,107,0.4); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(255,107,107,0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 20px rgba(255,107,107,0.4)'">
+                                <i class="fa fa-github"></i> 克隆项目 (Git Clone)
+                            </a>
+                            <div style="color: #c08080; font-size: 14px;">
+                                或执行命令：
+                                <code style="background: rgba(255,255,255,0.1); color: #00ff88; padding: 6px 14px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px; margin-left: 8px;">
+                                    git clone https://github.com/zhaoyachao/zdh_web.git && cd zdh_web && sh build.sh && sh bin/start.sh
+                                </code>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; color: #a07070; font-size: 13px;">
+                            <i class="fa fa-info-circle"></i>
+                            启动后访问 <strong style="color: #ff6b6b;">http://localhost:8081</strong> | 默认账号：<strong style="color: #43e97b;">zyc / 123456</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 平台特色功能 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>平台核心特色</h2>
+                            <p>企业级消息推送的必备能力</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-shield"></i>
+                                </div>
+                                <h3>高可用架构</h3>
+                                <p>分布式集群部署、故障自动转移、消息持久化存储，保证99.99%的消息送达率。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-flash"></i>
+                                </div>
+                                <h3>高性能引擎</h3>
+                                <p>异步非阻塞IO、消息队列削峰填谷、支持百万级并发推送，毫秒级响应。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-eye"></i>
+                                </div>
+                                <h3>全链路追踪</h3>
+                                <p>从发送到送达的全流程监控，实时状态追踪，失败自动重试，完整日志记录。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能模块详解 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-cubes"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>功能模块一览</h2>
+                            <p>覆盖消息推送全生命周期的完整功能矩阵</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #e65100;"><i class="fa fa-paper-plane"></i> 短信推送</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>多厂商支持：</strong>阿里云、腾讯云、云片网等主流短信服务商</li>
+                                    <li><strong>模板审核：</strong>短信模板在线提交、自动审核、版本管理</li>
+                                    <li><strong>签名管理：</strong>多签名配置、自动切换、流量分配</li>
+                                    <li><strong>限流防刷：</strong>频率限制、黑名单过滤、敏感词检测</li>
+                                    <li><strong>成本控制：</strong>余额预警、用量统计、成本分摊</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #e65100;"><i class="fa fa-envelope"></i> 邮件推送</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>富文本支持：</strong>HTML邮件、附件上传、内嵌图片</li>
+                                    <li><strong>模板引擎：</strong>Velocity/Freemarker模板、变量动态渲染</li>
+                                    <li><strong>发件箱管理：</strong>多账户轮发、域名配置、SPF/DKIM设置</li>
+                                    <li><strong>退信处理：</strong>退信自动识别、无效地址清理、原因分析</li>
+                                    <li><strong>打开追踪：</strong>邮件打开率、链接点击率、用户行为分析</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #e65100;"><i class="fa fa-weixin"></i> 微信消息</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>模板消息：</strong>公众号模板消息、小程序订阅消息</li>
+                                    <li><strong>客服消息：</strong>48小时内主动推送、图文/文本/图片</li>
+                                    <li><strong>群发消息：</strong>标签群发、分组群发、定时群发</li>
+                                    <li><strong>菜单消息：</strong>菜单点击触发、扫码事件响应</li>
+                                    <li><strong>素材管理：</strong>永久/临时素材、多媒体文件上传</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #e65100;"><i class="fa fa-mobile"></i> App推送</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>多平台支持：</strong>iOS (APNs)、Android (FCM/JPush/个推)</li>
+                                    <li><strong>精准推送：</strong>设备标签、用户分群、地理位置定向</li>
+                                    <li><strong>富媒体：</strong>大图、视频、声音、自定义样式</li>
+                                    <li><strong>A/B测试：</strong>推送内容对比、最佳方案优选</li>
+                                    <li><strong>到达确认：</strong>送达回执、展示回执、点击回调</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用场景 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-industry"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>典型应用场景</h2>
+                            <p>适用于各行业的消息通知需求</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </div>
+                                <h3>电商零售</h3>
+                                <p>订单状态通知、物流更新提醒、促销活动推送、评价邀请</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-university"></i>
+                                </div>
+                                <h3>金融银行</h3>
+                                <p>交易验证码、账单通知、风险预警、理财产品推荐</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-gamepad"></i>
+                                </div>
+                                <h3>游戏娱乐</h3>
+                                <p>登录验证、活动奖励通知、版本更新、好友互动提醒</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-building-o"></i>
+                                </div>
+                                <h3>企业办公</h3>
+                                <p>OA审批通知、会议提醒、系统告警、日报周报推送</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术架构 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>技术架构</h2>
+                            <p>基于成熟稳定的高性能技术栈</p>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>消息队列：</strong>RabbitMQ / Kafka / RocketMQ / ActiveMQ</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>调度框架：</strong>Quartz / XXL-JOB / Elastic-Job</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>缓存层：</strong>Redis Cluster（消息去重、频率限制、状态缓存）</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>数据库：</strong>MySQL（主库）+ MongoDB（日志库）+ ES（搜索）</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>监控体系：</strong>Prometheus + Grafana + ELK 日志分析</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速开始指南 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-play-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>快速开始</h2>
+                            <p>三步启动您的消息推送平台</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-download"></i>
+                                </div>
+                                <h3>Step 1: 获取代码</h3>
+                                <p>从GitHub或Gitee克隆项目代码到本地</p>
+                                <div class="code-block">git clone https://github.com/zhaoyachao/zdh_web.git</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-cogs"></i>
+                                </div>
+                                <h3>Step 2: 编译打包</h3>
+                                <p>使用Maven进行项目编译和打包</p>
+                                <div class="code-block">sh build.sh</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                                    <i class="fa fa-rocket"></i>
+                                </div>
+                                <h3>Step 3: 启动应用</h3>
+                                <p>启动应用并访问消息推送平台</p>
+                                <div class="code-block">sh bin/start.sh<br># 访问 http://localhost:8081</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 30px;">
+                        <h4 style="margin-top: 0; color: #e65100;"><i class="fa fa-lightbulb-o"></i> 配置说明</h4>
+                        <p style="margin-bottom: 10px;">在启动前，请确保在 <code>application.properties</code> 中配置以下参数：</p>
+                        <div class="code-block">
+# 短信配置（以阿里云为例）<br>
+sms.provider=aliyun<br>
+sms.access_key_id=your_access_key<br>
+sms.access_key_secret=your_secret<br>
+sms.sign_name=您的签名<br><br>
+# 邮件配置<br>
+mail.smtp.host=smtp.example.com<br>
+mail.smtp.port=465<br>
+mail.smtp.username=noreply@example.com<br>
+mail.smtp.password=your_email_password<br><br>
+# Redis配置（消息队列）<br>
+spring.redis.host=localhost<br>
+spring.redis.port=6379
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本特性 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>版本演进</h2>
+                            <p>持续迭代，不断增强推送能力</p>
+                        </div>
+                    </div>
+
+                    <div class="version-timeline">
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.4 <span class="badge-new">最新</span></h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">新增App推送通道、优化消息重试机制、提升系统稳定性至99.99%</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.3</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">新增短信多厂商智能切换、邮件打开率追踪、推送A/B测试功能</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.2</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">引入Redis集群支持百万级并发、新增推送数据可视化大屏</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.1</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">重构消息模板引擎、新增变量校验机制、优化定时任务调度</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.0</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">PushX消息推送平台正式发布，支持短信/邮件/微信/App四合一推送</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目信息 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>项目信息</h2>
+                            <p>开源项目，持续维护中</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">项目名称</td>
+                                        <td>ZDH PushX (Enterprise Message Push Platform)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">开源协议</td>
+                                        <td>Apache License 2.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">技术栈</td>
+                                        <td>Java / Spring Boot / RabbitMQ / Redis</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">适用场景</td>
+                                        <td>企业消息通知、营销推送、系统告警、验证码服务</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">GitHub</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web" target="_blank">github.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">Gitee</td>
+                                        <td><a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank">gitee.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">相关文档</td>
+                                        <td><a href="/readme" target="_blank">ZDH主平台</a> | <a href="/weizhike" target="_blank">微智客</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">问题反馈</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web/issues" target="_blank">提交Issue</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                            <i class="fa fa-star fa-lg"></i> Star 支持
+                        </a>
+                        <a href="https://github.com/zhaoyachao/zdh_web/fork" target="_blank" class="link-button">
+                            <i class="fa fa-code-fork fa-lg"></i> Fork 参与
+                        </a>
+                        <a href="/readme" target="_blank" class="link-button">
+                            <i class="fa fa-database fa-lg"></i> ZDH主平台
+                        </a>
+                        <a href="/weizhike" target="_blank" class="link-button">
+                            <i class="fa fa-weixin fa-lg"></i> 微智客
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <div style="background: #2d2d2d; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px;">
+        <p>&copy; 2020-2026 ZDH Team. All rights reserved.</p>
+        <p style="font-size: 13px; margin-top: 10px;">
+            Built with <i class="fa fa-heart text-danger"></i> using Spring Boot & Bootstrap | PushX · 让每一条消息都精准送达
+        </p>
+    </div>
+
+    <!-- 悬浮按钮：返回登录页面 -->
+    <a id="link_to_login" class="floating-login-btn" title="返回登录页面">
+        <i class="fa fa-sign-in"></i>
+        <span class="btn-text">登录</span>
+    </a>
+
+    <style>
+        .floating-login-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            height: 50px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .floating-login-btn i {
+            font-size: 18px;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-login-btn .btn-text {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .floating-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+            padding: 0 28px;
+        }
+
+        .floating-login-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        @media (max-width: 768px) {
+            .floating-login-btn {
+                bottom: 20px;
+                right: 20px;
+                height: 45px;
+                padding: 0 16px;
+            }
+
+            .floating-login-btn i {
+                font-size: 16px;
+                margin-right: 6px;
+            }
+
+            .floating-login-btn .btn-text {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/content.js"></script>
+
+    <script>
+        // 动态设置返回登录链接（支持 context-path）
+        (function() {
+            var currentPath = window.location.pathname;
+
+            // 从当前路径提取 context-path
+            var pathParts = currentPath.split('/');
+            var basePath = '';
+
+            if (pathParts.length >= 3 && pathParts[1]) {
+                basePath = '/' + pathParts[1];
+            }
+
+            var loginUrl = basePath + '/login.html';
+            
+            var linkElement = document.getElementById('link_to_login');
+            if (linkElement) {
+                linkElement.setAttribute('href', loginUrl);
+            }
+        })();
+    </script>
+
+</body>
+</html>

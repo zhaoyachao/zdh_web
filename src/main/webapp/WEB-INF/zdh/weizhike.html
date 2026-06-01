@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微智客 - 微信智能运营平台</title>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-banner h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-banner p {
+            font-size: 18px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            font-size: 36px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .module-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 10px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .module-title {
+            flex: 1;
+        }
+
+        .module-title h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .module-title p {
+            margin: 5px 0 0 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .data-source-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            color: #2e7d32;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            border-left: 4px solid #07c160;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .tech-stack strong {
+            color: #07c160;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 4px solid #07c160;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .stats-row {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 0 30px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #07c160;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .version-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .version-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .version-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .version-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #07c160;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #07c160;
+        }
+
+        .badge-new {
+            background: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+
+    <!-- 头部横幅 -->
+    <div class="header-banner animated fadeInDown">
+        <h1><i class="fa fa-weixin"></i> 微智客 - 微信智能运营平台</h1>
+        <p>一站式微信公众号/小程序运营解决方案 | 智能客服、精准营销、用户画像、数据分析</p>
+        <div style="margin-top: 30px;">
+            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-github fa-lg"></i> GitHub
+            </a>
+            <a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-git-alt fa-lg"></i> Gitee
+            </a>
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInUp">
+
+        <!-- 核心能力与快速开始 - 置顶展示 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section" style="background: linear-gradient(135deg, #134e28 0%, #0a3820 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="text-align: center; margin-bottom: 35px;">
+                        <h2 style="color: white; font-size: 32px; font-weight: 700; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(7,193,96,0.5);">
+                            <i class="fa fa-bolt" style="color: #ffd700; margin-right: 10px;"></i>
+                            核心能力矩阵 · 全方位微信运营解决方案
+                        </h2>
+                        <p style="color: #a0cfa0; font-size: 16px; line-height: 1.8;">从粉丝获取到转化变现，构建企业级微信生态运营体系</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- 能力1：公众号管理 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(7,193,96,0.15) 0%, rgba(6,174,86,0.15) 100%); border: 2px solid rgba(7,193,96,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(7,193,96,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #07c160 0%, #06ae56 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(7,193,96,0.4);">
+                                    <i class="fa fa-weixin"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">公众号管理</h4>
+                                <p style="color: #b0d8b0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">多账号统一管理、菜单配置、素材库、自动回复</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-plug"></i> 多账号</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-list"></i> 菜单</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-image"></i> 素材</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力2：消息中心 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(7,193,96,0.15) 0%, rgba(6,174,86,0.15) 100%); border: 2px solid rgba(7,193,96,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(7,193,96,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #07c160 0%, #06ae56 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(7,193,96,0.4);">
+                                    <i class="fa fa-comments"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">消息中心</h4>
+                                <p style="color: #b0d8b0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">模板消息、群发消息、客服消息、关键词回复</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-paper-plane"></i> 模板消息</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-users"></i> 群发</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-headphones"></i> 客服</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力3：用户运营 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(7,193,96,0.15) 0%, rgba(6,174,86,0.15) 100%); border: 2px solid rgba(7,193,96,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(7,193,96,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #07c160 0%, #06ae56 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(7,193,96,0.4);">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">用户运营</h4>
+                                <p style="color: #b0d8b0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">用户画像、标签管理、粉丝分析、生命周期管理</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-user"></i> 画像</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-tags"></i> 标签</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-chart-line"></i> 分析</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力4：数据统计 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(7,193,96,0.15) 0%, rgba(6,174,86,0.15) 100%); border: 2px solid rgba(7,193,96,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(7,193,96,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #07c160 0%, #06ae56 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(7,193,96,0.4);">
+                                    <i class="fa fa-chart-bar"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据统计</h4>
+                                <p style="color: #b0d8b0; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">图文分析、用户增长、消息效果、转化漏斗</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-file-text"></i> 图文</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-arrow-up"></i> 增长</span>
+                                    <span style="background: rgba(7,193,96,0.2); color: #a0d8a0; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-filter"></i> 漏斗</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA 按钮 -->
+                    <div style="text-align: center; margin-top: 35px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: white; font-size: 22px; margin-bottom: 20px; font-weight: 600;">
+                            <i class="fa fa-rocket" style="color: #ffd700; margin-right: 8px;"></i>
+                            立即开启微信智能运营之旅
+                        </h3>
+                        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center;">
+                            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #07c160 0%, #06ae56 100%); color: white; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 5px 20px rgba(7,193,96,0.4); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(7,193,96,0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 20px rgba(7,193,96,0.4)'">
+                                <i class="fa fa-github"></i> 克隆项目 (Git Clone)
+                            </a>
+                            <div style="color: #809088; font-size: 14px;">
+                                或执行命令：
+                                <code style="background: rgba(255,255,255,0.1); color: #00ff88; padding: 6px 14px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px; margin-left: 8px;">
+                                    git clone https://github.com/zhaoyachao/zdh_web.git && cd zdh_web && sh build.sh && sh bin/start.sh
+                                </code>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; color: #708878; font-size: 13px;">
+                            <i class="fa fa-info-circle"></i>
+                            启动后访问 <strong style="color: #07c160;">http://localhost:8081</strong> | 默认账号：<strong style="color: #43e97b;">zyc / 123456</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 平台特色功能 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>平台核心特色</h2>
+                            <p>专为企业和开发者打造的一站式微信运营工具集</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-shield"></i>
+                                </div>
+                                <h3>安全可靠</h3>
+                                <p>采用微信官方API接口，数据加密传输，权限精细控制，保障账号安全和用户隐私。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-magic"></i>
+                                </div>
+                                <h3>智能自动化</h3>
+                                <p>AI驱动的智能回复、定时任务、自动标签、智能分群，让运营更高效。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-line-chart"></i>
+                                </div>
+                                <h3>数据分析</h3>
+                                <p>全方位的数据统计分析，用户行为追踪，转化率优化，助力精准营销决策。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能模块详解 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-cubes"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>功能模块一览</h2>
+                            <p>覆盖微信运营全场景的完整功能矩阵</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #2e7d32;"><i class="fa fa-weixin"></i> 公众号管理</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>多账号管理：</strong>支持同时管理多个微信公众号</li>
+                                    <li><strong>菜单配置：</strong>可视化菜单编辑器，支持自定义菜单</li>
+                                    <li><strong>素材管理：</strong>图文、图片、视频、语音素材统一管理</li>
+                                    <li><strong>自动回复：</strong>关注回复、关键词回复、默认回复</li>
+                                    <li><strong>草稿箱：</strong>文章编辑与预览发布</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #2e7d32;"><i class="fa fa-paper-plane"></i> 消息推送</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>模板消息：</strong>服务通知、订单提醒、状态更新</li>
+                                    <li><strong>群发消息：</strong>图文群发、文本群发、定向推送</li>
+                                    <li><strong>客服消息：</strong>实时客服对话、消息记录查询</li>
+                                    <li><strong>定时发送：</strong>预设时间自动发送消息</li>
+                                    <li><strong>A/B测试：</strong>消息内容对比测试优化</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #2e7d32;"><i class="fa fa-users"></i> 用户运营</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>用户画像：</strong>多维度用户标签与属性分析</li>
+                                    <li><strong>标签系统：</strong>自定义标签、自动打标、批量管理</li>
+                                    <li><strong>粉丝分析：</strong>新增取关、活跃度、地域分布</li>
+                                    <li><strong>生命周期：</strong>新用户、活跃用户、流失预警</li>
+                                    <li><strong>黑名单：</strong>用户黑名单管理与导出</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #2e7d32;"><i class="fa fa-bar-chart"></i> 数据统计</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>图文分析：</strong>阅读量、分享量、收藏量统计</li>
+                                    <li><strong>用户增长：</strong>日增/周增/月增趋势图</li>
+                                    <li><strong>消息效果：</strong>送达率、点击率、转化率</li>
+                                    <li><strong>转化漏斗：</strong>从关注到转化的全链路追踪</li>
+                                    <li><strong>自定义报表：</strong>灵活配置数据维度和指标</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用场景 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-industry"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>典型应用场景</h2>
+                            <p>适用于各行业的微信生态运营需求</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </div>
+                                <h3>电商零售</h3>
+                                <p>订单通知、物流跟踪、促销活动推送、会员积分管理</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-hospital-o"></i>
+                                </div>
+                                <h3>医疗健康</h3>
+                                <p>预约提醒、报告查询、健康资讯、在线问诊通知</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <h3>教育培训</h3>
+                                <p>课程提醒、作业通知、成绩查询、家长沟通</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-building-o"></i>
+                                </div>
+                                <h3>企业服务</h3>
+                                <p>OA审批通知、会议提醒、考勤打卡、内部公告</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术架构 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>技术架构</h2>
+                            <p>基于成熟稳定的技术栈构建</p>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>后端框架：</strong>Spring Boot + MyBatis + Shiro 安全框架</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>前端技术：</strong>Bootstrap + jQuery + Layui + Font Awesome</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>数据库支持：</strong>MySQL / PostgreSQL / Oracle / SQL Server</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>微信API：</strong>微信公众平台API / 微信小程序API / 企业微信API</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>部署方式：</strong>Docker容器化部署 / 传统Tomcat部署 / Kubernetes集群</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速开始指南 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-play-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>快速开始</h2>
+                            <p>三步启动您的微信智能运营平台</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-download"></i>
+                                </div>
+                                <h3>Step 1: 获取代码</h3>
+                                <p>从GitHub或Gitee克隆项目代码到本地</p>
+                                <div class="code-block">git clone https://github.com/zhaoyachao/zdh_web.git</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-cogs"></i>
+                                </div>
+                                <h3>Step 2: 编译打包</h3>
+                                <p>使用Maven进行项目编译和打包</p>
+                                <div class="code-block">sh build.sh</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                                    <i class="fa fa-rocket"></i>
+                                </div>
+                                <h3>Step 3: 启动应用</h3>
+                                <p>启动应用并访问微信运营平台</p>
+                                <div class="code-block">sh bin/start.sh<br># 访问 http://localhost:8081</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 30px;">
+                        <h4 style="margin-top: 0; color: #2e7d32;"><i class="fa fa-lightbulb-o"></i> 配置说明</h4>
+                        <p style="margin-bottom: 10px;">在启动前，请确保在 <code>application.properties</code> 中配置以下参数：</p>
+                        <div class="code-block">
+# 微信公众号配置<br>
+wx.appid=your_app_id<br>
+wx.appsecret=your_app_secret<br>
+wx.token=your_token<br>
+wx.aes_key=your_aes_key<br><br>
+# 数据库配置<br>
+spring.datasource.url=jdbc:mysql://localhost:3306/zdh<br>
+spring.datasource.username=root<br>
+spring.datasource.password=your_password
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本特性 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>版本演进</h2>
+                            <p>持续迭代，不断完善的微信运营能力</p>
+                        </div>
+                    </div>
+
+                    <div class="version-timeline">
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.4 <span class="badge-new">最新</span></h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">新增问卷平台集成、优化Token认证机制、修复已知问题</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.3</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">增强消息推送能力、新增用户标签批量操作、性能优化</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.2</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">新增数据可视化大屏、优化公众号多账号管理、UI体验升级</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.1</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">重构消息中心模块、新增模板消息管理、提升系统稳定性</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.0</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">全新微智客模块上线，支持微信公众号和小程序一体化运营</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目信息 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>项目信息</h2>
+                            <p>开源项目，持续维护中</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">项目名称</td>
+                                        <td>ZDH 微智客 (WeChat Intelligent Operation Platform)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">开源协议</td>
+                                        <td>Apache License 2.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">技术栈</td>
+                                        <td>Java / Spring Boot / MySQL / Vue.js</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">适用场景</td>
+                                        <td>企业微信运营、公众号管理、小程序后台</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">GitHub</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web" target="_blank">github.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">Gitee</td>
+                                        <td><a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank">gitee.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">文档地址</td>
+                                        <td><a href="/readme" target="_blank">ZDH主平台文档</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">问题反馈</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web/issues" target="_blank">提交Issue</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                            <i class="fa fa-star fa-lg"></i> Star 支持
+                        </a>
+                        <a href="https://github.com/zhaoyachao/zdh_web/fork" target="_blank" class="link-button">
+                            <i class="fa fa-code-fork fa-lg"></i> Fork 参与
+                        </a>
+                        <a href="/readme" target="_blank" class="link-button">
+                            <i class="fa fa-database fa-lg"></i> ZDH主平台
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <div style="background: #2d2d2d; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px;">
+        <p>&copy; 2020-2026 ZDH Team. All rights reserved.</p>
+        <p style="font-size: 13px; margin-top: 10px;">
+            Built with <i class="fa fa-heart text-danger"></i> using Spring Boot & Bootstrap | 微智客 · 让微信运营更简单
+        </p>
+    </div>
+
+    <!-- 悬浮按钮：返回登录页面 -->
+    <a id="link_to_login" class="floating-login-btn" title="返回登录页面">
+        <i class="fa fa-sign-in"></i>
+        <span class="btn-text">登录</span>
+    </a>
+
+    <style>
+        .floating-login-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            height: 50px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(7, 193, 96, 0.4);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .floating-login-btn i {
+            font-size: 18px;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-login-btn .btn-text {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .floating-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(7, 193, 96, 0.6);
+            padding: 0 28px;
+        }
+
+        .floating-login-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        @media (max-width: 768px) {
+            .floating-login-btn {
+                bottom: 20px;
+                right: 20px;
+                height: 45px;
+                padding: 0 16px;
+            }
+
+            .floating-login-btn i {
+                font-size: 16px;
+                margin-right: 6px;
+            }
+
+            .floating-login-btn .btn-text {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/content.js"></script>
+
+    <script>
+        // 动态设置返回登录链接（支持 context-path）
+        (function() {
+            var currentPath = window.location.pathname;
+
+            // 从当前路径提取 context-path
+            // 例如: /weizhike -> '', /zdh/weizhike -> /zdh, /app/weizhike -> /app
+            var pathParts = currentPath.split('/');
+            var basePath = '';
+
+            // 如果路径格式为 /xxx/weizhike，则提取 /xxx 作为 basePath
+            if (pathParts.length >= 3 && pathParts[1]) {
+                basePath = '/' + pathParts[1];
+            }
+
+            var loginUrl = basePath + '/login.html';
+            
+            var linkElement = document.getElementById('link_to_login');
+            if (linkElement) {
+                linkElement.setAttribute('href', loginUrl);
+            }
+        })();
+    </script>
+
+</body>
+</html>

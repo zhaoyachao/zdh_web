@@ -290,6 +290,10 @@ public class ShiroConfig {
 		filterMap.put(project_pre+"/index", "authc");
 		filterMap.put(project_pre+"/register**", "anon");
 		filterMap.put(project_pre+"/readme", "anon");
+		filterMap.put(project_pre+"/weizhike", "anon");
+		filterMap.put(project_pre+"/pushx", "anon");
+		filterMap.put(project_pre+"/jingying", "anon");
+		filterMap.put(project_pre+"/wenjuan", "anon");
 		filterMap.put(project_pre+"/cron/**", "anon");
 		filterMap.put(project_pre+"/register/**", "anon");
 		filterMap.put(project_pre+"/retrieve_password", "anon");

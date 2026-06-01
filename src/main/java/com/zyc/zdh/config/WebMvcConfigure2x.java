@@ -21,7 +21,7 @@ public class WebMvcConfigure2x implements WebMvcConfigurer {
     public static List<String> excludePath = Lists.newArrayList("/register**","/statics/**","/css/**","/js/**","/fonts/**",
             "/img/**","/smart_doc/**","/api-docs/**","/get_platform_name","/get_error_msg",
             "/plugins/**","/zdh_flow/**","/favicon.ico","/etl/js/**","/etl/css/**",
-            "/statics/**","/403","/404","/503","/500","/cron/**","/download/**","/api/**", "/error", "/register.html","/readme");
+            "/statics/**","/403","/404","/503","/500","/cron/**","/download/**","/api/**", "/error", "/register.html","/readme","/weizhike","/pushx","/jingying","/wenjuan");
 
     @Autowired
     private RequestLoggingInterceptor requestLoggingInterceptor;

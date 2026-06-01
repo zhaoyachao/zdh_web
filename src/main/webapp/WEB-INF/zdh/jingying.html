@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字化经营平台 - 智能数据驱动业务增长</title>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-banner h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-banner p {
+            font-size: 18px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            font-size: 36px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .module-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 10px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .module-title {
+            flex: 1;
+        }
+
+        .module-title h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .module-title p {
+            margin: 5px 0 0 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .data-source-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            color: #1565c0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .tech-stack strong {
+            color: #667eea;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .stats-row {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 0 30px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .version-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .version-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .version-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .version-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .badge-new {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+
+    <!-- 头部横幅 -->
+    <div class="header-banner animated fadeInDown">
+        <h1><i class="fa fa-line-chart"></i> 数字化经营平台</h1>
+        <p>智能数据驱动业务增长 | 数据集成 · 数据调度 · 数据开发 · 数据质量 | 构建企业数字化运营核心引擎</p>
+        <div style="margin-top: 30px;">
+            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-github fa-lg"></i> GitHub
+            </a>
+            <a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                <i class="fa fa-git-alt fa-lg"></i> Gitee
+            </a>
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInUp">
+
+        <!-- 核心能力与快速开始 - 置顶展示 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section" style="background: linear-gradient(135deg, #1a1a3e 0%, #16163a 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="text-align: center; margin-bottom: 35px;">
+                        <h2 style="color: white; font-size: 32px; font-weight: 700; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">
+                            <i class="fa fa-bolt" style="color: #ffd700; margin-right: 10px;"></i>
+                            核心能力矩阵 · 全方位数据运营解决方案
+                        </h2>
+                        <p style="color: #b0b0ff; font-size: 16px; line-height: 1.8;">从数据采集到价值变现，构建企业级数据驱动决策体系</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- 能力1：数据集成 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border: 2px solid rgba(102,126,234,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                    <i class="fa fa-database"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据集成</h4>
+                                <p style="color: #b0b0ff; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">多源异构数据统一接入、实时/批量同步、CDC变更捕获</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-plug"></i> DataX</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-exchange"></i> Flink</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-refresh"></i> CDC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力2：数据调度 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border: 2px solid rgba(102,126,234,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据调度</h4>
+                                <p style="color: #b0b0ff; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">可视化DAG工作流、依赖管理、分布式任务调度、故障重试</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-sitemap"></i> DAG</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-cogs"></i> XXL-JOB</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-code-fork"></i> 依赖</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力3：数据开发 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border: 2px solid rgba(102,126,234,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                    <i class="fa fa-code"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据开发</h4>
+                                <p style="color: #b0b0ff; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">在线SQL开发IDE、UDF函数管理、版本控制、代码审查</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-terminal"></i> SQL IDE</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-puzzle-piece"></i> UDF</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-git"></i> Git</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 能力4：数据质量 -->
+                        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%); border: 2px solid rgba(102,126,234,0.3); border-radius: 15px; padding: 25px; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="width: 60px; height: 60px; line-height: 60px; text-align: center; font-size: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                    <i class="fa fa-check-circle"></i>
+                                </div>
+                                <h4 style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 12px;">数据质量</h4>
+                                <p style="color: #b0b0ff; font-size: 13px; line-height: 1.7; margin-bottom: 15px;">规则配置、异常检测、质量报告、数据清洗、血缘分析</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-filter"></i> 规则</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-warning"></i> 告警</span>
+                                    <span style="background: rgba(102,126,234,0.2); color: #b3b3ff; padding: 4px 10px; border-radius: 10px; font-size: 11px;"><i class="fa fa-share-alt"></i> 血缘</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA 按钮 -->
+                    <div style="text-align: center; margin-top: 35px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: white; font-size: 22px; margin-bottom: 20px; font-weight: 600;">
+                            <i class="fa fa-rocket" style="color: #ffd700; margin-right: 8px;"></i>
+                            立即开启您的数字化转型之旅
+                        </h3>
+                        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center;">
+                            <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: 600; box-shadow: 0 5px 20px rgba(102,126,234,0.4); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 20px rgba(102,126,234,0.4)'">
+                                <i class="fa fa-github"></i> 克隆项目 (Git Clone)
+                            </a>
+                            <div style="color: #8080b0; font-size: 14px;">
+                                或执行命令：
+                                <code style="background: rgba(255,255,255,0.1); color: #00ff88; padding: 6px 14px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px; margin-left: 8px;">
+                                    git clone https://github.com/zhaoyachao/zdh_web.git && cd zdh_web && sh build.sh && sh bin/start.sh
+                                </code>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; color: #7070a0; font-size: 13px;">
+                            <i class="fa fa-info-circle"></i>
+                            启动后访问 <strong style="color: #667eea;">http://localhost:8081</strong> | 默认账号：<strong style="color: #43e97b;">zyc / 123456</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 平台特色功能 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>平台核心特色</h2>
+                            <p>企业级数据平台的必备能力</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-shield"></i>
+                                </div>
+                                <h3>企业级架构</h3>
+                                <p>微服务架构设计、高可用集群部署、多租户隔离、完善的权限体系。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-dashboard"></i>
+                                </div>
+                                <h3>可视化操作</h3>
+                                <p>拖拽式任务编排、实时监控大屏、丰富的图表组件、零代码开发。</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-line-chart"></i>
+                                </div>
+                                <h3>智能分析</h3>
+                                <p>AI驱动的数据洞察、自动异常检测、预测性分析、智能推荐。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能模块详解 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-cubes"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>功能模块一览</h2>
+                            <p>覆盖数据全生命周期的完整功能矩阵</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #1565c0;"><i class="fa fa-database"></i> 数据集成中心</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>DataX引擎：</strong>基于DataX的离线数据同步，支持200+数据源</li>
+                                    <li><strong>Flink CDC：</strong>实时变更数据捕获，支持MySQL/PostgreSQL/Oracle</li>
+                                    <li><strong>Kafka集成：</strong>高吞吐消息队列，支持流批一体处理</li>
+                                    <li><strong>API接口：</strong>RESTful API数据接入，支持第三方系统对接</li>
+                                    <li><strong>文件采集：</strong>日志文件、CSV/Excel、FTP/SFTP自动采集</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #1565c0;"><i class="fa fa-sitemap"></i> 任务调度中心</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>DAG工作流：</strong>可视化拖拽编排，支持复杂依赖关系</li>
+                                    <li><strong>定时调度：</strong>Cron表达式、手动触发、事件驱动</li>
+                                    <li><strong>分布式执行：</strong>支持多节点并行执行，负载均衡</li>
+                                    <li><strong>失败重试：</strong>智能重试策略、告警通知、断点续跑</li>
+                                    <li><strong>资源管控：</strong>CPU/内存限制、队列优先级、并发控制</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #1565c0;"><i class="fa fa-code"></i> 数据开发环境</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>SQL IDE：</strong>在线SQL编辑器，语法高亮、智能补全、格式化</li>
+                                    <li><strong>UDF管理：</strong>自定义函数开发、测试、发布一体化</li>
+                                    <li><strong>版本控制：</strong>基于Git的代码版本管理，支持回滚</li>
+                                    <li><strong>代码审核：</strong>Code Review流程，保障代码质量</li>
+                                    <li><strong>调试工具：</strong>断点调试、性能分析、执行计划查看</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="highlight-box">
+                                <h4 style="margin-top: 0; color: #1565c0;"><i class="fa fa-check-double"></i> 数据质量管理</h4>
+                                <ul style="line-height: 2; color: #555;">
+                                    <li><strong>规则配置：</strong>内置100+质量规则，支持自定义规则扩展</li>
+                                    <li><strong>异常检测：</strong>统计方法+机器学习，自动识别数据异常</li>
+                                    <li><strong>质量报告：</strong>DQ评分、趋势分析、问题根因定位</li>
+                                    <li><strong>数据清洗：</strong>ETL清洗流程、去重、标准化、脱敏</li>
+                                    <li><strong>血缘追踪：</strong>字段级血缘关系、影响分析、溯源查询</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 应用场景 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-industry"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>典型应用场景</h2>
+                            <p>适用于各行业的数据建设需求</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-building-o"></i>
+                                </div>
+                                <h3>数据仓库建设</h3>
+                                <p>ODS/DWD/DWS/ADS分层架构、数仓建模、维度管理</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-bar-chart"></i>
+                                </div>
+                                <h3>BI报表分析</h3>
+                                <p>多维度报表、自助式BI、实时大屏、移动端看板</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-user-secret"></i>
+                                </div>
+                                <h3>用户画像平台</h3>
+                                <p>标签体系、人群圈选、360度视图、精准营销支撑</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-brain"></i>
+                                </div>
+                                <h3>AI模型训练</h3>
+                                <p>特征工程、样本管理、模型训练、在线推理服务</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技术架构 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>技术架构</h2>
+                            <p>基于成熟稳定的大数据技术栈</p>
+                        </div>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>数据集成：</strong>DataX / Flink CDC / Kafka Connect / Canal</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>计算引擎：</strong>Spark / Flink / Hive / Presto / ClickHouse</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>存储层：</strong>HDFS / MySQL / PostgreSQL / Redis / Elasticsearch</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>调度框架：</strong>XXL-JOB / Apache DolphinScheduler / Airflow</p>
+                    </div>
+
+                    <div class="tech-stack">
+                        <p><strong>服务治理：</strong>Spring Cloud / Nacos / Sentinel / Seata</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速开始指南 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-play-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>快速开始</h2>
+                            <p>三步启动您的数字化经营平台</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-download"></i>
+                                </div>
+                                <h3>Step 1: 获取代码</h3>
+                                <p>从GitHub或Gitee克隆项目代码到本地</p>
+                                <div class="code-block">git clone https://github.com/zhaoyachao/zdh_web.git</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-cogs"></i>
+                                </div>
+                                <h3>Step 2: 编译打包</h3>
+                                <p>使用Maven进行项目编译和打包</p>
+                                <div class="code-block">sh build.sh</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fa fa-rocket"></i>
+                                </div>
+                                <h3>Step 3: 启动应用</h3>
+                                <p>启动应用并访问数字化经营平台</p>
+                                <div class="code-block">sh bin/start.sh<br># 访问 http://localhost:8081</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 30px;">
+                        <h4 style="margin-top: 0; color: #1565c0;"><i class="fa fa-lightbulb-o"></i> 配置说明</h4>
+                        <p style="margin-bottom: 10px;">在启动前，请确保在 <code>application.properties</code> 中配置以下参数：</p>
+                        <div class="code-block">
+# 数据库配置<br>
+spring.datasource.url=jdbc:mysql://localhost:3306/zdh<br>
+spring.datasource.username=root<br>
+spring.datasource.password=your_password<br><br>
+# Redis配置（缓存和任务队列）<br>
+spring.redis.host=localhost<br>
+spring.redis.port=6379<br><br>
+# 数据源配置（可选）<br>
+etl.datax.home=/opt/datax<br>
+etl.flink.home=/opt/flink
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本特性 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>版本演进</h2>
+                            <p>持续迭代，不断增强数据能力</p>
+                        </div>
+                    </div>
+
+                    <div class="version-timeline">
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.4 <span class="badge-new">最新</span></h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">新增Flink CDC实时集成、优化DAG调度性能、增强数据质量规则引擎</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.3</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">重构SQL IDE、新增UDF函数市场、支持ClickHouse数据源</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.2</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">引入XXL-JOB调度中心、新增数据血缘可视化、提升系统稳定性</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.1</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">升级DataX引擎至最新版、优化大数据量同步性能、修复已知问题</p>
+                        </div>
+
+                        <div class="version-item">
+                            <h4 style="margin: 0; color: #333;">V5.7.0</h4>
+                            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">数字化经营平台全新上线，实现数据集成、调度、开发、质量四位一体</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目信息 -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="module-section">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="module-title">
+                            <h2>项目信息</h2>
+                            <p>开源项目，持续维护中</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">项目名称</td>
+                                        <td>ZDH Digital Operation Platform (数字化经营平台)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">开源协议</td>
+                                        <td>Apache License 2.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">技术栈</td>
+                                        <td>Java / Spring Boot / DataX / Flink / Spark</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">适用场景</td>
+                                        <td>数据仓库建设、ETL开发、数据分析、数据治理</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 30%; font-weight: bold; background: #f8f9fa;">GitHub</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web" target="_blank">github.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">Gitee</td>
+                                        <td><a href="https://gitee.com/zhaoyachao/zdh_web" target="_blank">gitee.com/zhaoyachao/zdh_web</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">相关文档</td>
+                                        <td><a href="/weizhike" target="_blank">微智客</a> | <a href="/pushx" target="_blank">PushX</a> | <a href="/wenjuan" target="_blank">问卷平台</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold; background: #f8f9fa;">问题反馈</td>
+                                        <td><a href="https://github.com/zhaoyachao/zdh_web/issues" target="_blank">提交Issue</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="https://github.com/zhaoyachao/zdh_web" target="_blank" class="link-button">
+                            <i class="fa fa-star fa-lg"></i> Star 支持
+                        </a>
+                        <a href="https://github.com/zhaoyachao/zdh_web/fork" target="_blank" class="link-button">
+                            <i class="fa fa-code-fork fa-lg"></i> Fork 参与
+                        </a>
+                        <a href="/weizhike" target="_blank" class="link-button" style="background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);">
+                            <i class="fa fa-weixin fa-lg"></i> 微智客
+                        </a>
+                        <a href="/pushx" target="_blank" class="link-button" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                            <i class="fa fa-bell fa-lg"></i> PushX
+                        </a>
+                        <a href="/wenjuan" target="_blank" class="link-button" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <i class="fa fa-edit fa-lg"></i> 问卷平台
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <div style="background: #2d2d2d; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px;">
+        <p>&copy; 2020-2026 ZDH Team. All rights reserved.</p>
+        <p style="font-size: 13px; margin-top: 10px;">
+            Built with <i class="fa fa-heart text-danger"></i> using Spring Boot & Bootstrap | 数字化经营平台 · 让数据创造价值
+        </p>
+    </div>
+
+    <!-- 悬浮按钮：返回登录页面 -->
+    <a id="link_to_login" class="floating-login-btn" title="返回登录页面">
+        <i class="fa fa-sign-in"></i>
+        <span class="btn-text">登录</span>
+    </a>
+
+    <style>
+        .floating-login-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            height: 50px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .floating-login-btn i {
+            font-size: 18px;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-login-btn .btn-text {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .floating-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            padding: 0 28px;
+        }
+
+        .floating-login-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        @media (max-width: 768px) {
+            .floating-login-btn {
+                bottom: 20px;
+                right: 20px;
+                height: 45px;
+                padding: 0 16px;
+            }
+
+            .floating-login-btn i {
+                font-size: 16px;
+                margin-right: 6px;
+            }
+
+            .floating-login-btn .btn-text {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/content.js"></script>
+
+    <script>
+        // 动态设置返回登录链接（支持 context-path）
+        (function() {
+            var currentPath = window.location.pathname;
+
+            // 从当前路径提取 context-path
+            var pathParts = currentPath.split('/');
+            var basePath = '';
+
+            // 如果路径格式为 /xxx/jingying，则提取 /xxx 作为 basePath
+            if (pathParts.length >= 3 && pathParts[1]) {
+                basePath = '/' + pathParts[1];
+            }
+
+            var loginUrl = basePath + '/login.html';
+            
+            var linkElement = document.getElementById('link_to_login');
+            if (linkElement) {
+                linkElement.setAttribute('href', loginUrl);
+            }
+        })();
+    </script>
+
+</body>
+</html>
