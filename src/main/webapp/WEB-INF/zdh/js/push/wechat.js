@@ -150,6 +150,47 @@
 
               });
           },
+          'click #auth_url': function (e, value, row, index) {
+              var loadIndex = parent.layer.load(1, {shade: [0.3, '#000']});
+
+              $.ajax({
+                  url : server_context+"/wechat_gen_auth_url",
+                  data : {"id": row.id},
+                  type : "post",
+                  dataType : "json",
+                  timeout: 15000,
+                  success : function(data) {
+                      if(data.code != '200'){
+                          console.error(data.msg);
+                          parent.layer.close(loadIndex);
+                          parent.layer.msg("生成授权链接失败");
+                          return ;
+                      }
+
+                      var authUrl = data.result;
+
+                      if(!authUrl || authUrl === ''){
+                          parent.layer.close(loadIndex);
+                          parent.layer.msg("未获取到有效的授权链接");
+                          return;
+                      }
+
+                      parent.layer.close(loadIndex);
+
+                      var targetUrl = server_context + '/wechat_auth_index?auth_url=' + encodeURIComponent(authUrl);
+                      window.open(targetUrl, '_blank');
+
+                  },
+                  error: function (data) {
+                      console.info("error: " + data.responseText);
+                      parent.layer.close(loadIndex);
+                      parent.layer.msg("请求失败，请重试");
+                  },
+                  complete: function() {
+                      parent.layer.close(loadIndex);
+                  }
+              });
+          },
 
       };
 
@@ -157,11 +198,14 @@
           var edit_class = "btn btn-outline btn-sm "+ get_edit_class(row);
           var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
           var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
+          var auth_class = "btn btn-outline btn-sm" + get_edit_class(row);
           return [
               ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="refresh" name="refresh" type="button" class="'+copy_class+'" title="刷新粉丝"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>\n' +
+              '                                    </button>',
+              ' <button id="auth_url" name="auth_url" type="button" class="'+auth_class+'" title="生成授权链接"><i class="glyphicon glyphicon-link" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="del" name="del" type="button" class="'+del_class+'" title="删除">\n' +
               '                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>\n' +

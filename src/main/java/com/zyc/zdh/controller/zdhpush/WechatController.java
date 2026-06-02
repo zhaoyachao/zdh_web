@@ -6,7 +6,9 @@ import com.zyc.zdh.dao.WechatMapper;
 import com.zyc.zdh.dao.WechatSubscriptionMapper;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
+import com.zyc.zdh.pushx.PushxWechatAuthService;
 import com.zyc.zdh.pushx.PushxWechatFollowService;
+import com.zyc.zdh.pushx.entity.WechatAuthGetResponse;
 import com.zyc.zdh.pushx.entity.WechatFollowAddResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
@@ -42,6 +44,8 @@ public class WechatController extends BaseController {
     private ZdhPermissionService zdhPermissionService;
     @Autowired
     private PushxWechatFollowService pushxWechatFollowService;
+    @Autowired
+    private PushxWechatAuthService pushxWechatAuthService;
 
     /**
      * 微信信息表列表首页
@@ -51,6 +55,12 @@ public class WechatController extends BaseController {
     public String wechat_index() {
 
         return "push/wechat_index";
+    }
+
+    @RequestMapping(value = "/wechat_auth_index", method = RequestMethod.GET)
+    public String wechat_auth_index() {
+
+        return "push/wechat_auth_index";
     }
 
     /**
@@ -290,6 +300,26 @@ public class WechatController extends BaseController {
         } catch (Exception e) {
             LogUtil.error(this.getClass(), e);
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "同步失败", e.getMessage());
+        }
+    }
+
+    @SentinelResource(value = "wechat_gen_auth_url", blockHandler = "handleReturn")
+    @RequestMapping(value = "/wechat_gen_auth_url", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ReturnInfo<String> wechat_gen_auth_url(String id) {
+        try {
+            WechatInfo wechatInfo = wechatMapper.selectByPrimaryKey(id);
+            checkAttrPermissionByProduct(zdhPermissionService, wechatInfo.getProduct_code(), getAttrAdd());
+
+            WechatAuthGetResponse response = pushxWechatAuthService.genAuthUrl(wechatInfo.getWechat_channel());
+            if(!response.isSuccess()){
+                return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "授权链接生成失败", response.getMsg());
+            }
+
+            return ReturnInfo.buildSuccess(response.getData());
+        } catch (Exception e) {
+            LogUtil.error(this.getClass(), e);
+            return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "授权链接生成失败", e.getMessage());
         }
     }
 

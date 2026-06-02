@@ -1331,7 +1331,7 @@ INSERT INTO `resource_tree_info` VALUES (802848818109353984,'#','ZDH','1','zyc',
 (1509848454489182210, '1509846325749878784', '问卷管理-删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_delete', '5', '', '', 'zdh', ''),
 (1509850007283437568, '1509846325749878784', '问卷管理-统计页面', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:24:53', '2026-05-29 09:24:53', 'survey_statistics_index', '3', '', '', 'zdh', ''),
 (1509850137424302080, '1509846325749878784', '问卷管理-统计查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:25:24', '2026-05-29 09:25:24', 'survey_statistics', '5', '', '', 'zdh', ''),
-(1509850213601251328, '1509846325749878784', '问卷管理-提交', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:25:43', '2026-05-29 09:25:43', 'survey_submit', '5', '', '', 'zdh', '');
+(1509850213601251328, '1509846325749878784', '问卷管理-提交', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:25:43', '2026-05-29 09:25:43', 'survey_submit', '5', '', '', 'zdh', ''),(1511390651554467840, '1495051432326336512', '服务号管理-生成授权链接', '5', 'zyc', 'fa fa-coffee', '', '10', '1', '2026-06-02 15:26:52', '2026-06-02 15:26:52', 'wechat_gen_auth_url', '5', '', '', 'zdh', ''),(1511390807054094336, '1495051432326336512', '服务号管理-授权链接页面', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2026-06-02 15:27:29', '2026-06-02 15:27:29', 'wechat_auth_index', '3', '', '', 'zdh', '');
 /*!40000 ALTER TABLE `resource_tree_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4026,6 +4026,22 @@ CREATE TABLE `survey_answer_info` (
   KEY `idx_create_time` (`create_time`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问卷记录表';
 
+CREATE TABLE wechat_third_authorizer_info (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键自增',
+    authorizer_appid VARCHAR(64) NOT NULL COMMENT '授权公众号APPID',
+    authorizer_access_token VARCHAR(512) DEFAULT '' COMMENT '代公众号调用接口凭证',
+    expires_in INT DEFAULT 7200 COMMENT '过期时间(秒)',
+    authorizer_refresh_token VARCHAR(512) DEFAULT '' COMMENT '长期刷新令牌',
+    func_info TEXT COMMENT '已授权权限列表JSON',
+    auth_code VARCHAR(128) DEFAULT '' COMMENT '授权码',
+    state VARCHAR(128) DEFAULT '' COMMENT '状态参数',
+    wechat_channel VARCHAR(128) DEFAULT '' COMMENT '微信通道标识',
+    status INT DEFAULT 1 COMMENT '状态 1有效 0无效',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    INDEX idx_authorizer_appid (authorizer_appid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信第三方授权方信息';
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
