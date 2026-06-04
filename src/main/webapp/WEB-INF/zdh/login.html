@@ -323,14 +323,23 @@
 <script>
 
     $(document).ready(function () {
-        // 监听Enter键触发登录
-        $('#login input').on('keypress', function(e) {
-            if (e.which === 13) {
-                e.preventDefault();
-                login2();
-                return false;
-            }
-        });
+        // 【重要】页面加载时立即设置正确的action，适配Shiro框架要求
+        $("#login").attr("action", server_context + "/login");
+
+        // 监听Enter键触发登录（使用keydown更可靠）
+        // $('#login input').on('keydown', function(e) {
+        //     if (e.which === 13 || e.keyCode === 13) {
+        //         // 彻底阻止所有默认行为和事件传播
+        //         e.preventDefault();
+        //         e.stopPropagation();
+        //         e.stopImmediatePropagation();
+        //
+        //         // 调用登录函数（action已在上面设置好）
+        //         login2();
+        //
+        //         return false;
+        //     }
+        // });
 
         //加载平台名称
         $.ajax({
@@ -400,28 +409,9 @@
 
         //进行登录操作
         form.on('submit(login)', function (data) {
-            return false;
-            data = data.field;
-            if (data.product_code == '') {
-                layer.msg('企业标识不能为空');
-                return false;
-            }
-            if (data.username == '') {
-                layer.msg('用户名不能为空');
-                return false;
-            }
-            if (data.password == '') {
-                layer.msg('密码不能为空');
-                return false;
-            }
-            if (data.captcha == '') {
-                layer.msg('验证码不能为空');
-                return false;
-            }
-
-            $("#login").submit();
-            return false
-
+            // 委托给login2()统一处理登录逻辑（包括验证和提交）
+            login2();
+            return false;  // 阻止layui默认的表单提交行为
         });
     });
 
@@ -458,6 +448,8 @@
                     layer.msg(data.msg);
                     return ;
                 }
+
+                // 直接提交表单（action已在页面加载时设置好）
                 $("#login").submit();
             },
             //处理完成

@@ -228,7 +228,7 @@
           formatter: operateFormatter //表格中增加按钮
       }];
 
-      var bootstrapTableConf = getTablePageCommon(server_context+"/data_tag_list?"+$("#data_tag_form").serialize()+"&tm="+new Date());
+      var bootstrapTableConf = getTablePageCommon();
       bootstrapTableConf['columns'] = columns;
       $('#exampleTableEvents').bootstrapTable(bootstrapTableConf);
 

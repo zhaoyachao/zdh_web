@@ -109,12 +109,7 @@
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <script src="js/admin/data_tag.js"></script>
-
-<script>
-
-    $(document).ready(function () {
-
+    <script>
         $.ajax({
             type: 'POST',
             url: server_context+"/product_tag_list",
@@ -142,7 +137,12 @@
             error: function (data) {
             }
         });
+    </script>
+    <script src="js/admin/data_tag.js"></script>
 
+<script>
+
+    $(document).ready(function () {
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
                 url: server_context+"/data_tag_list?"+$("#data_tag_form").serialize(),

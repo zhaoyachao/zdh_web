@@ -144,7 +144,7 @@
 
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
-          url: server_context+"/user_group_list2?"+$("#user_group_form").serialize(),
+          url: "",
           dataType: 'json',
           search: true,
           pagination: true,

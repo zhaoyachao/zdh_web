@@ -189,6 +189,7 @@
       $('#exampleTableEvents').bootstrapTable({
           method: "POST",
           url: server_context+"/role_list?"+$("#user_form").serialize(),
+          dataType: 'json',
           search: true,
           pagination: true,
           showRefresh: true,

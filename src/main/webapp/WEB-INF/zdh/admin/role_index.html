@@ -112,12 +112,7 @@
     <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
-    <script src="js/admin/role.js"></script>
-
-<script>
-
-    $(document).ready(function () {
-
+    <script>
         $.ajax({
             type: 'POST',
             url: server_context+"/product_tag_list",
@@ -145,6 +140,12 @@
             error: function (data) {
             }
         });
+    </script>
+    <script src="js/admin/role.js"></script>
+
+<script>
+
+    $(document).ready(function () {
 
         $('#search').click(function () {
             $('#exampleTableEvents').bootstrapTable('refresh', {
