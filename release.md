@@ -4605,3 +4605,21 @@
     PRIMARY KEY (id),
     INDEX idx_authorizer_appid (authorizer_appid)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信第三方授权方信息';
+
+    CREATE TABLE `wechat_user_attribute` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+    `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户OpenID',
+    `attribute_type` varchar(128) NOT NULL DEFAULT '' COMMENT '属性类型:phone/email/name/id_card/company/position',
+    `attribute_value` varchar(2048) NOT NULL DEFAULT '' COMMENT '属性值',
+    `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态:1-有效,0-已解绑',
+    `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标志:0-未删除,1-已删除',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_channel_openid_attr` (`wechat_channel`, `openid`, `attribute_type`),
+    KEY `idx_wechat_channel` (`wechat_channel`),
+    KEY `idx_openid` (`openid`),
+    KEY `idx_attribute_type` (`attribute_type`),
+    KEY `idx_attribute_value` (`attribute_value`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信用户属性绑定表';
