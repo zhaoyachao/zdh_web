@@ -518,6 +518,7 @@ public class ProductTagController extends BaseController {
         rootNode.setLevel("1");
         rootNode.setText(product_code);
         rootNode.setProduct_code(product_code);
+        rootNode.setIcon("fa fa-folder");
         rootNode.setIs_enable("1");
         rootNode.setOwner(getOwner());
         rootNode.setOrder("1");
