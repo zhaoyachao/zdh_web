@@ -183,7 +183,7 @@ public class WechatUserTagController extends BaseController {
     public ReturnInfo<WechatUserTagInfo> wechat_user_tag_detail(String id) {
         try {
             WechatUserTagInfo wechatUserTagInfo = wechatUserTagMapper.selectByPrimaryKey(id);
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechatUserTagInfo.getWechat_channel()), getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechatUserTagInfo.getWechat_channel()).getProduct_code(), getAttrSelect());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  wechatUserTagInfo.getProduct_code(), wechatUserTagInfo.getDim_group(), getAttrSelect());
             //checkAttrPermissionByProduct(zdhPermissionService,  wechatUserTagInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatUserTagInfo);
@@ -209,7 +209,7 @@ public class WechatUserTagController extends BaseController {
             wechatUserTagInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             wechatUserTagInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatUserTagInfo.getWechat_channel()), getAttrAdd());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,wechatUserTagInfo.getWechat_channel()).getProduct_code(), getAttrAdd());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatUserTagInfo.getProduct_code(), wechatUserTagInfo.getDim_group(), getAttrAdd());
             //checkAttrPermissionByProduct(zdhPermissionService, wechatUserTagInfo.getProduct_code(), getAttrAdd());
             WechatTagResponse batchuntagging = pushxWechatTagService.batchuntagging(wechatUserTagInfo, Lists.newArrayList(wechatUserTagInfo.getOpenid()));
@@ -245,7 +245,7 @@ public class WechatUserTagController extends BaseController {
             }
             Set<String> collect = wechatUserTagInfos.stream().map(wechatUserTagInfo -> wechatUserTagInfo.getWechat_channel()).collect(Collectors.toSet());
             for (String wechat_channel:collect){
-                checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechat_channel), getAttrDel());
+                checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechat_channel).getProduct_code(), getAttrDel());
             }
 
             WechatTagResponse batchuntagging = pushxWechatTagService.batchuntagging(wechatUserTagInfos.get(0), Lists.newArrayList(ids));

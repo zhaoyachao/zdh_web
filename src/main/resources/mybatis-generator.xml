@@ -536,5 +536,12 @@
 <!--                    <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
 <!--                    <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
 <!--                </table>-->
+
+<!--            <table tableName="wechat_user_attribute" domainObjectName="WechatUserAttribute" mapperName="BaseWechatUserAttributeMapper">-->
+<!--                <property name="useActualColumnNames" value="true" />-->
+<!--                <columnOverride column="id" property="id" javaType="java.lang.String"/>-->
+<!--                <columnOverride column="create_time" property="create_time" javaType="java.sql.Timestamp"/>-->
+<!--                <columnOverride column="update_time" property="update_time" javaType="java.sql.Timestamp"/>-->
+<!--            </table>-->
     </context>
 </generatorConfiguration>

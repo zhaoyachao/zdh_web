@@ -2,10 +2,7 @@ package com.zyc.zdh.service.impl;
 
 import com.google.common.collect.Sets;
 import com.zyc.zdh.controller.PermissionApiController;
-import com.zyc.zdh.dao.PermissionDimensionValueMapper;
-import com.zyc.zdh.dao.PermissionMapper;
-import com.zyc.zdh.dao.PermissionUserDimensionValueMapper;
-import com.zyc.zdh.dao.PermissionUserGroupDimensionValueMapper;
+import com.zyc.zdh.dao.*;
 import com.zyc.zdh.entity.*;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
@@ -33,6 +30,9 @@ public class ZdhPermissionServiceImpl implements ZdhPermissionService {
     private PermissionUserDimensionValueMapper permissionUserDimensionValueMapper;
     @Autowired
     private PermissionUserGroupDimensionValueMapper permissionUserGroupDimensionValueMapper;
+
+    @Autowired
+    private WechatMapper wechatMapper;
 
 
     /**
@@ -270,5 +270,16 @@ public class ZdhPermissionServiceImpl implements ZdhPermissionService {
         List<PermissionUserGroupDimensionValueInfo> dim_value_by_user_group = permissionUserGroupDimensionValueMapper.select(permissionUserGroupDimensionValueInfo);
 
         return UserAndGroupPermissionDimensionValueInfo.build(product_code, user_account, user_group, dim_value_by_user_account, dim_value_by_user_group);
+    }
+
+    @Override
+    public String getProductCodeByWechatChannel(String wechat_channel) {
+
+        WechatInfo wechatInfo = new WechatInfo();
+        wechatInfo.setWechat_channel(wechat_channel);
+        wechatInfo.setIs_delete(Const.NOT_DELETE);
+
+        wechatInfo = wechatMapper.selectOne(wechatInfo);
+        return wechatInfo.getProduct_code();
     }
 }

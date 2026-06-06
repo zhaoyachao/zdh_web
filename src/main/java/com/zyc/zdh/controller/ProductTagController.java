@@ -427,120 +427,409 @@ public class ProductTagController extends BaseController {
 
     /**
      * 同步资源树信息
+     *
+     * 核心逻辑：
+     * 1. 根节点（parent="#"）通过 createRootNode 单独创建，不通过 url/text 判断是否为新增
+     * 2. 但根节点必须保留在基础信息中，因为新增的资源可能挂在根节点下（parent="#"）
+     * 3. 非根节点通过 url 或 text 字段进行匹配，判断是否为新增资源
+     * 4. 新增资源会生成新的ID，并正确处理 parent 层级关系
+     *
+     * @param product_code 目标产品编码
+     * @param base_product_code 源产品编码
+     * @throws Exception
      */
     private void syncResourceTreeInfo(String product_code, String base_product_code) throws Exception {
+        LogUtil.info(this.getClass(), "开始同步资源树信息, 源产品: {}, 目标产品: {}", base_product_code, product_code);
 
-        // 查询源产品下的所有资源树信息
-        Example exampleSource=new Example(ResourceTreeInfo.class);
-        Example.Criteria criteriaSource=exampleSource.createCriteria();
-        criteriaSource.andEqualTo("product_code", base_product_code);
-        List<ResourceTreeInfo> baseResourceTreeInfos = resourceTreeMapper.selectByExample(exampleSource);
+        // 1. 查询源产品和目标产品的所有资源树信息
+        List<ResourceTreeInfo> baseResourceList = getResourceTreeByProductCode(base_product_code);
+        List<ResourceTreeInfo> targetResourceList = getResourceTreeByProductCode(product_code);
 
-        Example example=new Example(ResourceTreeInfo.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("product_code", product_code);
-        List<ResourceTreeInfo> resourceTreeInfos = resourceTreeMapper.selectByExample(example);
+        // 2. 如果目标产品没有资源，创建根节点（根节点不参与url/text匹配判断新增）
+        if (targetResourceList.isEmpty()) {
+            LogUtil.info(this.getClass(), "目标产品无资源, 创建根节点");
+            createRootNode(product_code);
+            // 重新查询（包含刚创建的根节点）
+            targetResourceList = getResourceTreeByProductCode(product_code);
+        }
 
-        //根据资源url 或者 text 生成菜单等信息
-        Map<String, ResourceTreeInfo> baseResourceTreeInfoMapById = new HashMap<>();
-        Map<String, ResourceTreeInfo> baseResourceTreeInfoMap = new HashMap<>();
-        for(ResourceTreeInfo resourceTreeInfo: baseResourceTreeInfos){
-            baseResourceTreeInfoMapById.put(resourceTreeInfo.getId(), resourceTreeInfo);
-            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
-//                if(baseResourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
-//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getUrl());
-//                }
-                baseResourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
-            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
-//                if(baseResourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
-//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getText());
-//                }
-                baseResourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
+        // 3. 构建映射表（用于快速查找）
+        // 3.1 源产品的映射表
+        Map<String, ResourceTreeInfo> baseMapById = buildMapById(baseResourceList);
+        // 注意：url/text映射排除根节点，避免根节点被误判为"新增资源"
+        Map<String, ResourceTreeInfo> baseMapByUrlOrText = buildMapByUrlOrText(baseResourceList);
+
+        // 3.2 目标产品的映射表
+        Map<String, ResourceTreeInfo> targetMapById = buildMapById(targetResourceList);
+        Map<String, ResourceTreeInfo> targetMapByUrlOrText = buildMapByUrlOrText(targetResourceList);
+
+        // 3.3 获取根节点信息（保留根节点用于处理parent关系）
+        ResourceTreeInfo baseRootNode = getRootNode(baseResourceList);
+        ResourceTreeInfo targetRootNode = getRootNode(targetResourceList);
+
+        if (targetRootNode == null) {
+            throw new Exception("目标产品未找到根节点");
+        }
+
+        LogUtil.info(this.getClass(), "源产品根节点: ID={}, Text={}, 目标产品根节点: ID={}, Text={}",
+                    baseRootNode != null ? baseRootNode.getId() : "null",
+                    baseRootNode != null ? baseRootNode.getText() : "null",
+                    targetRootNode.getId(),
+                    targetRootNode.getText());
+
+        // 4. 找出需要新增的资源（通过url或text匹配，排除根节点判断）
+        List<ResourceTreeInfo> resourcesToAdd = findResourcesToAdd(baseResourceList, targetMapByUrlOrText);
+
+        if (resourcesToAdd.isEmpty()) {
+            LogUtil.info(this.getClass(), "没有需要新增的资源");
+            return;
+        }
+
+        LogUtil.info(this.getClass(), "发现 {} 个需要新增的资源", resourcesToAdd.size());
+
+        // 5. 为新增资源生成新的ID映射关系
+        Map<String, String> oldIdToNewIdMap = generateNewIdMapping(resourcesToAdd);
+
+        // 6. 插入新增资源到目标产品（传入根节点信息用于处理parent关系）
+        insertNewResources(resourcesToAdd, baseMapById, baseMapByUrlOrText,
+                          targetMapById, targetMapByUrlOrText, oldIdToNewIdMap,
+                          product_code, baseRootNode, targetRootNode);
+
+        LogUtil.info(this.getClass(), "资源树信息同步完成");
+    }
+
+    /**
+     * 根据产品编码查询所有资源树信息
+     */
+    private List<ResourceTreeInfo> getResourceTreeByProductCode(String product_code) {
+        Example example = new Example(ResourceTreeInfo.class);
+        example.createCriteria().andEqualTo("product_code", product_code);
+        return resourceTreeMapper.selectByExample(example);
+    }
+
+    /**
+     * 创建根节点
+     */
+    private void createRootNode(String product_code) throws Exception {
+        LogUtil.info(this.getClass(), "创建目标产品的根节点, 产品: {}", product_code);
+        ResourceTreeInfo rootNode = new ResourceTreeInfo();
+        rootNode.setId(String.valueOf(SnowflakeIdWorker.getInstance().nextId()));
+        rootNode.setParent("#");
+        rootNode.setLevel("1");
+        rootNode.setText(product_code);
+        rootNode.setProduct_code(product_code);
+        rootNode.setIs_enable("1");
+        rootNode.setOwner(getOwner());
+        rootNode.setOrder("1");
+        rootNode.setResource_type("2");
+        rootNode.setCreate_time(new Timestamp(System.currentTimeMillis()));
+        rootNode.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+        resourceTreeMapper.insertSelective(rootNode);
+        LogUtil.info(this.getClass(), "根节点创建成功, ID: {}", rootNode.getId());
+    }
+
+    /**
+     * 获取产品的根节点（parent="#"的节点）
+     */
+    private ResourceTreeInfo getRootNode(List<ResourceTreeInfo> resourceList) {
+        if (resourceList == null || resourceList.isEmpty()) {
+            return null;
+        }
+        for (ResourceTreeInfo resource : resourceList) {
+            if (isRootNode(resource)) {
+                return resource;
             }
         }
+        return null;
+    }
 
-        Map<String, ResourceTreeInfo> resourceTreeInfoMapById = new HashMap<>();
-        Map<String, ResourceTreeInfo> resourceTreeInfoMap = new HashMap<>();
-        for(ResourceTreeInfo resourceTreeInfo: resourceTreeInfos){
-            resourceTreeInfoMapById.put(resourceTreeInfo.getId(), resourceTreeInfo);
-            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
-//                if(resourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
-//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getUrl());
-//                }
-                resourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
-            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
-//                if(resourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
-//                    throw new Exception("产品:"+resourceTreeInfo.getProduct_code()+", 存在重复的资源: "+resourceTreeInfo.getText());
-//                }
-                resourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
-            }
+    /**
+     * 构建ID到资源的映射
+     */
+    private Map<String, ResourceTreeInfo> buildMapById(List<ResourceTreeInfo> list) {
+        Map<String, ResourceTreeInfo> map = new HashMap<>();
+        for (ResourceTreeInfo item : list) {
+            map.put(item.getId(), item);
         }
+        return map;
+    }
 
-        List<ResourceTreeInfo> newResourceTreeInfos = new ArrayList<>();
-        Map<String, ResourceTreeInfo> newResourceTreeInfoMap = new HashMap<>();
-        //对比新增的资源树信息
-        for(ResourceTreeInfo resourceTreeInfo: baseResourceTreeInfos){
-            if(!StringUtils.isEmpty(resourceTreeInfo.getUrl())){
-                if(!resourceTreeInfoMap.containsKey(resourceTreeInfo.getUrl())){
-                    newResourceTreeInfos.add(resourceTreeInfo);
-                    newResourceTreeInfoMap.put(resourceTreeInfo.getUrl(), resourceTreeInfo);
-                }
-            }else if(!StringUtils.isEmpty(resourceTreeInfo.getText())){
-                //新增的资源树信息
-                if(!resourceTreeInfoMap.containsKey(resourceTreeInfo.getText())){
-                    newResourceTreeInfos.add(resourceTreeInfo);
-                    newResourceTreeInfoMap.put(resourceTreeInfo.getText(), resourceTreeInfo);
-                }
-            }
-        }
-
-        //根据新增的资源生成新的映射关系
-        Map<String, String> idMap = new HashMap<>();
-
-        for(ResourceTreeInfo resourceTreeInfo: newResourceTreeInfos) {
-            String rid = resourceTreeInfo.getId();
-            //生成新的rid
-            String newRid = String.valueOf(SnowflakeIdWorker.getInstance().nextId());
-            idMap.put(rid, newRid);
-        }
-
-        //开始替换id和parent
-        for(ResourceTreeInfo resourceTreeInfo: newResourceTreeInfos) {
-            String rid = resourceTreeInfo.getId();
-            String parent = resourceTreeInfo.getParent();
-            if(parent.equals("#")){
+    /**
+     * 构建URL或Text到资源的映射（优先使用URL）
+     * 注意：排除根节点（parent="#"），避免根节点通过text匹配导致重复
+     */
+    private Map<String, ResourceTreeInfo> buildMapByUrlOrText(List<ResourceTreeInfo> list) {
+        Map<String, ResourceTreeInfo> map = new HashMap<>();
+        for (ResourceTreeInfo item : list) {
+            // 排除根节点，根节点不能通过text/url匹配
+            if (isRootNode(item)) {
+                LogUtil.debug(this.getClass(), "排除根节点: ID={}, Text={}", item.getId(), item.getText());
                 continue;
             }
-            String newParentId = "";
-            //根据parent 查找对应的资源信息
-            ResourceTreeInfo baseResourceTreeInfo = baseResourceTreeInfoMapById.get(parent);
+            String key = getUrlOrTextKey(item);
+            if (!StringUtils.isEmpty(key)) {
+                map.put(key, item);
+            }
+        }
+        return map;
+    }
 
-            //在产品中查找是否已经存在节点
-            String urlOrText = StringUtils.isEmpty(baseResourceTreeInfo.getUrl())?baseResourceTreeInfo.getText():baseResourceTreeInfo.getUrl();
-            if(resourceTreeInfoMap.containsKey(urlOrText)){
-                //当前新增的资源,使用历史的父节点信息
-                newParentId =  resourceTreeInfoMap.get(urlOrText).getId();
-            }else{
-                //当前新增资源,使用新增的资源作为父节点
-                newParentId = idMap.get(newResourceTreeInfoMap.get(urlOrText).getId());
-            }
-            String s = JsonUtil.formatJsonString(resourceTreeInfo);
-            ResourceTreeInfo newResourceTreeInfo = JsonUtil.toJavaBean(s, ResourceTreeInfo.class);
-            newResourceTreeInfo.setId(idMap.get(rid));
-            if(!newResourceTreeInfo.getParent().equals("#")){
-                newResourceTreeInfo.setParent(newParentId);
-            }
-            newResourceTreeInfo.setProduct_code(product_code);
-            if(!StringUtils.isEmpty(newResourceTreeInfo.getOrder())){
-                newResourceTreeInfo.setOrder(newResourceTreeInfo.getOrder());
-            }
-            newResourceTreeInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
-            newResourceTreeInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
-            LogUtil.info(this.getClass(),"新增资源树信息:{}", JsonUtil.formatJsonString(newResourceTreeInfo));
+    /**
+     * 判断是否为根节点
+     */
+    private boolean isRootNode(ResourceTreeInfo resource) {
+        return resource != null && "#".equalsIgnoreCase(resource.getParent());
+    }
 
-            resourceTreeMapper.insertSelective(newResourceTreeInfo);
+    /**
+     * 获取用于匹配的key（优先使用url，其次使用text）
+     */
+    private String getUrlOrTextKey(ResourceTreeInfo resource) {
+        if (!StringUtils.isEmpty(resource.getUrl())) {
+            return resource.getUrl();
+        } else if (!StringUtils.isEmpty(resource.getText())) {
+            return resource.getText();
+        }
+        return null;
+    }
+
+    /**
+     * 找出需要新增的资源（在源产品中存在但目标产品中不存在）
+     * 注意：排除根节点，根节点通过createRootNode单独创建
+     */
+    private List<ResourceTreeInfo> findResourcesToAdd(List<ResourceTreeInfo> baseResources,
+                                                        Map<String, ResourceTreeInfo> targetMapByUrlOrText) {
+        List<ResourceTreeInfo> result = new ArrayList<>();
+        for (ResourceTreeInfo baseResource : baseResources) {
+            // 排除根节点，不参与匹配
+            if (isRootNode(baseResource)) {
+                LogUtil.debug(this.getClass(), "跳过根节点: Text={}", baseResource.getText());
+                continue;
+            }
+
+            String key = getUrlOrTextKey(baseResource);
+            if (key != null && !targetMapByUrlOrText.containsKey(key)) {
+                result.add(baseResource);
+                LogUtil.debug(this.getClass(), "发现新增资源: {} ({})", baseResource.getText(), key);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 为新增资源生成新的ID映射（旧ID -> 新ID）
+     */
+    private Map<String, String> generateNewIdMapping(List<ResourceTreeInfo> resourcesToAdd) {
+        Map<String, String> idMap = new HashMap<>();
+        for (ResourceTreeInfo resource : resourcesToAdd) {
+            String newId = String.valueOf(SnowflakeIdWorker.getInstance().nextId());
+            idMap.put(resource.getId(), newId);
+            LogUtil.debug(this.getClass(), "ID映射: {} -> {}", resource.getId(), newId);
+        }
+        return idMap;
+    }
+
+    /**
+     * 插入新增资源到目标产品
+     *
+     * @param resourcesToAdd 需要新增的资源列表
+     * @param baseMapById 源产品的ID映射
+     * @param baseMapByUrlOrText 源产品的URL/Text映射（排除根节点）
+     * @param targetMapById 目标产品的ID映射（包含根节点）
+     * @param targetMapByUrlOrText 目标产品的URL/Text映射（排除根节点）
+     * @param oldIdToNewIdMap 旧ID到新ID的映射
+     * @param product_code 目标产品编码
+     * @param baseRootNode 源产品的根节点信息
+     * @param targetRootNode 目标产品的根节点信息
+     * @throws Exception
+     */
+    private void insertNewResources(List<ResourceTreeInfo> resourcesToAdd,
+                                    Map<String, ResourceTreeInfo> baseMapById,
+                                    Map<String, ResourceTreeInfo> baseMapByUrlOrText,
+                                    Map<String, ResourceTreeInfo> targetMapById,
+                                    Map<String, ResourceTreeInfo> targetMapByUrlOrText,
+                                    Map<String, String> oldIdToNewIdMap,
+                                    String product_code,
+                                    ResourceTreeInfo baseRootNode,
+                                    ResourceTreeInfo targetRootNode) throws Exception {
+
+        for (ResourceTreeInfo baseResource : resourcesToAdd) {
+            // 双重检查：确保不插入根节点（根节点通过createRootNode单独创建）
+            if (isRootNode(baseResource)) {
+                LogUtil.warn(this.getClass(), "跳过根节点的插入: Text={}", baseResource.getText());
+                continue;
+            }
+
+            String oldId = baseResource.getId();
+            String newId = oldIdToNewIdMap.get(oldId);
+
+            // 复制资源属性
+            String jsonStr = JsonUtil.formatJsonString(baseResource);
+            ResourceTreeInfo newResource = JsonUtil.toJavaBean(jsonStr, ResourceTreeInfo.class);
+
+            // 设置新的ID
+            newResource.setId(newId);
+
+            // 处理parent关系（传入根节点信息，用于处理挂在根节点下的资源）
+            resolveParentRelation(baseResource, newResource, baseMapById,
+                                 baseMapByUrlOrText, targetMapById,
+                                 targetMapByUrlOrText, oldIdToNewIdMap,
+                                 baseRootNode, targetRootNode);
+
+            // 更新产品编码和时间戳
+            newResource.setProduct_code(product_code);
+            newResource.setCreate_time(new Timestamp(System.currentTimeMillis()));
+            newResource.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+
+            LogUtil.info(this.getClass(), "插入新资源: ID={}, Text={}, Parent={}",
+                        newResource.getId(), newResource.getText(), newResource.getParent());
+
+            resourceTreeMapper.insertSelective(newResource);
+        }
+    }
+
+    /**
+     * 解析并设置资源的parent关系
+     *
+     * 核心逻辑：
+     * - 如果是根节点（parent="#"），使用目标产品的根节点ID
+     * - 如果父节点已在目标产品中存在，使用目标产品中的父节点ID
+     * - 如果父节点也在新增列表中，使用父节点的新ID
+     * - 否则向上递归查找已存在的祖先节点（最终会找到目标产品的根节点）
+     *
+     * @param baseResource 源资源信息
+     * @param newResource 新资源信息（需要设置parent）
+     * @param baseMapById 源产品的ID映射
+     * @param baseMapByUrlOrText 源产品的URL/Text映射（排除根节点）
+     * @param targetMapById 目标产品的ID映射（包含根节点）
+     * @param targetMapByUrlOrText 目标产品的URL/Text映射（排除根节点）
+     * @param oldIdToNewIdMap 旧ID到新ID的映射
+     * @param baseRootNode 源产品的根节点信息
+     * @param targetRootNode 目标产品的根节点信息
+     */
+    private void resolveParentRelation(ResourceTreeInfo baseResource,
+                                        ResourceTreeInfo newResource,
+                                        Map<String, ResourceTreeInfo> baseMapById,
+                                        Map<String, ResourceTreeInfo> baseMapByUrlOrText,
+                                        Map<String, ResourceTreeInfo> targetMapById,
+                                        Map<String, ResourceTreeInfo> targetMapByUrlOrText,
+                                        Map<String, String> oldIdToNewIdMap,
+                                        ResourceTreeInfo baseRootNode,
+                                        ResourceTreeInfo targetRootNode) {
+
+        String parent = baseResource.getParent();
+
+        // 特殊情况：parent="#" 表示该资源挂在根节点下
+        if ("#".equalsIgnoreCase(parent)) {
+            // 使用目标产品的根节点ID作为parent
+            newResource.setParent(targetRootNode.getId());
+            LogUtil.debug(this.getClass(), "资源挂在根节点下, 使用目标根节点ID: {}", targetRootNode.getId());
+            return;
         }
 
+        // 获取父节点的源数据
+        ResourceTreeInfo baseParent = baseMapById.get(parent);
+        if (baseParent == null) {
+            LogUtil.warn(this.getClass(), "未找到父节点信息, 父节点ID: {}, 使用目标根节点作为父节点", parent);
+            newResource.setParent(targetRootNode.getId());
+            return;
+        }
+
+        // 获取父节点的匹配key（url或text）
+        String parentKey = getUrlOrTextKey(baseParent);
+        if (StringUtils.isEmpty(parentKey)) {
+            LogUtil.warn(this.getClass(), "父节点无有效的url或text, 父节点ID: {}, 使用目标根节点作为父节点", parent);
+            newResource.setParent(targetRootNode.getId());
+            return;
+        }
+
+        // 情况1：父节点已在目标产品中存在 → 直接使用目标产品中的父节点ID
+        if (targetMapByUrlOrText.containsKey(parentKey)) {
+            String existingParentId = targetMapByUrlOrText.get(parentKey).getId();
+            newResource.setParent(existingParentId);
+            LogUtil.debug(this.getClass(), "父节点已存在, 使用已有ID: {}", existingParentId);
+            return;
+        }
+
+        // 情况2：父节点也在新增列表中 → 使用父节点的新ID
+        if (baseMapByUrlOrText.containsKey(parentKey)) {
+            ResourceTreeInfo parentInBase = baseMapByUrlOrText.get(parentKey);
+            String parentOldId = parentInBase.getId();
+            if (oldIdToNewIdMap.containsKey(parentOldId)) {
+                String newParentId = oldIdToNewIdMap.get(parentOldId);
+                newResource.setParent(newParentId);
+                LogUtil.debug(this.getClass(), "父节点也是新增的, 使用新ID: {}", newParentId);
+                return;
+            }
+        }
+
+        // 情况3：向上递归查找已存在的祖先节点（传入targetMapById用于查找根节点）
+        String resolvedParentId = findExistingAncestor(baseParent, baseMapById,
+                                                       baseMapByUrlOrText, targetMapById,
+                                                       targetMapByUrlOrText, oldIdToNewIdMap,
+                                                       targetRootNode);
+        newResource.setParent(resolvedParentId);
+        LogUtil.debug(this.getClass(), "递归查找后确定的父节点ID: {}", resolvedParentId);
+    }
+
+    /**
+     * 递归查找已存在的祖先节点ID
+     *
+     * @param currentNode 当前节点
+     * @param baseMapById 源产品的ID映射
+     * @param baseMapByUrlOrText 源产品的URL/Text映射（排除根节点）
+     * @param targetMapById 目标产品的ID映射（包含根节点）
+     * @param targetMapByUrlOrText 目标产品的URL/Text映射（排除根节点）
+     * @param oldIdToNewIdMap 旧ID到新ID的映射
+     * @param targetRootNode 目标产品的根节点信息
+     * @return 找到的祖先节点ID，如果找不到则返回目标产品的根节点ID
+     */
+    private String findExistingAncestor(ResourceTreeInfo currentNode,
+                                         Map<String, ResourceTreeInfo> baseMapById,
+                                         Map<String, ResourceTreeInfo> baseMapByUrlOrText,
+                                         Map<String, ResourceTreeInfo> targetMapById,
+                                         Map<String, ResourceTreeInfo> targetMapByUrlOrText,
+                                         Map<String, String> oldIdToNewIdMap,
+                                         ResourceTreeInfo targetRootNode) {
+
+        String currentParent = currentNode.getParent();
+
+        // 到达根节点：返回目标产品的根节点ID
+        if ("#".equalsIgnoreCase(currentParent)) {
+            LogUtil.debug(this.getClass(), "递归到达根节点, 返回目标根节点ID: {}", targetRootNode.getId());
+            return targetRootNode.getId();
+        }
+
+        // 获取当前节点的父节点
+        ResourceTreeInfo parentNode = baseMapById.get(currentParent);
+        if (parentNode == null) {
+            LogUtil.warn(this.getClass(), "递归查找时未找到节点, ID: {}, 返回目标根节点", currentParent);
+            return targetRootNode.getId();
+        }
+
+        String parentKey = getUrlOrTextKey(parentNode);
+        if (StringUtils.isEmpty(parentKey)) {
+            // 继续向上查找
+            return findExistingAncestor(parentNode, baseMapById, baseMapByUrlOrText,
+                                       targetMapById, targetMapByUrlOrText, oldIdToNewIdMap,
+                                       targetRootNode);
+        }
+
+        // 检查父节点是否在目标产品中已存在
+        if (targetMapByUrlOrText.containsKey(parentKey)) {
+            return targetMapByUrlOrText.get(parentKey).getId();
+        }
+
+        // 检查父节点是否在新增列表中
+        if (oldIdToNewIdMap.containsKey(parentNode.getId())) {
+            return oldIdToNewIdMap.get(parentNode.getId());
+        }
+
+        // 继续向上递归
+        return findExistingAncestor(parentNode, baseMapById, baseMapByUrlOrText,
+                                   targetMapById, targetMapByUrlOrText, oldIdToNewIdMap,
+                                   targetRootNode);
     }
 
     /**

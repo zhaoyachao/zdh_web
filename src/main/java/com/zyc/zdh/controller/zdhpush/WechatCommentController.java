@@ -6,13 +6,11 @@ import com.zyc.zdh.dao.WechatCommentMapper;
 import com.zyc.zdh.dao.WechatMapper;
 import com.zyc.zdh.dao.WechatSendNewsMapper;
 import com.zyc.zdh.entity.*;
-import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.pushx.PushxWechatCommentService;
 import com.zyc.zdh.pushx.entity.WechatCommentRequest;
 import com.zyc.zdh.pushx.entity.WechatCommentResponse;
 import com.zyc.zdh.service.ZdhPermissionService;
 import com.zyc.zdh.util.Const;
-import com.zyc.zdh.util.DateUtil;
 import com.zyc.zdh.util.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
@@ -124,7 +122,7 @@ public class WechatCommentController extends BaseController {
             if (parent == null || "1".equals(parent.getIs_delete())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "父评论不存在", null);
             }
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, parent.getWechat_channel()), getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, parent.getWechat_channel()).getProduct_code(), getAttrSelect());
 
             //根据wechat_channel和article_id查询文章
             WechatSendNewsInfo wechatSendNewsInfo = new WechatSendNewsInfo();
@@ -180,7 +178,7 @@ public class WechatCommentController extends BaseController {
             if (parent == null || "1".equals(parent.getIs_delete())) {
                 return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "父评论不存在", null);
             }
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, parent.getWechat_channel()), getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, parent.getWechat_channel()).getProduct_code(), getAttrSelect());
 
             //根据wechat_channel和article_id查询文章
             WechatSendNewsInfo wechatSendNewsInfo = new WechatSendNewsInfo();
@@ -235,7 +233,7 @@ public class WechatCommentController extends BaseController {
             }
             List<WechatCommentInfo> comments = wechatCommentMapper.selectObjectByIds(wechatCommentMapper.getTable(), ids);
             for (WechatCommentInfo item : comments) {
-                checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, item.getWechat_channel()), getAttrDel());
+                checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, item.getWechat_channel()).getProduct_code(), getAttrDel());
 
                 //根据wechat_channel和article_id查询文章
                 WechatSendNewsInfo wechatSendNewsInfo = new WechatSendNewsInfo();

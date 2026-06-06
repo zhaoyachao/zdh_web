@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Table(name = "wechat_comment_info")
-public class WechatCommentInfo {
+public class WechatCommentInfo extends BaseWechatChannelAuthInfo{
 
     @Id
     private String id;

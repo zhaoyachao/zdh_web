@@ -181,7 +181,7 @@ public class WechatRuleController extends BaseController {
     @RequestMapping(value = "/wechat_rule_update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo<WechatRuleInfo> wechat_rule_update(WechatRuleInfo wechatRuleInfo, String msg_type, String content, String title,
+    public ReturnInfo<WechatRuleInfo> wechat_rule_update(WechatRuleInfo wechatRuleInfo, String match_mode, String msg_type, String content, String title,
                                                          String description, String musicurl, String hqmusicurl, String thumbmediaid, String picurl, String url) {
         try {
 
@@ -193,6 +193,7 @@ public class WechatRuleController extends BaseController {
             checkAttrPermissionByProduct(zdhPermissionService, oldWechatRuleInfo.getProduct_code(), getAttrEdit());
 
             WechatRuleInfo.RuleConfig ruleConfig = new WechatRuleInfo.RuleConfig();
+            ruleConfig.setMatch_mode(match_mode);
             ruleConfig.setMsg_type(msg_type);
             ruleConfig.setContent(content);
             ruleConfig.setTitle(title);
@@ -227,12 +228,13 @@ public class WechatRuleController extends BaseController {
     @RequestMapping(value = "/wechat_rule_add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     @Transactional(propagation= Propagation.NESTED)
-    public ReturnInfo<WechatRuleInfo> wechat_rule_add(WechatRuleInfo wechatRuleInfo, String msg_type, String content, String title,
+    public ReturnInfo<WechatRuleInfo> wechat_rule_add(WechatRuleInfo wechatRuleInfo, String match_mode, String msg_type, String content, String title,
                                                       String description, String musicurl, String hqmusicurl, String thumbmediaid, String picurl, String url) {
         try {
             wechatRuleInfo.setId(SnowflakeIdWorker.getInstance().nextId()+"");
 
             WechatRuleInfo.RuleConfig ruleConfig = new WechatRuleInfo.RuleConfig();
+            ruleConfig.setMatch_mode(match_mode);
             ruleConfig.setMsg_type(msg_type);
             ruleConfig.setContent(content);
             ruleConfig.setTitle(title);

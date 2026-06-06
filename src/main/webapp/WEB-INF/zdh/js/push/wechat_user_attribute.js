@@ -12,19 +12,19 @@
       $('#add').click(function () {
           parent.layer.open({
               type: 2,
-              title: '客户配置',
+              title: '微信用户属性绑定表配置',
               shadeClose: false,
               resize: true,
               fixed: false,
               maxmin: true,
               shade: 0.1,
-              area : ['45%', '60%'],
+              area : ['100%', '100%'],//[宽度,高度]
               //area: ['450px', '500px'],
-              content: server_context+"/customer_manager_add_index?id=-1", //iframe的url
+              content: server_context+"/wechat_user_attribute_add_index?id=-1", //iframe的url
               end : function () {
                   $('#exampleTableEvents-table').bootstrapTable('destroy');
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize()+"&tm="+new Date(),
+                      url: server_context+"/wechat_user_attribute_list_by_page?"+$("#wechat_user_attribute_form").serialize()+"&tm="+new Date(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -39,7 +39,7 @@
             layer.msg("请先选择要删除的记录!");
             return;
         } else {
-            layer.confirm('是否删除标签', {
+            layer.confirm('是否删除规则', {
                 btn: ['确定','取消'] //按钮
             }, function(index){
                 var ids = new Array();// 声明一个数组
@@ -56,32 +56,9 @@
 
     });
 
-      $('#batchadd').click(function () {
-          parent.layer.open({
-              type: 2,
-              title: '批量上传配置',
-              shadeClose: false,
-              resize: true,
-              fixed: false,
-              maxmin: true,
-              shade: 0.1,
-              area : ['45%', '60%'],
-              //area: ['450px', '500px'],
-              content: server_context+"/customer_manager_batchadd_index?id=-1", //iframe的url
-              end : function () {
-                  $('#exampleTableEvents-table').bootstrapTable('destroy');
-                  $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize()+"&tm="+new Date(),
-                      contentType: "application/json;charset=utf-8",
-                      dataType: "json"
-                  });
-              }
-          });
-      });
-
       function deleteMs(ids) {
           $.ajax({
-              url : server_context+"/customer_manager_delete",
+              url : server_context+"/wechat_user_attribute_delete",
               data : "ids=" + ids,
               type : "post",
               dataType : "json",
@@ -93,7 +70,7 @@
                   }
                   parent.layer.msg("执行成功");
                   $('#exampleTableEvents').bootstrapTable('refresh', {
-                      url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize(),
+                      url: server_context+"/wechat_user_attribute_list_by_page?"+$("#wechat_user_attribute_form").serialize(),
                       contentType: "application/json;charset=utf-8",
                       dataType: "json"
                   });
@@ -110,18 +87,18 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '标签配置',
+                  title: '微信用户属性绑定表配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
                   maxmin: true,
                   shade: 0.1,
-                  area : ['45%', '60%'],
+                  area : ['100%', '100%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/customer_manager_add_index?id="+row.id, //iframe的url
+                  content: server_context+"/wechat_user_attribute_add_index?id="+row.id, //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
+                          url: server_context+"/wechat_user_attribute_list_by_page?"+$("#wechat_user_attribute_form").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -133,18 +110,18 @@
               $("#id").val(row.id);
               top.layer.open({
                   type: 2,
-                  title: '标签配置',
+                  title: '微信用户属性绑定表配置',
                   shadeClose: false,
                   resize: true,
                   fixed: false,
                   maxmin: true,
                   shade: 0.1,
-                  area : ['45%', '60%'],
+                  area : ['100%', '100%'],
                   //area: ['450px', '500px'],
-                  content: server_context+"/customer_manager_add_index?id="+row.id+"&is_copy=true", //iframe的url
+                  content: server_context+"/wechat_user_attribute_add_index?id="+row.id+"&is_copy=true", //iframe的url
                   end:function () {
                       $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
+                          url: server_context+"/wechat_user_attribute_list_by_page?"+$("#wechat_user_attribute_form").serialize(),
                           contentType: "application/json;charset=utf-8",
                           dataType: "json"
                       });
@@ -164,77 +141,7 @@
 
               });
           },
-          'click #tasks': function (e, value, row, index) {
-              layer.confirm('是否编辑加工任务(当前功能未开发,可使用ETL能力暂时代替)', {
-                  btn: ['确定','取消'] //按钮
-              }, function(index){
-                  layer.close(layer.index)
-              }, function(){
 
-              });
-          },
-          'click #edit_value': function (e, value, row, index) {
-              $("#id").val(row.id);
-              top.layer.open({
-                  type: 2,
-                  title: '标签配置',
-                  shadeClose: false,
-                  resize: true,
-                  fixed: false,
-                  maxmin: true,
-                  shade: 0.1,
-                  area : ['45%', '60%'],
-                  //area: ['450px', '500px'],
-                  content: server_context+"/customer_manager_online_add_value_index?id="+row.id, //iframe的url
-                  end:function () {
-                      $('#exampleTableEvents').bootstrapTable('refresh', {
-                          url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
-                          contentType: "application/json;charset=utf-8",
-                          dataType: "json"
-                      });
-                  }
-              });
-
-          },
-      };
-
-      window.operateEvents3 = {
-          'click #btn_status': function (e, value, row, index) {
-              layer.confirm('是否启用/禁用', {
-                  btn: ['确定','取消'] //按钮
-              }, function(index){
-                  $.ajax({
-                      url: server_context+"/customer_manager_enable",
-                      data: "id=" + row.id,
-                      type: "post",
-                      async:false,
-                      dataType: "json",
-                      success: function (data) {
-                          if(data.code != "200"){
-                              layer.msg(data.msg);
-                              return
-                          }
-                          layer.msg(data.msg);
-                          $('#exampleTableEvents').bootstrapTable('refresh', {
-                              url: server_context+"/customer_manager_list?"+$("#customer_manager_form").serialize(),
-                              contentType: "application/json;charset=utf-8",
-                              dataType: "json"
-                          });
-                      },
-                      complete: function () {
-                          console.info("complete")
-                      },
-                      error: function (data) {
-                          layer.msg('删除失败');
-                          console.info("error: " + data.responseText);
-                      }
-
-                  });
-                  layer.close(layer.index)
-              }, function(){
-
-              });
-          }
       };
 
       function operateFormatter(value, row, index) {
@@ -242,7 +149,7 @@
           var copy_class = "btn btn-outline btn-sm "+ get_edit_class(row);
           var del_class = "btn btn-outline btn-sm "+ get_del_class(row);
           return [
-              ' <div class="btn-group">' +
+              ' <div class="btn-group" id="exampleTableEventsToolbar" role="group">' +
               ' <button id="edit" name="edit" type="button" class="'+edit_class+'" title="更新"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i>\n' +
               '                                    </button>',
               ' <button id="copy" name="copy" type="button" class="'+copy_class+'" title="复制"><i class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></i>\n' +
@@ -298,19 +205,26 @@
 
       $('#exampleTableEvents').bootstrapTable('destroy').bootstrapTable({
       method: "POST",
-      url: server_context+"/customer_manager_list_by_page?"+$("#customer_manager_form").serialize(),
-      search: true,
-      pagination: true,
-      showRefresh: true,
-      showToggle: true,
-      showColumns: true,
+      dataType: 'json',
+      url: "",
+          search: true,
+          pagination: true,
+          showRefresh: true,
+          showToggle: true,
+          showColumns: true,
           sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
           pageNumber: 1,                       //初始化加载第一页，默认第一页
           pageSize: 10,                       //每页的记录行数（*）
-      iconSize: 'outline',
+          iconSize: 'outline',
+          toolbar: '#exampleTableEventsToolbar',
+          icons: {
+              refresh: 'glyphicon-repeat',
+              toggle: 'glyphicon-list-alt',
+              columns: 'glyphicon-list'
+          },
           queryParams: function (params) {
               // 此处使用了LayUi组件 是为加载层
-              //loadIndex = layer.load(1);
+              loadIndex = layer.load(1);
               let resRepor = {
                   //服务端分页所需要的参数
                   limit: params.limit,
@@ -318,55 +232,76 @@
               };
               return resRepor;
           },
+          // 请求完成回调 可处理请求到的数据
           responseHandler: res => {
               // 关闭加载层
-              //layer.close(loadIndex);
+              layer.close(loadIndex);
               layer.msg(res.msg);
               return {
                   "total":res.result.total,
                   "rows": res.result.rows
               }
           },
-      toolbar: '#exampleTableEventsToolbar',
-      icons: {
-        refresh: 'glyphicon-repeat',
-        toggle: 'glyphicon-list-alt',
-        columns: 'glyphicon-list'
-      },
-        columns: [{
-            checkbox: true,
-            field:'state',
-            sortable:false
-        }, {
-            field: 'id',
-            title: 'ID',
-            sortable:false
-        }, {
-            field: 'uid',
-            title: '用户ID',
-            sortable:true
-        }, {
-            field: 'uid_type',
-            title: '用户类型',
-            sortable:true,
-            cellStyle: formatTableUnit,
-            formatter: paramsMatter
-        }, {
-            field: 'source',
-            title: '归属平台',
-            sortable:true
-        }, {
+        columns: [
+            {
+                checkbox: true,
+                field:'state',
+                sortable:false
+            },
+          {
+              field: 'id',
+              title: '主键ID',
+              sortable:false
+          },
+          {
+              field: 'wechat_channel',
+              title: '服务号',
+              sortable:false
+          },
+          {
+              field: 'openid',
+              title: '用户OpenID',
+              sortable:false
+          },
+          {
+              field: 'attribute_type',
+              title: '属性类型:phone/email/name/id_card/company/position',
+              sortable:false
+          },
+          {
+              field: 'attribute_value',
+              title: '属性值',
+              sortable:false
+          },
+          {
+              field: 'status',
+              title: '状态:1-有效,0-已解绑',
+              sortable:false
+          },
+          {
+              field: 'is_delete',
+              title: '删除标志:0-未删除,1-已删除',
+              sortable:false
+          },
+          {
             field: 'create_time',
             title: '任 务 创 建 时 间',
             sortable:true,
             formatter: function (value, row, index) {
                 return getMyDate(value);
             }
-        }, {
+        },  {
+                field: 'update_time',
+                title: '更新时间',
+                sortable:false,
+                formatter: function (value, row, index) {
+                    return getMyDate(value);
+                }
+            },{
             field: 'operate',
             title: '常用操作按钮事件',
             events: operateEvents,//给按钮注册事件
-            width:200,
+            width:150,
             formatter: operateFormatter //表格中增加按钮
         }]
     });

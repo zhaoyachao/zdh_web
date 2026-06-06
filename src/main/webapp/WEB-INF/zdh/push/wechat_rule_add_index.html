@@ -97,6 +97,22 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">匹配模式</label>
+                            <div class="col-sm-10">
+                                <select id="match_mode" name="match_mode"
+                                        data-placeholder="匹配模式...."
+                                        class="chosen-select form-control m-b" >
+                                    <option value="" mytype="">选择匹配模式...</option>
+                                    <option value="1" mytype="">完全匹配</option>
+                                    <option value="2" mytype="">包含匹配</option>
+                                    <option value="3" mytype="">任意一个完全匹配(多关键字时使用)</option>
+                                    <option value="4" mytype="">任意一个包含匹配(多关键字时使用)</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label">规则</label>
                             <div class="col-sm-10">
@@ -127,6 +143,7 @@
                                         <option value="video" mytype="">视频</option>
                                         <option value="music" mytype="">音乐</option>
                                         <option value="news" mytype="">图文</option>
+                                        <option value="signaling" mytype="">信令</option>
                                     </select>
                                 </div>
                             </div>
@@ -411,11 +428,18 @@
                             $("#rule_name").val(rule_name);
                             var event = data.result.event;
                             $("#event").val(event);
+
+                            var ruleConfig = data.result.ruleConfig;
+
+                            var match_mode=ruleConfig.match_mode;
+                            $("#match_mode").val(match_mode);
+                            $("#match_mode").trigger("chosen:updated");
+
                             var event_key = data.result.event_key;
                             $("#event_key").val(event_key);
                             var weight = data.result.weight;
                             $("#weight").val(weight);
-                            var ruleConfig = data.result.ruleConfig;
+
 
                             $("#msg_type").val(ruleConfig.msg_type);
                             $("#msg_type").trigger("chosen:updated");

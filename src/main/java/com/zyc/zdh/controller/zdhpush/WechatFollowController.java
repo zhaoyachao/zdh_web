@@ -4,10 +4,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.zyc.zdh.controller.BaseController;
 import com.zyc.zdh.dao.WechatMapper;
 import com.zyc.zdh.dao.WechatSubscriptionMapper;
-import com.zyc.zdh.entity.PageResult;
-import com.zyc.zdh.entity.RETURN_CODE;
-import com.zyc.zdh.entity.ReturnInfo;
-import com.zyc.zdh.entity.WechatSubscriptionInfo;
+import com.zyc.zdh.entity.*;
 import com.zyc.zdh.job.SnowflakeIdWorker;
 import com.zyc.zdh.pushx.PushxWechatUserService;
 import com.zyc.zdh.pushx.entity.WechatUserRemarkResponse;
@@ -170,9 +167,9 @@ public class WechatFollowController extends BaseController {
     public ReturnInfo<WechatSubscriptionInfo> wechat_follow_detail(String id) {
         try {
             WechatSubscriptionInfo wechatSubscriptionInfo = wechatSubscriptionMapper.selectByPrimaryKey(id);
-            String product_code = getProductCodeByChannel(wechatMapper, wechatSubscriptionInfo.getWechat_channel());
+            BaseWechatChannelAuthInfo baseWechatChannelAuthInfo = getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechatSubscriptionInfo.getWechat_channel());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  wechatSubscriptionInfo.getProduct_code(), wechatSubscriptionInfo.getDim_group(), getAttrSelect());
-            checkAttrPermissionByProduct(zdhPermissionService,  product_code, getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  baseWechatChannelAuthInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatSubscriptionInfo);
         } catch (Exception e) {
             return ReturnInfo.build(RETURN_CODE.FAIL.getCode(), "查询失败", e);
@@ -193,8 +190,8 @@ public class WechatFollowController extends BaseController {
 
             WechatSubscriptionInfo oldWechatSubscriptionInfo = wechatSubscriptionMapper.selectByPrimaryKey(wechatSubscriptionInfo.getId());
 
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,oldWechatSubscriptionInfo.getWechat_channel()), getAttrEdit());
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatSubscriptionInfo.getWechat_channel()), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,oldWechatSubscriptionInfo.getWechat_channel()).getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,wechatSubscriptionInfo.getWechat_channel()).getProduct_code(), getAttrEdit());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatSubscriptionInfo.getProduct_code(), wechatSubscriptionInfo.getDim_group(), getAttrEdit());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, oldWechatSubscriptionInfo.getProduct_code(), oldWechatSubscriptionInfo.getDim_group(), getAttrEdit());
             //checkAttrPermissionByProduct(zdhPermissionService, wechatSubscriptionInfo.getProduct_code(), getAttrEdit());
@@ -239,7 +236,7 @@ public class WechatFollowController extends BaseController {
             wechatSubscriptionInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             wechatSubscriptionInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatSubscriptionInfo.getWechat_channel()), getAttrAdd());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,wechatSubscriptionInfo.getWechat_channel()).getProduct_code(), getAttrAdd());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService, wechatSubscriptionInfo.getProduct_code(), wechatSubscriptionInfo.getDim_group(), getAttrAdd());
             //checkAttrPermissionByProduct(zdhPermissionService, wechatSubscriptionInfo.getProduct_code(), getAttrAdd());
             wechatSubscriptionMapper.insertSelective(wechatSubscriptionInfo);
@@ -265,7 +262,7 @@ public class WechatFollowController extends BaseController {
             List<WechatSubscriptionInfo> wechatSubscriptionInfos = wechatSubscriptionMapper.selectObjectByIds(wechatSubscriptionMapper.getTable(), ids);
             Set<String> collect = wechatSubscriptionInfos.stream().map(wechatSubscriptionInfo -> wechatSubscriptionInfo.getWechat_channel()).collect(Collectors.toSet());
             for (String wechat_channel:collect){
-                checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechat_channel), getAttrDel());
+                checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechat_channel).getProduct_code(), getAttrDel());
             }
             wechatSubscriptionMapper.deleteLogicByIds(wechatSubscriptionMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);

@@ -162,7 +162,7 @@ public class WechatSendNewsController extends BaseController {
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_detail(String id) {
         try {
             WechatSendNewsInfo wechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(id);
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechatSendNewsInfo.getWechat_channel()), getAttrSelect());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechatSendNewsInfo.getWechat_channel()).getProduct_code(), getAttrSelect());
             //checkAttrPermissionByProductAndDimGroup(zdhPermissionService,  wechatSendNewsInfo.getProduct_code(), wechatSendNewsInfo.getDim_group(), getAttrSelect());
             //checkAttrPermissionByProduct(zdhPermissionService,  wechatSendNewsInfo.getProduct_code(), getAttrSelect());
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "查询成功", wechatSendNewsInfo);
@@ -185,8 +185,8 @@ public class WechatSendNewsController extends BaseController {
 
             WechatSendNewsInfo oldWechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(wechatSendNewsInfo.getId());
 
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,oldWechatSendNewsInfo.getWechat_channel()), getAttrEdit());
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatSendNewsInfo.getWechat_channel()), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,oldWechatSendNewsInfo.getWechat_channel()).getProduct_code(), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,wechatSendNewsInfo.getWechat_channel()).getProduct_code(), getAttrEdit());
 
             wechatSendNewsInfo.setCreate_time(oldWechatSendNewsInfo.getCreate_time());
             wechatSendNewsInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
@@ -216,7 +216,7 @@ public class WechatSendNewsController extends BaseController {
             wechatSendNewsInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
             wechatSendNewsInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
 
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper,wechatSendNewsInfo.getWechat_channel()), getAttrAdd());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService,wechatSendNewsInfo.getWechat_channel()).getProduct_code(), getAttrAdd());
             wechatSendNewsMapper.insertSelective(wechatSendNewsInfo);
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "新增成功", wechatSendNewsInfo);
         } catch (Exception e) {
@@ -241,7 +241,7 @@ public class WechatSendNewsController extends BaseController {
 
             Set<String> collect = wechatSendNewsInfos.stream().map(wechatSendNewsInfo -> wechatSendNewsInfo.getWechat_channel()).collect(Collectors.toSet());
             for (String wechat_channel:collect){
-                checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechat_channel), getAttrDel());
+                checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechat_channel).getProduct_code(), getAttrDel());
             }
             wechatSendNewsMapper.deleteLogicByIds(wechatSendNewsMapper.getTable(),ids, new Timestamp(System.currentTimeMillis()));
             return ReturnInfo.build(RETURN_CODE.SUCCESS.getCode(), "删除成功", null);
@@ -264,7 +264,7 @@ public class WechatSendNewsController extends BaseController {
     public ReturnInfo<WechatSendNewsInfo> wechat_send_news_refresh_comment(String id) {
         try {
             WechatSendNewsInfo wechatSendNewsInfo = wechatSendNewsMapper.selectByPrimaryKey(id);
-            checkAttrPermissionByProduct(zdhPermissionService,  getProductCodeByChannel(wechatMapper, wechatSendNewsInfo.getWechat_channel()), getAttrEdit());
+            checkAttrPermissionByProduct(zdhPermissionService,  getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, wechatSendNewsInfo.getWechat_channel()).getProduct_code(), getAttrEdit());
             //获取上次同步的时间
             String last_sync_time =wechatSendNewsInfo.getWechat_comment_sync_time();
 

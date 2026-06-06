@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "wechat_subscription_info")
-public class WechatSubscriptionInfo {
+public class WechatSubscriptionInfo extends BaseWechatChannelAuthInfo{
     /**
      * 主键ID
      */

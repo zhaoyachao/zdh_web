@@ -304,6 +304,7 @@ public class WechatRuleInfo extends BaseProductAuthInfo{
     }
 
     public static class RuleConfig{
+        private String match_mode;
         private String msg_type;
         private String content;
         private String title;
@@ -313,6 +314,12 @@ public class WechatRuleInfo extends BaseProductAuthInfo{
         private String thumbmediaid;
         private String picurl;
         private String url;
+        public String getMatch_mode() {
+            return match_mode;
+        }
+        public void setMatch_mode(String match_mode) {
+            this.match_mode = match_mode;
+        }
         public String getMsg_type() {
             return msg_type;
         }

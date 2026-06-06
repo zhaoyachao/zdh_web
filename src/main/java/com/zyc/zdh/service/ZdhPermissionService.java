@@ -30,4 +30,6 @@ public interface ZdhPermissionService {
      * @throws Exception
      */
     public UserAndGroupPermissionDimensionValueInfo get_dim_permission(String product_code, String user_account, String user_group) throws Exception;
+
+    public String getProductCodeByWechatChannel(String wechat_channel);
 }

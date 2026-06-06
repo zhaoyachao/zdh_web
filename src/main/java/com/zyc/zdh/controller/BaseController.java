@@ -35,6 +35,8 @@ public class BaseController {
 
     private String ZDH_PERMISSION_DIM_GROUP_ATTR="zdh_permission_dim_group_attr";
 
+    private String ZDH_PERMISSION_WECHAT_CHANNEL="zdh_permission_wechat_channel";
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
@@ -586,6 +588,8 @@ public class BaseController {
     public void dynamicAuth(ZdhPermissionService zdhPermissionService, List list) throws Exception {
         dynamicAuthByProduct(zdhPermissionService, list);
         dynamicAuthByProductAndDimGroup(zdhPermissionService, list);
+        //微信服务号专属权限
+        dynamicAuthByWechatChannel(zdhPermissionService, list);
     }
 
     /**
@@ -632,6 +636,30 @@ public class BaseController {
                 BaseProductAndDimGroupAuthInfo attrPermissionByProductAndDimGroup = getAttrPermissionByProductAndDimGroup(zdhPermissionService, ((BaseProductAndDimGroupAuthInfo) o).getProduct_code(), ((BaseProductAndDimGroupAuthInfo) o).getDim_group());
                 attrPermissionByProductAndDimGroup.getAuth().setIs_manager(String.valueOf(is_admin));
                 ((BaseProductAndDimGroupAuthInfo) o).setAuth(attrPermissionByProductAndDimGroup.getAuth());
+            }
+        }
+
+    }
+
+    /**
+     * 根据微信服务号生成动态权限
+     * @param list
+     */
+    public void dynamicAuthByWechatChannel(ZdhPermissionService zdhPermissionService, List list) throws Exception {
+        // 检查是否产品管理员
+
+        // 检查是否拥有管理员角色,角色code=super_admin
+        boolean is_admin = getUser().getRoles().contains(Const.SUPER_ADMIN_ROLE);
+
+        if(list == null || list.size()<=0){
+            return;
+        }
+
+        for(Object o: list){
+            if(o instanceof BaseWechatChannelAuthInfo){
+                BaseWechatChannelAuthInfo baseWechatChannelAuthInfo = getBaseWechatChannelAuthInfoByChannel(zdhPermissionService, ((BaseWechatChannelAuthInfo) o).getWechat_channel());
+                baseWechatChannelAuthInfo.getAuth().setIs_manager(String.valueOf(is_admin));
+                ((BaseWechatChannelAuthInfo) o).setAuth(baseWechatChannelAuthInfo.getAuth());
             }
         }
 
@@ -725,13 +753,34 @@ public class BaseController {
         return collect;
     }
 
-    public String getProductCodeByChannel(WechatMapper wechatMapper, String wechat_channel){
-        WechatInfo wechatInfo = new WechatInfo();
-        wechatInfo.setWechat_channel(wechat_channel);
-        wechatInfo.setIs_delete(Const.NOT_DELETE);
+    public BaseWechatChannelAuthInfo getBaseWechatChannelAuthInfoByChannel(ZdhPermissionService zdhPermissionService, String wechat_channel) throws Exception {
 
-        wechatInfo = wechatMapper.selectOne(wechatInfo);
-        return wechatInfo.getProduct_code();
+        String product_code = zdhPermissionService.getProductCodeByWechatChannel(wechat_channel);
+
+        BaseWechatChannelAuthInfo baseWechatChannelAuthInfo = new BaseWechatChannelAuthInfo();
+        BaseWechatChannelAuthInfo.Auth auth = new BaseWechatChannelAuthInfo.Auth();
+        baseWechatChannelAuthInfo.setProduct_code(product_code);
+        baseWechatChannelAuthInfo.setAuth(auth);
+        if(StringUtils.isEmpty(product_code)){
+            return baseWechatChannelAuthInfo;
+        }
+
+        String key = ZDH_PERMISSION_WECHAT_CHANNEL+"_"+product_code+"_"+getOwner();
+
+        String cache = getCache(key);
+        if(!StringUtils.isEmpty(cache)){
+            return JsonUtil.toJavaBean(cache, BaseWechatChannelAuthInfo.class);
+        }
+
+        //检查是否有维度对应自定义权限(增,删,改,审批等)
+        Map<String, Map<String, String>> dim_product_attrs = zdhPermissionService.get_dim_value_attr_by_user_account(product_code,getOwner(),getUserGroup(), "dim_product");
+        if(dim_product_attrs.containsKey(product_code)){
+            auth.setActions(dim_product_attrs.get(product_code));
+        }
+
+        setCache(key, JsonUtil.formatJsonString(baseWechatChannelAuthInfo));
+        return baseWechatChannelAuthInfo;
+
     }
 
 

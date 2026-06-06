@@ -1331,7 +1331,14 @@ INSERT INTO `resource_tree_info` VALUES (802848818109353984,'#','ZDH','1','zyc',
 (1509848454489182210, '1509846325749878784', '问卷管理-删除', '4', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-05-29 09:18:43', '2026-05-29 09:18:43', 'survey_delete', '5', '', '', 'zdh', ''),
 (1509850007283437568, '1509846325749878784', '问卷管理-统计页面', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:24:53', '2026-05-29 09:24:53', 'survey_statistics_index', '3', '', '', 'zdh', ''),
 (1509850137424302080, '1509846325749878784', '问卷管理-统计查询', '4', 'zyc', 'fa fa-coffee', '', '8', '1', '2026-05-29 09:25:24', '2026-05-29 09:25:24', 'survey_statistics', '5', '', '', 'zdh', ''),
-(1509850213601251328, '1509846325749878784', '问卷管理-提交', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:25:43', '2026-05-29 09:25:43', 'survey_submit', '5', '', '', 'zdh', ''),(1511390651554467840, '1495051432326336512', '服务号管理-生成授权链接', '5', 'zyc', 'fa fa-coffee', '', '10', '1', '2026-06-02 15:26:52', '2026-06-02 15:26:52', 'wechat_gen_auth_url', '5', '', '', 'zdh', ''),(1511390807054094336, '1495051432326336512', '服务号管理-授权链接页面', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2026-06-02 15:27:29', '2026-06-02 15:27:29', 'wechat_auth_index', '3', '', '', 'zdh', '');
+(1509850213601251328, '1509846325749878784', '问卷管理-提交', '4', 'zyc', 'fa fa-coffee', '', '9', '1', '2026-05-29 09:25:43', '2026-05-29 09:25:43', 'survey_submit', '5', '', '', 'zdh', ''),(1511390651554467840, '1495051432326336512', '服务号管理-生成授权链接', '5', 'zyc', 'fa fa-coffee', '', '10', '1', '2026-06-02 15:26:52', '2026-06-02 15:26:52', 'wechat_gen_auth_url', '5', '', '', 'zdh', ''),(1511390807054094336, '1495051432326336512', '服务号管理-授权链接页面', '5', 'zyc', 'fa fa-coffee', '', '11', '1', '2026-06-02 15:27:29', '2026-06-02 15:27:29', 'wechat_auth_index', '3', '', '', 'zdh', ''),(1512755864832839680, '1464735889027502080', '粉丝管理-属性列表页面', '5', 'zyc', 'fa fa-coffee', '', '', '1', '2026-06-06 09:51:44', '2026-06-06 09:52:47', 'wechat_user_attribute_index', '3', '', '', 'zdh', ''),
+(1512755949427757056, '1512755864832839680', '粉丝管理-属性列表页面-列表', '6', 'zyc', 'fa fa-coffee', '', '1', '1', '2026-06-06 09:52:04', '2026-06-06 09:53:34', 'wechat_user_attribute_list', '5', '', '', 'zdh', ''),
+(1512755949431951360, '1512755864832839680', '粉丝管理-属性列表页面-分页列表', '6', 'zyc', 'fa fa-coffee', '', '2', '1', '2026-06-06 09:52:04', '2026-06-06 09:53:40', 'wechat_user_attribute_list_by_page', '5', '', '', 'zdh', ''),
+(1512755949431951361, '1512755864832839680', '粉丝管理-属性列表页面-新增页面', '6', 'zyc', 'fa fa-coffee', '', '3', '1', '2026-06-06 09:52:04', '2026-06-06 09:53:46', 'wechat_user_attribute_add_index', '3', '', '', 'zdh', ''),
+(1512755949436145664, '1512755864832839680', '粉丝管理-属性列表页面-明细', '6', 'zyc', 'fa fa-coffee', '', '4', '1', '2026-06-06 09:52:04', '2026-06-06 09:53:52', 'wechat_user_attribute_detail', '5', '', '', 'zdh', ''),
+(1512755949436145665, '1512755864832839680', '粉丝管理-属性列表页面-新增', '6', 'zyc', 'fa fa-coffee', '', '5', '1', '2026-06-06 09:52:04', '2026-06-06 09:53:58', 'wechat_user_attribute_add', '5', '', '', 'zdh', ''),
+(1512755949436145666, '1512755864832839680', '粉丝管理-属性列表页面-更新', '6', 'zyc', 'fa fa-coffee', '', '6', '1', '2026-06-06 09:52:04', '2026-06-06 09:54:04', 'wechat_user_attribute_update', '5', '', '', 'zdh', ''),
+(1512755949440339968, '1512755864832839680', '粉丝管理-属性列表页面-删除', '6', 'zyc', 'fa fa-coffee', '', '7', '1', '2026-06-06 09:52:04', '2026-06-06 09:54:10', 'wechat_user_attribute_delete', '5', '', '', 'zdh', '');
 /*!40000 ALTER TABLE `resource_tree_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4042,6 +4049,24 @@ CREATE TABLE wechat_third_authorizer_info (
     PRIMARY KEY (id),
     INDEX idx_authorizer_appid (authorizer_appid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信第三方授权方信息';
+
+ CREATE TABLE `wechat_user_attribute` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `wechat_channel` varchar(100) NOT NULL DEFAULT '' COMMENT '服务号',
+    `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户OpenID',
+    `attribute_type` varchar(128) NOT NULL DEFAULT '' COMMENT '属性类型:phone/email/name/id_card/company/position',
+    `attribute_value` varchar(2048) NOT NULL DEFAULT '' COMMENT '属性值',
+    `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态:1-有效,0-已解绑',
+    `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标志:0-未删除,1-已删除',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_channel_openid_attr` (`wechat_channel`, `openid`, `attribute_type`),
+    KEY `idx_wechat_channel` (`wechat_channel`),
+    KEY `idx_openid` (`openid`),
+    KEY `idx_attribute_type` (`attribute_type`),
+    KEY `idx_attribute_value` (`attribute_value`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='微信用户属性绑定表';
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
