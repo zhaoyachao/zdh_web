@@ -375,6 +375,14 @@
           {
               field: 'error_msg',
               title: '失败说明',
+              width: 200,
+              formatter: function(value) {
+                  if (is_empty(value)) return ''; // 空值处理
+                  if (value.length > 100) {
+                      return value.substring(0, 100);
+                  }
+                  return value;
+              },
               sortable:false
           },
           {
